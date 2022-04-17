@@ -7,11 +7,13 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
+	"strconv"
 	"time"
 )
 
 type User struct {
-	Id    string `json:"id"`
+	Id    int    `json:"id"`
 	Name  string `json:"name"`
 	Email string `json:"email"`
 }
@@ -26,14 +28,12 @@ func pingHandle(c *gin.Context) {
 
 func queryUser(c *gin.Context) {
 
-	userID := c.Query("id")
+	userID, _ := strconv.Atoi(c.Query("id"))
 	var user User
 	//user.Id = userID
 	collection := client.Database("test").Collection("user")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 
-	err := collection.FindOne(ctx, bson.M{"id": userID}).Decode(&user)
+	err := collection.FindOne(context.TODO(), bson.D{{"id", userID}}).Decode(&user)
 	if err != nil {
 		c.JSON(400, gin.H{
 			"message": "error",
@@ -43,12 +43,16 @@ func queryUser(c *gin.Context) {
 }
 func main() {
 	engine := gin.Default()
-
+	var err error
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	client, err = mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
 		fmt.Println(err.Error())
+	}
+	err = client.Ping(context.TODO(), nil)
+	if err != nil {
+		log.Fatal(err)
 	}
 	defer func() {
 		if err = client.Disconnect(ctx); err != nil {

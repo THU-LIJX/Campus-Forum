@@ -21,9 +21,10 @@ func Auth() gin.HandlerFunc {
 		}
 		user, err := model.GetUser(cookie)
 		if err != nil {
-			c.JSON(403, gin.H{
+			c.AbortWithStatusJSON(403, gin.H{
 				"message": "登陆状态过期",
 			})
+
 		}
 		c.Set("user", user)
 		c.Next()
@@ -33,12 +34,16 @@ func register(engine *gin.Engine) {
 	engine.GET("/ping", pingHandle)
 	engine.StaticFile("/favicon.ico", "./asset/images.webp")
 
-	userGroup := engine.Group("/user")
+	rootGroup := engine.Group("/api")
+	userGroup := rootGroup.Group("/user")
 	userGroup.Use(Auth())
-	
-	engine.GET("/info", controller.QueryUser)
-	engine.POST("/register", controller.Register)
-	engine.POST("/login", controller.Login)
+	userGroup.POST("/change", controller.ChangeUserInfo)
+	userGroup.POST("/subscribe", controller.Subscribe)
+	userGroup.POST("/unsubscribe", controller.Unsubscribe)
+
+	rootGroup.GET("/info", controller.QueryUser)
+	rootGroup.POST("/register", controller.Register)
+	rootGroup.POST("/login", controller.Login)
 	//Post之类相关的可以设置verify登陆状态的中间件
 
 }

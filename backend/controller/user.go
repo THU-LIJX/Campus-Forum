@@ -7,7 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 	"io"
+	"log"
+	"reflect"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -91,4 +94,96 @@ func Login(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "ok",
 	})
+}
+
+func ChangeUserInfo(c *gin.Context) {
+	//TODO: 通过反射直接修改用户的信息
+	userI, _ := c.Get("user")
+	user := userI.(*model.User)
+	m := make(map[string]interface{})
+	err := c.BindJSON(&m)
+
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": "bind json error",
+		})
+		return
+	}
+	log.Println(m)
+	//t := reflect.TypeOf(user)
+
+	val := reflect.ValueOf(user).Elem()
+
+	for k, v := range m {
+		field := val.FieldByNameFunc(func(s string) bool {
+			return strings.ToLower(s) == strings.ToLower(k)
+		})
+		if field.CanSet() {
+			field.Set(reflect.ValueOf(v))
+		}
+	}
+	log.Println(user)
+	err = user.Commit()
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": "user commit error",
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "ok",
+	})
+}
+func Unsubscribe(c *gin.Context) {
+	userI, _ := c.Get("user")
+	user := userI.(*model.User)
+
+	id, err := strconv.Atoi(c.PostForm("id"))
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": "参数错误",
+		})
+		return
+	}
+
+	err = user.Unsubscribe(id)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "ok",
+	})
+
+}
+func Subscribe(c *gin.Context) {
+	userI, _ := c.Get("user")
+	user := userI.(*model.User)
+
+	id, err := strconv.Atoi(c.PostForm("id"))
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": "参数错误",
+		})
+		return
+	}
+	if !model.ExistsUser(id) {
+		c.JSON(400, gin.H{
+			"message": "该用户不存在",
+		})
+		return
+	}
+	err = user.Subscribe(id)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "ok",
+	})
+
 }

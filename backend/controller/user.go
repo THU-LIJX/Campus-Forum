@@ -1,0 +1,94 @@
+package controller
+
+import (
+	"backend/model"
+	"crypto/md5"
+	"encoding/hex"
+	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
+	"io"
+	"strconv"
+	"time"
+)
+
+func Register(c *gin.Context) {
+	email := c.PostForm("email")
+	name := c.PostForm("name")
+	password := c.PostForm("password")
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost) //加密
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": "密码存储错误",
+		})
+	}
+	counter := model.GetUserCounter()
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": "获取全局用户错误",
+		})
+	}
+	counter.Value++
+
+	err = counter.Commit()
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": "内部错误",
+		})
+		return
+	}
+	user := model.User{
+		Id:       counter.Value,
+		Name:     name,
+		Email:    email,
+		Password: string(hash),
+	}
+	err = model.AddUser(&user)
+
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": "数据插入错误",
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": "ok",
+		"id":      counter.Value,
+	})
+}
+func QueryUser(c *gin.Context) {
+
+	userID, _ := strconv.Atoi(c.Query("id"))
+	var user *model.User
+	//user.Id = userID
+	user, err := model.QueryUser(userID)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": "error",
+		})
+	}
+	c.JSON(200, user)
+}
+
+func Login(c *gin.Context) {
+	email := c.PostForm("email")
+	password := c.PostForm("password")
+	user, err := model.Login(email, password)
+	if err != nil {
+		c.JSON(403, gin.H{
+			"message": "用户名或密码错误",
+		})
+	}
+	//开始生成cookie
+
+	hash := md5.New()
+	_, _ = io.WriteString(hash, user.Email+time.Now().String())
+	cookie := hex.EncodeToString(hash.Sum(nil))
+	//在返回中添加cookie
+	c.SetCookie("campus_cookie", cookie, 0, "/", "localhost", false, true)
+	model.SetCookie(cookie, user)
+
+	c.JSON(200, gin.H{
+		"message": "ok",
+	})
+}

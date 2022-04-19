@@ -43,6 +43,7 @@ func register(engine *gin.Engine) {
 	userGroup.POST("/block", controller.Block)
 	userGroup.GET("/info", controller.UserInfo)
 	userGroup.POST("/post", controller.Post)
+	userGroup.GET("/blogs", controller.GetBlogs)
 
 	rootGroup.GET("/info", controller.QueryUser)
 	rootGroup.POST("/register", controller.Register)

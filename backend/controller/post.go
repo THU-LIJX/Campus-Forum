@@ -6,6 +6,23 @@ import (
 	"time"
 )
 
+func GetBlogs(c *gin.Context) {
+	//TODO: 暂时先不给别的东西，就测试用
+	userI, _ := c.Get("user")
+	user := userI.(*model.User)
+	res, err := user.ViewBlogs(0, 2, 2)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "ok",
+		"blogs":   res,
+	})
+}
+
 //需要验证用户状态
 func Post(c *gin.Context) {
 	//需要读取post上来的内容，包含文字图片等等信息。打上时间标签
@@ -33,7 +50,8 @@ func Post(c *gin.Context) {
 		User:     user.Id,
 		Time:     now,
 		Text:     text,
-		Liked:    nil,
+		Liked:    0,
+		LikedBy:  nil,
 		Location: loc,
 		Comment:  nil,
 	}

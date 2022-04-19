@@ -1,15 +1,18 @@
 package store
 
 import (
+	"backend/config"
 	"context"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 )
 
 var client *mongo.Client
 
 func InitMongo() (err error) {
-	client, err = mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://qiuyuhan.xyz:27017"))
+	log.Println(config.DBUri())
+	client, err = mongo.Connect(context.Background(), options.Client().ApplyURI(config.DBUri()))
 	if err != nil {
 		return
 	}

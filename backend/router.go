@@ -41,6 +41,8 @@ func register(engine *gin.Engine) {
 	userGroup.POST("/subscribe", controller.Subscribe)
 	userGroup.POST("/unsubscribe", controller.Unsubscribe)
 	userGroup.POST("/block", controller.Block)
+	userGroup.GET("/info", controller.UserInfo)
+	userGroup.POST("/post", controller.Post)
 
 	rootGroup.GET("/info", controller.QueryUser)
 	rootGroup.POST("/register", controller.Register)

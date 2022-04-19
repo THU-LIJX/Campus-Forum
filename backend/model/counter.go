@@ -15,14 +15,25 @@ type Counter struct {
 
 var counters *mongo.Collection
 var usersCounter *Counter
+var blogsCounter *Counter
+var commentsCounter *Counter
 
 func initCounter() {
 	counters = store.GetMongo().Database("test").Collection("counters")
 	usersCounter, _ = getCounter("users")
+	blogsCounter, _ = getCounter("blogs")
+	commentsCounter, _ = getCounter("comments")
 }
 
 func GetUserCounter() *Counter {
 	return usersCounter
+}
+func GetBlogCounter() *Counter {
+	return blogsCounter
+}
+
+func GetCommentCounter() *Counter {
+	return commentsCounter
 }
 
 func (c *Counter) Commit() (err error) {

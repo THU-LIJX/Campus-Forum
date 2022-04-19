@@ -24,3 +24,8 @@ counter用于维护全局的id（即总数）。可能最好是直接给定而�
 提供统一的接口，前端只要在query中加上条件。
 
 page limit id
+
+## mongodb
+mongodb管理员配置：https://blog.csdn.net/HH_KELE/article/details/105804643
+
+用户名 campus 密码campus 数据库 test（测试用

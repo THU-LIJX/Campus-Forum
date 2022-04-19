@@ -97,6 +97,16 @@ func Login(c *gin.Context) {
 	})
 }
 
+func UserInfo(c *gin.Context) {
+	userI, _ := c.Get("user")
+	user := userI.(*model.User)
+	user.Password = ""
+	c.JSON(200, gin.H{
+		"message":  "ok",
+		"userInfo": user,
+	})
+}
+
 func ChangeUserInfo(c *gin.Context) {
 	//TODO: 通过反射直接修改用户的信息
 	userI, _ := c.Get("user")

@@ -16,9 +16,9 @@ type User struct {
 	Email         string      `json:"email" bson:"email"`
 	Password      string      `json:"password" bson:"password"`
 	Description   string      `json:"description" bson:"description"`
-	Posts         string      `json:"posts" bson:"posts"`
+	Blogs         []int       `json:"blogs" bson:"blogs"`
 	Subscriptions []int       `json:"subscriptions" bson:"subscriptions"`
-	BlackList     []int       `json:"blackList" bson:"blackList"`
+	BlackList     []int       `json:"blacklist" bson:"blacklist"`
 	Extension     interface{} `json:"extension" bson:"extension"` //后期前端想展示的其他个人信息字段统一放进来
 }
 
@@ -123,4 +123,15 @@ func (user *User) Block(id int) (err error) {
 		}
 	}
 	return nil
+}
+
+func (user *User) Post(blog *Blog) (err error) {
+	//单纯存储
+	err = AddBlog(blog)
+	if err != nil {
+		return
+	}
+	user.Blogs = append(user.Blogs, blog.Id)
+	err = user.Commit()
+	return
 }

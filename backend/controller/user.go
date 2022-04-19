@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
 	"io"
 	"log"
@@ -49,7 +50,7 @@ func Register(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(400, gin.H{
-			"message": "数据插入错误",
+			"message": err.Error(),
 		})
 		return
 	}
@@ -169,7 +170,7 @@ func Subscribe(c *gin.Context) {
 		})
 		return
 	}
-	if !model.ExistsUser(id) {
+	if !model.ExistsUser(bson.D{{"id", id}}) {
 		c.JSON(400, gin.H{
 			"message": "该用户不存在",
 		})
@@ -185,5 +186,33 @@ func Subscribe(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "ok",
 	})
+}
 
+func Block(c *gin.Context) {
+	userI, _ := c.Get("user")
+	user := userI.(*model.User)
+
+	id, err := strconv.Atoi(c.PostForm("id"))
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": "参数错误",
+		})
+		return
+	}
+	if !model.ExistsUser(bson.D{{"id", id}}) {
+		c.JSON(400, gin.H{
+			"message": "该用户不存在",
+		})
+		return
+	}
+	err = user.Block(id)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "ok",
+	})
 }

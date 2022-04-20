@@ -145,3 +145,58 @@ func (user *User) Post(blog *Blog) (err error) {
 }
 
 //TODO: 点赞，评论
+func (user *User) Comment(blog *Blog, comment *Comment) (err error) {
+	//TODO: 被屏蔽的用户不能评论
+	blog.Comment = append(blog.Comment, comment.Id)
+	err = blog.Commit()
+	if err != nil {
+		return err
+	}
+	//对Blog操作错误会导致评论也不插入到评论里
+
+	err = AddComment(comment)
+	if err != nil {
+		return err
+	}
+	//TODO: 应该对评论序号进行回滚，但是因为我们项目太小所以无所谓
+	return
+}
+func (user *User) DeleteComment(comment *Comment) (err error) {
+
+	//有两种情况下有权限删除：自己给别人留下的评论；自己blog下的任何评论
+	blog, err := GetBlog(comment.Blog)
+	if err != nil {
+		return
+	}
+	if comment.User != user.Id && blog.User != user.Id {
+		return errors.New("无权删除评论")
+	}
+	//开始删除的逻辑
+	_, err = comments.DeleteOne(context.Background(), bson.D{{"id", comment.Id}})
+	if err != nil {
+		return err
+	}
+	_, err = blogs.UpdateOne(context.Background(), bson.D{{"id", blog.Id}}, bson.D{{"$pull", bson.M{"comment": comment.Id}}})
+	return
+}
+
+//TODO: 优化liked
+func (user *User) Like(blog *Blog) (err error) {
+	_, err = blogs.UpdateOne(context.Background(), bson.D{{"id", blog.Id}}, bson.D{{"$addToSet", bson.M{"likedby": user.Id}}})
+	if err != nil {
+		log.Println("添加id失败")
+	}
+	blog, _ = GetBlog(blog.Id)
+	blog.Liked = len(blog.LikedBy)
+	_, err = blogs.UpdateOne(context.Background(), bson.D{{"id", blog.Id}}, bson.D{{"$set", bson.M{"liked": blog.Liked}}})
+	return
+}
+func (user *User) Dislike(blog *Blog) (err error) {
+	_, err = blogs.UpdateOne(context.Background(), bson.D{{"id", blog.Id}}, bson.D{{"$pull", bson.M{"likedby": user.Id}}})
+	blog, _ = GetBlog(blog.Id)
+	blog.Liked = len(blog.LikedBy)
+	_, err = blogs.UpdateOne(context.Background(), bson.D{{"id", blog.Id}}, bson.D{{"$set", bson.M{"liked": blog.Liked}}})
+	return
+}
+
+//TODO: Logout 把不要的cookie删除掉

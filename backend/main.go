@@ -22,6 +22,7 @@ func Init() {
 func main() {
 	Init()
 	engine := gin.Default()
+
 	register(engine)
 	client = store.GetMongo() //main函数退出的时候需要关闭数据库
 	defer func() {
@@ -30,7 +31,7 @@ func main() {
 		}
 	}()
 
-	err = engine.Run()
+	err = engine.Run("0.0.0.0:8080")
 	if err != nil {
 		return
 	}

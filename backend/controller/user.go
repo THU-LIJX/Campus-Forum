@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"backend/config"
 	"backend/model"
 	"crypto/md5"
 	"encoding/hex"
@@ -89,7 +90,7 @@ func Login(c *gin.Context) {
 	_, _ = io.WriteString(hash, user.Email+time.Now().String())
 	cookie := hex.EncodeToString(hash.Sum(nil))
 	//在返回中添加cookie
-	c.SetCookie("campus_cookie", cookie, 0, "/", "localhost", false, true)
+	c.SetCookie("campus_cookie", cookie, 0, "/", config.Domain(), false, true)
 	model.SetCookie(cookie, user)
 
 	c.JSON(200, gin.H{

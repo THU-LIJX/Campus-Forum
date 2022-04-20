@@ -11,6 +11,9 @@ type Conf struct {
 		Name string `yaml:"name"`
 		Uri  string `yaml:"uri"`
 	} `yaml:"dbconf"`
+	HostConf struct {
+		Domain string `yaml:"domain"`
+	} `yaml:"hostconf"`
 }
 
 var conf Conf
@@ -37,4 +40,7 @@ func DB() string {
 }
 func DBUri() string {
 	return conf.DBConf.Uri
+}
+func Domain() string {
+	return conf.HostConf.Domain
 }

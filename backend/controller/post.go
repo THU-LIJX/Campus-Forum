@@ -105,7 +105,7 @@ func Post(c *gin.Context) {
 		Time:     now,
 		Text:     text,
 		Liked:    0,
-		LikedBy:  nil,
+		LikedBy:  []int{},
 		Location: loc,
 		Comment:  nil,
 		Type:     typenum,

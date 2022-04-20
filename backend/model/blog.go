@@ -42,7 +42,11 @@ func AddBlog(blog *Blog) (err error) {
 	_, err = blogs.InsertOne(context.Background(), blog)
 	return
 }
-
+func GetBlog(id int) (blog *Blog, err error) {
+	blog = new(Blog)
+	err = blogs.FindOne(context.Background(), bson.D{{"id", id}}).Decode(blog)
+	return blog, err
+}
 func (user *User) ViewBlogs(flags uint16, pagesize, page int64) (res []*Blog, err error) {
 	//默认按时间先后
 	sortTime, sortLiked := -1, 0
@@ -101,6 +105,17 @@ func (user *User) ViewBlogs(flags uint16, pagesize, page int64) (res []*Blog, er
 
 	cursor.Close(context.Background())
 	return
+}
+
+func (blog *Blog) Commit() (err error) {
+	filter := bson.D{
+		{"id", blog.Id},
+	}
+	update := bson.D{
+		{"$set", blog},
+	}
+	_, err = blogs.UpdateOne(context.Background(), filter, update)
+	return err
 }
 
 //TODO: 模糊搜索

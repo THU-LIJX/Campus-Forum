@@ -44,10 +44,15 @@ func register(engine *gin.Engine) {
 	userGroup.GET("/info", controller.UserInfo)
 	userGroup.POST("/post", controller.Post)
 	userGroup.GET("/blogs", controller.GetBlogs)
+	userGroup.POST("/comment", controller.Comment)
+	userGroup.POST("/delcomment", controller.DeleteComment)
+	userGroup.POST("/dislike", controller.Dislike)
+	userGroup.POST("/like", controller.Like)
 
 	rootGroup.GET("/info", controller.QueryUser)
 	rootGroup.POST("/register", controller.Register)
 	rootGroup.POST("/login", controller.Login)
+	rootGroup.GET("/comment/:id", controller.GetComment)
 	//Post之类相关的可以设置verify登陆状态的中间件
 
 }

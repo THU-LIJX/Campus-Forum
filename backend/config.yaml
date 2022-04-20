@@ -1,0 +1,6 @@
+dbconf:
+  name: "test"
+  uri: "mongodb://campus:campus@qiuyuhan.xyz:27017/test"
+
+hostconf:
+  domain: "localhost"

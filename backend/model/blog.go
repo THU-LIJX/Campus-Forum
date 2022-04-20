@@ -14,6 +14,13 @@ const (
 	LIKEDASC
 	LIKEDDES
 	SUBSCIBED
+	MYSELF
+)
+const (
+	TEXT = 1 << iota
+	IMAGE
+	SOUND
+	VIDEO
 )
 
 //Comment 的实现就是Post。这样可以实现图片评论且评论可以点赞。评论也可以有评论，想要的话
@@ -22,6 +29,7 @@ type Blog struct {
 	User     int       `json:"user" bson:"user"`
 	Time     time.Time `json:"time" bson:"time"`
 	Text     string    `json:"text" bson:"text"`
+	Type     int       `json:"type" bson:"type"`
 	LikedBy  []int     `json:"likedby" bson:"likedby"` //方便排序加的
 	Liked    int       `json:"liked" json:"liked"`
 	Location string    `json:"location" bson:"location"`
@@ -42,9 +50,19 @@ func (user *User) ViewBlogs(flags uint16, pagesize, page int64) (res []*Blog, er
 	var sort []bson.E
 
 	if flags&SUBSCIBED != 0 {
-		filter = bson.M{
-			"age": bson.M{"$in": user.Subscriptions},
-		}
+		//注意or条件需要使用bson.M的数组而不是bson.D的
+		filter["$or"] =
+
+			[]bson.M{
+				{"user": user.Id},
+				{"user": bson.D{
+					{"$in", user.Subscriptions},
+					{"$nin", user.BlackList},
+				},
+				},
+			}
+	} else if flags&MYSELF != 0 {
+		filter["user"] = user.Id
 	}
 
 	if flags&LIKEDASC != 0 {
@@ -84,3 +102,5 @@ func (user *User) ViewBlogs(flags uint16, pagesize, page int64) (res []*Blog, er
 	cursor.Close(context.Background())
 	return
 }
+
+//TODO: 模糊搜索

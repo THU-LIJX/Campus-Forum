@@ -52,6 +52,14 @@ func Login(email string, password string) (user *User, err error) {
 	if err != nil {
 		return nil, err
 	}
+
+	//确保用户的数据是非nil的
+	if user.Subscriptions == nil {
+		user.Subscriptions = make([]int, 0)
+	}
+	if user.BlackList == nil {
+		user.BlackList = make([]int, 0)
+	}
 	return user, nil
 }
 
@@ -135,3 +143,5 @@ func (user *User) Post(blog *Blog) (err error) {
 	err = user.Commit()
 	return
 }
+
+//TODO: 点赞，评论

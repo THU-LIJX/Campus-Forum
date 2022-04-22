@@ -35,7 +35,7 @@ func init() {
 		panic("解析配置文件失败")
 		return
 	}
-	want2make := []string{"/image", "/sound", "video/"}
+	want2make := []string{"/image", "/sound", "/video"}
 	for _, s := range want2make {
 		_, err := os.Stat(Static() + s)
 		if os.IsNotExist(err) {

@@ -4,3 +4,4 @@ dbconf:
 
 hostconf:
   domain: "localhost"
+  static: "/Users/bytedance/Documents/"

@@ -1,8 +1,10 @@
 package controller
 
 import (
+	"backend/config"
 	"backend/model"
 	"github.com/gin-gonic/gin"
+	"log"
 	"strconv"
 	"time"
 )
@@ -78,21 +80,31 @@ func Post(c *gin.Context) {
 	var typenum int
 
 	//TODO:这里处理文件上传。文件上传失败就自动停止后续步骤
+	var err error
 	switch tp {
 	case "text":
 		typenum = model.TEXT
 	case "image":
 		typenum = model.IMAGE
+		file, _ := c.FormFile("image")
+		err = c.SaveUploadedFile(file, config.Static()+"/image/"+file.Filename)
+
 	case "sound":
 		typenum = model.SOUND
+		file, _ := c.FormFile("sound")
+		err = c.SaveUploadedFile(file, config.Static()+"/sound/"+file.Filename)
 	case "video":
 		typenum = model.VIDEO
+		file, _ := c.FormFile("video")
+		err = c.SaveUploadedFile(file, config.Static()+"/video/"+file.Filename)
 	}
-
+	if err != nil {
+		log.Println("Can't save file")
+	}
 	//动态核心部分上传
 	counter := model.GetBlogCounter()
 	counter.Value++
-	err := counter.Commit()
+	err = counter.Commit()
 	if err != nil {
 		c.JSON(500, gin.H{
 			"message": "发布失败，系统内部错误",

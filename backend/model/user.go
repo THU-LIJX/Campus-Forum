@@ -14,7 +14,7 @@ type User struct {
 	Id            int         `json:"id" bson:"id"`
 	Name          string      `json:"name" bson:"name"`
 	Email         string      `json:"email" bson:"email"`
-	Password      string      `json:"password" bson:"password"`
+	Password      string      `bson:"password" json:"-"`
 	Description   string      `json:"description" bson:"description"`
 	Blogs         []int       `json:"blogs" bson:"blogs"`
 	Subscriptions []int       `json:"subscriptions" bson:"subscriptions"`
@@ -200,3 +200,7 @@ func (user *User) Dislike(blog *Blog) (err error) {
 }
 
 //TODO: Logout 把不要的cookie删除掉
+func (user *User) Logout(cookie string) {
+	DeleteCookie(cookie)
+
+}

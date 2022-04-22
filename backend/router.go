@@ -48,6 +48,7 @@ func register(engine *gin.Engine) {
 	userGroup.POST("/delcomment", controller.DeleteComment)
 	userGroup.POST("/dislike", controller.Dislike)
 	userGroup.POST("/like", controller.Like)
+	userGroup.POST("/logout", controller.Logout)
 
 	rootGroup.GET("/info", controller.QueryUser)
 	rootGroup.POST("/register", controller.Register)

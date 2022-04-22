@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend/config"
 	"backend/controller"
 	"backend/model"
 	"github.com/gin-gonic/gin"
@@ -33,6 +34,7 @@ func Auth() gin.HandlerFunc {
 func register(engine *gin.Engine) {
 	engine.GET("/ping", pingHandle)
 	engine.StaticFile("/favicon.ico", "./asset/images.webp")
+	engine.Static("/static", config.Static())
 
 	rootGroup := engine.Group("/api")
 	userGroup := rootGroup.Group("/user")
@@ -48,6 +50,7 @@ func register(engine *gin.Engine) {
 	userGroup.POST("/delcomment", controller.DeleteComment)
 	userGroup.POST("/dislike", controller.Dislike)
 	userGroup.POST("/like", controller.Like)
+	userGroup.POST("/logout", controller.Logout)
 
 	rootGroup.GET("/info", controller.QueryUser)
 	rootGroup.POST("/register", controller.Register)

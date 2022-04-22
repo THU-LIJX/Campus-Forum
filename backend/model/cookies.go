@@ -2,19 +2,23 @@ package model
 
 import "errors"
 
-var cookies map[string]*User
+var cookie_user map[string]*User
 
 func init() {
-	cookies = make(map[string]*User)
+	cookie_user = make(map[string]*User)
 }
 
 func GetUser(cookie string) (*User, error) {
-	user, ok := cookies[cookie]
+	user, ok := cookie_user[cookie]
 	if !ok {
 		return nil, errors.New("Not exists")
 	}
 	return user, nil
 }
 func SetCookie(cookie string, user *User) {
-	cookies[cookie] = user
+	cookie_user[cookie] = user
+}
+
+func DeleteCookie(cookie string) {
+	delete(cookie_user, cookie)
 }

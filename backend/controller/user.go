@@ -101,7 +101,8 @@ func Login(c *gin.Context) {
 func UserInfo(c *gin.Context) {
 	userI, _ := c.Get("user")
 	user := userI.(*model.User)
-	user.Password = ""
+	//屏蔽user.Password字段 直接在json的配置里完成
+
 	c.JSON(200, gin.H{
 		"message":  "ok",
 		"userInfo": user,
@@ -223,6 +224,15 @@ func Block(c *gin.Context) {
 		})
 		return
 	}
+	c.JSON(200, gin.H{
+		"message": "ok",
+	})
+}
+func Logout(c *gin.Context) {
+	userI, _ := c.Get("user")
+	user := userI.(*model.User)
+	cookie, _ := c.Cookie("campus_cookie")
+	user.Logout(cookie)
 	c.JSON(200, gin.H{
 		"message": "ok",
 	})

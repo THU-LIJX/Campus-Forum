@@ -1,3 +1,7 @@
 .DS_STORE
 
 /backend/.idea
+*.bin
+*.lock
+*.class
+*.properties

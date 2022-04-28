@@ -112,7 +112,7 @@ func Post(c *gin.Context) {
 			dirname := "/src/" + strconv.Itoa(counter.Value)
 			_ = os.MkdirAll(config.Static()+dirname, 0775)
 			filename := dirname + "/" + strconv.Itoa(i) + suffix
-			sources = append(sources, filename)
+			sources = append(sources, "/static"+filename)
 			err = c.SaveUploadedFile(file, config.Static()+filename)
 			if err != nil {
 				log.Println("Can't save file")

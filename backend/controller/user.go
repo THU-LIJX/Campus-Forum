@@ -168,7 +168,7 @@ func ChangeAvatar(c *gin.Context) {
 		})
 		return
 	}
-	user.Avatar = filename
+	user.Avatar = "/static" + filename
 	err = user.Commit()
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{

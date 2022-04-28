@@ -36,11 +36,7 @@ public class DemoApplication {
                     return response.bodyToMono(String.class);
                 })
                 .block();
-//                .retrieve()
-//                .bodyToMono(String.class)
 
-//        Consumer<MultiValueMap<String,String>>cookieConsumer=new Consumer<MultiValueMap<String, String>>();
-//        webClient.options().mycookies()
         String key = "";
         String value = "";
         for (var cookie : mycookies.get().entrySet()) {

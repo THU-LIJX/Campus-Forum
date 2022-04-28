@@ -1,15 +1,22 @@
 {
 	"info": {
 		"_postman_id": "35618a65-9085-4e41-842e-c21d51a72543",
-		"name": "New Collection",
+		"name": "Campus",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
 			"name": "userInfo(no auth)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"method": "GET",
 				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
 				"url": {
 					"raw": "{{host}}/info?id=1",
 					"host": [
@@ -80,7 +87,7 @@
 						},
 						{
 							"key": "password",
-							"value": "123456",
+							"value": "234567",
 							"type": "text"
 						}
 					]
@@ -138,20 +145,26 @@
 					"mode": "formdata",
 					"formdata": [
 						{
-							"key": "",
-							"value": "",
+							"key": "description",
+							"value": "测试修改",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "改名啦",
 							"type": "text"
 						}
 					]
 				},
 				"url": {
-					"raw": "{{host}}/user/change",
+					"raw": "{{host}}/user/change/info",
 					"host": [
 						"{{host}}"
 					],
 					"path": [
 						"user",
-						"change"
+						"change",
+						"info"
 					]
 				}
 			},
@@ -301,11 +314,18 @@
 		},
 		{
 			"name": "view blogs(with filter)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"method": "GET",
 				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
 				"url": {
-					"raw": "{{host}}/user/blogs?pagesize=5&page=0",
+					"raw": "{{host}}/user/blogs?pagesize=5&page=0&subscibed=true&sort_liked=DES",
 					"host": [
 						"{{host}}"
 					],
@@ -341,6 +361,14 @@
 							"value": "true",
 							"description": "是否只看自己的。",
 							"disabled": true
+						},
+						{
+							"key": "subscibed",
+							"value": "true"
+						},
+						{
+							"key": "sort_liked",
+							"value": "DES"
 						}
 					]
 				}
@@ -468,7 +496,140 @@
 			"name": "Get Comment",
 			"request": {
 				"method": "GET",
-				"header": []
+				"header": [],
+				"url": {
+					"raw": "{{host}}/comment/6",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"comment",
+						"6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/user/logout",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"user",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post with multi img",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "test",
+							"value": "有图片哦",
+							"type": "text"
+						},
+						{
+							"key": "src",
+							"type": "file",
+							"src": [
+								"/C:/Users/14032/Pictures/屏幕截图 2021-07-05 153920.png",
+								"/C:/Users/14032/Pictures/屏幕截图 2021-07-05 155329.png"
+							]
+						},
+						{
+							"key": "type",
+							"value": "image",
+							"type": "text"
+						},
+						{
+							"key": "upload[]",
+							"type": "file",
+							"src": [],
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{host}}/user/post",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"user",
+						"post"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "改头像",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "img",
+							"type": "file",
+							"src": "/C:/Users/14032/Pictures/kb01.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{host}}/user/change/avatar",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"user",
+						"change",
+						"avatar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "改密码",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "password",
+							"value": "234567",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{host}}/user/change/password",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"user",
+						"change",
+						"password"
+					]
+				}
 			},
 			"response": []
 		}
@@ -497,13 +658,13 @@
 		{
 			"key": "host",
 			"value": "http://localhost:8080/api",
-			"type": "string"
+			"type": "string",
+			"disabled": true
 		},
 		{
 			"key": "host",
 			"value": "http://qiuyuhan.xyz:8080/api",
-			"type": "string",
-			"disabled": true
+			"type": "string"
 		}
 	]
 }

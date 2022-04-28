@@ -30,6 +30,7 @@ type Blog struct {
 	Time     time.Time `json:"time" bson:"time"`
 	Text     string    `json:"text" bson:"text"`
 	Type     int       `json:"type" bson:"type"`
+	Sources  []string  `json:"src" bson:"src"`         //资源列表
 	LikedBy  []int     `json:"likedby" bson:"likedby"` //方便排序加的
 	Liked    int       `json:"liked" json:"liked"`
 	Location string    `json:"location" bson:"location"`
@@ -37,6 +38,7 @@ type Blog struct {
 }
 
 var blogs *mongo.Collection
+var drafts *mongo.Collection
 
 func AddBlog(blog *Blog) (err error) {
 	_, err = blogs.InsertOne(context.Background(), blog)

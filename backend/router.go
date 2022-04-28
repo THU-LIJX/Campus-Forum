@@ -16,7 +16,8 @@ func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		cookie, err := c.Cookie("campus_cookie")
 		if err != nil {
-			c.JSON(403, gin.H{
+
+			c.AbortWithStatusJSON(403, gin.H{
 				"message": "cookie 错误",
 			})
 		}
@@ -39,7 +40,10 @@ func register(engine *gin.Engine) {
 	rootGroup := engine.Group("/api")
 	userGroup := rootGroup.Group("/user")
 	userGroup.Use(Auth())
-	userGroup.POST("/change", controller.ChangeUserInfo)
+	userGroup.POST("/change/info", controller.ChangeUserInfo)
+	userGroup.POST("/change/avatar", controller.ChangeAvatar)
+	userGroup.POST("/change/password", controller.ChangeUserPassword)
+
 	userGroup.POST("/subscribe", controller.Subscribe)
 	userGroup.POST("/unsubscribe", controller.Unsubscribe)
 	userGroup.POST("/block", controller.Block)

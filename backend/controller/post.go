@@ -5,6 +5,8 @@ import (
 	"backend/model"
 	"github.com/gin-gonic/gin"
 	"log"
+	"os"
+	"path"
 	"strconv"
 	"time"
 )
@@ -70,38 +72,13 @@ func Post(c *gin.Context) {
 	//需要读取post上来的内容，包含文字图片等等信息。打上时间标签
 	//依旧采用form-data格式。文件直接可以读出来
 	//TODO:信息校验
+	var err error
 	userI, _ := c.Get("user")
 	user := userI.(*model.User)
 	now := time.Now()
 	text := c.PostForm("text")
 	loc := c.PostForm("location")
 	tp := c.PostForm("type")
-	//TODO: 信息格式校验
-	var typenum int
-
-	//TODO:这里处理文件上传。文件上传失败就自动停止后续步骤
-	var err error
-	switch tp {
-	case "text":
-		typenum = model.TEXT
-	case "image":
-		typenum = model.IMAGE
-		file, _ := c.FormFile("image")
-		err = c.SaveUploadedFile(file, config.Static()+"/image/"+file.Filename)
-
-	case "sound":
-		typenum = model.SOUND
-		file, _ := c.FormFile("sound")
-		err = c.SaveUploadedFile(file, config.Static()+"/sound/"+file.Filename)
-	case "video":
-		typenum = model.VIDEO
-		file, _ := c.FormFile("video")
-		err = c.SaveUploadedFile(file, config.Static()+"/video/"+file.Filename)
-	}
-	if err != nil {
-		log.Println("Can't save file")
-	}
-	//动态核心部分上传
 	counter := model.GetBlogCounter()
 	counter.Value++
 	err = counter.Commit()
@@ -111,6 +88,45 @@ func Post(c *gin.Context) {
 		})
 		return
 	}
+	//TODO: 信息格式校验
+	var typenum int
+
+	sources := make([]string, 0)
+
+	switch tp {
+	case "text":
+		typenum = model.TEXT
+	case "image":
+		typenum = model.IMAGE
+	case "sound":
+		typenum = model.SOUND
+	case "video":
+		typenum = model.VIDEO
+	}
+	if typenum != model.TEXT {
+		form, _ := c.MultipartForm()
+		files := form.File["src"]
+		for i, file := range files {
+			suffix := path.Ext(file.Filename)
+			//创建属于这个blog的资源文件夹
+			dirname := "/src/" + strconv.Itoa(counter.Value)
+			_ = os.MkdirAll(config.Static()+dirname, 0775)
+			filename := dirname + "/" + strconv.Itoa(i) + suffix
+			sources = append(sources, "/static"+filename)
+			err = c.SaveUploadedFile(file, config.Static()+filename)
+			if err != nil {
+				log.Println("Can't save file")
+				c.JSON(400, gin.H{
+					"message": "文件上传失败",
+				})
+				return
+			}
+		}
+
+	}
+
+	//动态核心部分上传
+
 	blog := model.Blog{
 		Id:       counter.Value,
 		User:     user.Id,
@@ -121,6 +137,7 @@ func Post(c *gin.Context) {
 		Location: loc,
 		Comment:  nil,
 		Type:     typenum,
+		Sources:  sources,
 	}
 	err = user.Post(&blog)
 	if err != nil {

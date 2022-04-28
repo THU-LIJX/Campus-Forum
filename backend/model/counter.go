@@ -17,14 +17,19 @@ var counters *mongo.Collection
 var usersCounter *Counter
 var blogsCounter *Counter
 var commentsCounter *Counter
+var draftsCounter *Counter
 
 func initCounter() {
 	counters = store.GetMongo().Database("test").Collection("counters")
 	usersCounter, _ = getCounter("users")
 	blogsCounter, _ = getCounter("blogs")
 	commentsCounter, _ = getCounter("comments")
+	draftsCounter, _ = getCounter("drafts")
 }
 
+func GetDraftsCounter() *Counter {
+	return draftsCounter
+}
 func GetUserCounter() *Counter {
 	return usersCounter
 }

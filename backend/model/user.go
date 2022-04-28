@@ -11,15 +11,18 @@ import (
 )
 
 type User struct {
-	Id            int         `json:"id" bson:"id"`
-	Name          string      `json:"name" bson:"name"`
-	Email         string      `json:"email" bson:"email"`
-	Password      string      `bson:"password" json:"-"`
-	Description   string      `json:"description" bson:"description"`
-	Blogs         []int       `json:"blogs" bson:"blogs"`
-	Subscriptions []int       `json:"subscriptions" bson:"subscriptions"`
-	BlackList     []int       `json:"blacklist" bson:"blacklist"`
-	Extension     interface{} `json:"extension" bson:"extension"` //后期前端想展示的其他个人信息字段统一放进来
+	Id            int    `json:"id" bson:"id"`
+	Name          string `json:"name" bson:"name"`
+	Email         string `json:"email" bson:"email"`
+	Password      string `bson:"password" json:"-"`
+	Description   string `json:"description" bson:"description"`
+	Avatar        string `json:"avatar" bson:"avatar"`
+	Blogs         []int  `json:"blogs" bson:"blogs"`
+	Drafts        []int  `json:"drafts" json:"drafts"`
+	Subscriptions []int  `json:"subscriptions" bson:"subscriptions"`
+	BlackList     []int  `json:"blacklist" bson:"blacklist"`
+
+	Extension interface{} `json:"extension" bson:"extension"` //后期前端想展示的其他个人信息字段统一放进来
 }
 
 var users *mongo.Collection

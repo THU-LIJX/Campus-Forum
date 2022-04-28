@@ -9,10 +9,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
 	"io"
-	"log"
-	"reflect"
+	"path"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -83,6 +81,7 @@ func Login(c *gin.Context) {
 		c.JSON(403, gin.H{
 			"message": "用户名或密码错误",
 		})
+		return
 	}
 	//开始生成cookie
 
@@ -110,42 +109,77 @@ func UserInfo(c *gin.Context) {
 }
 
 func ChangeUserInfo(c *gin.Context) {
-	//TODO: 通过反射直接修改用户的信息
+	//TODO: 还是通过form-data的方式来传
 	userI, _ := c.Get("user")
 	user := userI.(*model.User)
-	m := make(map[string]interface{})
-	err := c.BindJSON(&m)
-
+	name := c.PostForm("name")
+	descript := c.PostForm("description")
+	user.Name = name
+	user.Description = descript
+	err := user.Commit()
 	if err != nil {
-		c.JSON(400, gin.H{
-			"message": "bind json error",
-		})
-		return
-	}
-	log.Println(m)
-	//t := reflect.TypeOf(user)
-
-	val := reflect.ValueOf(user).Elem()
-
-	for k, v := range m {
-		field := val.FieldByNameFunc(func(s string) bool {
-			return strings.ToLower(s) == strings.ToLower(k)
-		})
-		if field.CanSet() {
-			field.Set(reflect.ValueOf(v))
-		}
-	}
-	log.Println(user)
-	err = user.Commit()
-	if err != nil {
-		c.JSON(400, gin.H{
-			"message": "user commit error",
+		c.AbortWithStatusJSON(400, gin.H{
+			"message": err.Error(),
 		})
 		return
 	}
 	c.JSON(200, gin.H{
 		"message": "ok",
 	})
+}
+func ChangeUserPassword(c *gin.Context) {
+	userI, _ := c.Get("user")
+	user := userI.(*model.User)
+	password := c.PostForm("password")
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost) //加密
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": "密码存储错误",
+		})
+	}
+	user.Password = string(hash)
+	err = user.Commit()
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "ok",
+	})
+
+}
+func ChangeAvatar(c *gin.Context) {
+	userI, _ := c.Get("user")
+	user := userI.(*model.User)
+	file, err := c.FormFile("img")
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"message": "图片上传失败",
+		})
+	}
+	suffix := path.Ext(file.Filename)
+	filename := "/image/" + strconv.Itoa(user.Id) + suffix
+	err = c.SaveUploadedFile(file, config.Static()+filename)
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"message": "文件上传失败吧",
+		})
+		return
+	}
+	user.Avatar = "/static" + filename
+	err = user.Commit()
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"message": "用户信息同步失败",
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "ok",
+	})
+
 }
 func Unsubscribe(c *gin.Context) {
 	userI, _ := c.Get("user")

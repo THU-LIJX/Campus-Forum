@@ -4,4 +4,5 @@ dbconf:
 
 hostconf:
   domain: "localhost"
-  static: "/Users/bytedance/Documents/"
+  static: "D:\\workPlace\\Android\\test"
+# static: "/Users/bytedance/Documents/"

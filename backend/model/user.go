@@ -1,13 +1,19 @@
 package model
 
 import (
+	"backend/config"
 	"backend/utils"
 	"context"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/jordan-wright/email"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 	"log"
+	"net/smtp"
+	"strconv"
+	"time"
 )
 
 type User struct {
@@ -17,6 +23,7 @@ type User struct {
 	Password      string `bson:"password" json:"-"`
 	Description   string `json:"description" bson:"description"`
 	Avatar        string `json:"avatar" bson:"avatar"`
+	Verified      bool   `json:"verified" bson:"verified"`
 	Blogs         []int  `json:"blogs" bson:"blogs"`
 	Drafts        []int  `json:"drafts" json:"drafts"`
 	Subscriptions []int  `json:"subscriptions" bson:"subscriptions"`
@@ -206,4 +213,29 @@ func (user *User) Dislike(blog *Blog) (err error) {
 func (user *User) Logout(cookie string) {
 	DeleteCookie(cookie)
 
+}
+
+func (user *User) Verify() error {
+	_, err := users.UpdateOne(context.Background(), bson.D{{"id", user.Id}}, bson.D{{"$set", bson.M{"verified": true}}})
+	return err
+}
+
+func (user *User) SendValidationEmail() (err error) {
+	now := time.Now()
+	expiry := now.Add(time.Minute * 60) //一个小时内有效
+	claims := &jwt.StandardClaims{
+		ExpiresAt: expiry.Unix(),
+		Id:        strconv.Itoa(user.Id),
+	}
+	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte("campus"))
+	//log.Println(err.Error())
+	log.Println(token)
+	//发送邮件
+	e := email.NewEmail()
+	e.From = "Campusbbs <1403292286@qq.com>"
+	e.To = []string{user.Email}
+	e.Subject = "验证用户身份"
+	e.Text = []byte("http://" + config.Domain() + ":8080/api/verify/" + token) //TODO 这里硬编码了端口
+	err = e.Send("smtp.qq.com:25", smtp.PlainAuth("", "1403292286@qq.com", "kpcimoxvgthdgifc", "smtp.qq.com"))
+	return err
 }

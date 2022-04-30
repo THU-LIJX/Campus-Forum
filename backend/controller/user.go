@@ -5,6 +5,7 @@ import (
 	"backend/model"
 	"crypto/md5"
 	"encoding/hex"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
@@ -44,6 +45,7 @@ func Register(c *gin.Context) {
 		Name:     name,
 		Email:    email,
 		Password: string(hash),
+		Verified: false,
 	}
 	err = model.AddUser(&user)
 
@@ -53,6 +55,7 @@ func Register(c *gin.Context) {
 		})
 		return
 	}
+	_ = user.SendValidationEmail() //直接忽略，用户自己可以check
 
 	c.JSON(200, gin.H{
 		"message": "ok",
@@ -270,4 +273,53 @@ func Logout(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "ok",
 	})
+}
+
+func SendValidationEmail(c *gin.Context) {
+	userI, _ := c.Get("user")
+	user := userI.(*model.User)
+	if user.Verified {
+		c.JSON(400, gin.H{
+			"message": "已经验证通过了",
+		})
+		return
+	}
+	err := user.SendValidationEmail()
+	if err != nil {
+		c.JSON(400, gin.H{
+			"message": "发送失败",
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "发送成功",
+	})
+}
+
+func VerifyUser(c *gin.Context) {
+	token := c.Param("token")
+	//id := c.Param("userid")
+	stdclaims := new(jwt.StandardClaims)
+	tokenClaims, err := jwt.ParseWithClaims(token, stdclaims, func(token *jwt.Token) (interface{}, error) {
+		return []byte("campus"), nil
+	})
+	if err != nil || !tokenClaims.Valid {
+		c.JSON(401, gin.H{
+			"message": "验证失败",
+		})
+		return
+	}
+	userId, err := strconv.Atoi(stdclaims.Id)
+	user, err := model.QueryUser(userId)
+	err = user.Verify()
+	if err != nil {
+		c.JSON(401, gin.H{
+			"message": "验证失败",
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "验证成功",
+	})
+
 }

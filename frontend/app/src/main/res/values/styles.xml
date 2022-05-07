@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.App.BottomAppBar" parent="Widget.MaterialComponents.BottomAppBar.Colored">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.BottomAppBar</item>
+    </style>
+    <style name="ThemeOverlay.App.BottomAppBar" parent="">
+        <item name="colorOnPrimary">@color/blue_600</item>
+    </style>
+    <style name="ButtonStyle" parent="@style/Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/blue_600</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+</resources>

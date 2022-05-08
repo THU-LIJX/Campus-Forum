@@ -6,8 +6,10 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.example.campusforum.databinding.ActivityMainPageBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -27,5 +29,13 @@ public class MainPageActivity extends AppCompatActivity {
         NavController navController = navHostFragment.getNavController();
         // 将BottomNavigationView与NavController绑定
         NavigationUI.setupWithNavController(binding.mainPageBtmNavi, navController);
+
+        binding.mainPageToPost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainPageActivity.this,PostEditActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }

@@ -16,12 +16,10 @@
             android:text="post browse fragment" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/to_login"
+            android:id="@+id/to_user_page"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-        </com.google.android.material.button.MaterialButton>
-
+            android:layout_height="wrap_content"
+            android:text="to user page" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
 

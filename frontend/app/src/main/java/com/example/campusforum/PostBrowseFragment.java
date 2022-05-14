@@ -53,6 +53,8 @@ public class PostBrowseFragment extends Fragment {
         return fragment;
     }
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,12 +74,11 @@ public class PostBrowseFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstance) {
-        // 暂时用作页面跳转
-        binding.toLogin.setOnClickListener(new View.OnClickListener() {
+        binding.toUserPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), LoginAndRegisterActivity.class);
-                startActivity(intent);
+               Intent intent = new Intent(getActivity(), UserActivity.class);
+               startActivity(intent);
             }
         });
     }

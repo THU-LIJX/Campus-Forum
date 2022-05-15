@@ -1,4 +1,4 @@
-package com.example.campusforum;
+package com.example.campusforum.mediaselector;
 
 import android.content.Context;
 import android.view.View;

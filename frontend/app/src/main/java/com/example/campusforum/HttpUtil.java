@@ -1,5 +1,7 @@
 package com.example.campusforum;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -17,7 +19,10 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 public class HttpUtil {
-    static final String baseUrl = "http://qiuyuhan.xyz:8080/api";
+    //本地跑后端，用10.0.2.2这个ip地址
+    //static final String baseUrl = "http://10.0.2.2:8080/api";
+    static final  String baseUrl="http://qiuyuhan.xyz:8080/api";
+    private static final String TAG = "HTTPUtil";
     static OkHttpClient client;
 
     /**
@@ -31,15 +36,20 @@ public class HttpUtil {
                         private final HashMap<HttpUrl, List<Cookie>> cookieStore = new HashMap<>();
                         @Override
                         public void saveFromResponse(@NonNull HttpUrl httpUrl, @NonNull List<Cookie> cookies) {
-                            cookieStore.put(httpUrl, cookies);
-                            System.out.println("cookies url:" + httpUrl.toString());
+                            //原来这种写法会导致存进去带/api/login的url，之后发请求就不会带上这个cookie
+                            //cookieStore.put(httpUrl, cookies);
+
+                            cookieStore.put(HttpUrl.get(baseUrl),cookies);
+
+                            System.out.println("cookies url:" + cookies.get(0).domain());
                             System.out.println("cookies:" + cookies.toString());
                         }
 
                         @NonNull
                         @Override
                         public List<Cookie> loadForRequest(@NonNull HttpUrl httpUrl) {
-                            List<Cookie> cookies = cookieStore.get(httpUrl);
+                            List<Cookie> cookies = cookieStore.get(HttpUrl.get(baseUrl));
+                            Log.d(TAG, "loadForRequest: "+cookies);
                             return cookies != null ? cookies : new ArrayList<Cookie>();
                         }
                     }).build();
@@ -80,6 +90,14 @@ public class HttpUtil {
             url = url.substring(0, url.length()-1);
         }
         Request request = new Request.Builder().url(url).get().build();
+        client.newCall(request).enqueue(callback);
+    }
+
+    public static void sendRequestBody(String url,RequestBody requestBody,okhttp3.Callback callback){
+        init_okhttpclient();
+
+        url=baseUrl+url;
+        Request request=new Request.Builder().url(url).post(requestBody).build();
         client.newCall(request).enqueue(callback);
     }
 }

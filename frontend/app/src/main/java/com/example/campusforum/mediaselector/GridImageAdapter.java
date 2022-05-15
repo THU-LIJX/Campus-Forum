@@ -1,4 +1,4 @@
-package com.example.campusforum;
+package com.example.campusforum.mediaselector;
 
 import android.content.Context;
 import android.net.Uri;
@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.campusforum.R;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.config.SelectMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
@@ -201,13 +202,7 @@ public class GridImageAdapter extends RecyclerView.Adapter<GridImageAdapter.View
                 });
             }
 
-            if (mItemLongClickListener != null) {
-                viewHolder.itemView.setOnLongClickListener(v -> {
-                    int adapterPosition = viewHolder.getAbsoluteAdapterPosition();
-                    mItemLongClickListener.onItemLongClick(viewHolder, adapterPosition, v);
-                    return true;
-                });
-            }
+
         }
     }
 
@@ -232,9 +227,4 @@ public class GridImageAdapter extends RecyclerView.Adapter<GridImageAdapter.View
         void openPicture();
     }
 
-    private OnItemLongClickListener mItemLongClickListener;
-
-    public void setItemLongClickListener(OnItemLongClickListener l) {
-        this.mItemLongClickListener = l;
-    }
 }

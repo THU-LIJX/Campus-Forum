@@ -105,6 +105,7 @@ func Post(c *gin.Context) {
 	}
 	if typenum != model.TEXT {
 		form, _ := c.MultipartForm()
+
 		files := form.File["src"]
 		for i, file := range files {
 			suffix := path.Ext(file.Filename)

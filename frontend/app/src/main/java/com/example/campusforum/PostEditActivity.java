@@ -47,8 +47,15 @@ import com.luck.picture.lib.loader.IBridgeMediaLoader;
 import com.luck.picture.lib.utils.DensityUtil;
 import com.luck.picture.lib.utils.MediaUtils;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,6 +74,7 @@ public class PostEditActivity extends AppCompatActivity {
 
     boolean selectImage=true;//为false表示录音
     String audioPath; //存储选择的音频的路径
+    Uri audioUri;
     private GridImageAdapter mAdapter;
 
     private final List<LocalMedia>mData=new ArrayList<>();
@@ -113,6 +121,7 @@ public class PostEditActivity extends AppCompatActivity {
                                 public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
                                     String path=result.getString("path");
                                     Log.d(TAG, "onFragmentResult: "+path);
+                                    audioUri=result.getParcelable("uri");
                                     // 可以获取录音的结果或者选择文件的结果，把结果放在audioPath中去
                                     audioPath=path;
                                 }
@@ -296,21 +305,39 @@ public class PostEditActivity extends AppCompatActivity {
         //Log.d(TAG,"fileType:"+fileType);
         builder.addFormDataPart("text",text);
         builder.addFormDataPart("type","sound");
-
-
-
         File file=new File(audioPath);
         String filename=file.getName();
         String type=filename.substring(filename.lastIndexOf("."));
         Log.d(TAG, "publish: file exists"+file.exists()+audioPath);
+
         if(!file.exists()){
             return ;
         }
-        builder.addFormDataPart(
-                "src",
-                file.getName(),
-                RequestBody.create(file,MediaType.get("audio/"+type))
-        );
+        try {
+            FileDescriptor fd=getContext().getContentResolver().openFileDescriptor(audioUri,"r")
+                    .getFileDescriptor();
+            FileInputStream inputStream=new FileInputStream(fd);
+            byte[] buffer=new byte[4096];
+            ByteArrayOutputStream out=new ByteArrayOutputStream();
+            int nRead;
+
+            while((nRead=inputStream.read(buffer,0,buffer.length))!=-1){
+                out.write(buffer,0,nRead);
+            }
+            builder.addFormDataPart(
+                    "src",
+                    file.getName(),
+                    RequestBody.create(out.toByteArray(),MediaType.get("audio/"+type))
+            );
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
 
         RequestBody requestBody=builder.build();
         HttpUtil.sendRequestBody("/user/post", requestBody, new Callback() {

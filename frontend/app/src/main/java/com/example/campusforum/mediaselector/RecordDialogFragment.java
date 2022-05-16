@@ -2,6 +2,7 @@ package com.example.campusforum.mediaselector;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -21,8 +22,12 @@ import androidx.fragment.app.Fragment;
 import androidx.loader.content.CursorLoader;
 
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
+import android.provider.DocumentsContract;
+import android.provider.DocumentsProvider;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,11 +36,14 @@ import android.widget.Chronometer;
 
 import com.example.campusforum.R;
 import com.example.campusforum.databinding.FragmentRecordDialogBinding;
+import com.google.common.io.FileWriteMode;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 /**
@@ -51,6 +59,8 @@ public class RecordDialogFragment extends DialogFragment {
     private String mFileName = null;
     private String mFilePath = null;
     Uri fileUri;
+    FileDescriptor fd;
+    ParcelFileDescriptor pfd;
     private MediaRecorder mRecorder = null;
     ActivityResultLauncher<Intent>activityResultLauncher;
     private long mStartingTimeMillis = 0;
@@ -117,8 +127,15 @@ public class RecordDialogFragment extends DialogFragment {
                     public void onActivityResult(ActivityResult result) {
                         if(result.getResultCode()== Activity.RESULT_OK&&result.getData()!=null){
                             fileUri=result.getData().getData();
-                            //mFilePath=uri.getPath();
-                            Log.d(TAG, "onActivityResult: uri:"+fileUri);
+                            //mFilePath=uri.getPath()
+                            try {
+                                pfd=getActivity().getContentResolver().openFileDescriptor(fileUri, "wr");
+                                fd= pfd.getFileDescriptor();
+
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                            Log.d(TAG, "onActivityResult: uri:"+fileUri+" Path"+getPath(fileUri));
                             //开始录音
                             chronometer.setBase(SystemClock.elapsedRealtime());
                             chronometer.start();
@@ -171,7 +188,7 @@ public class RecordDialogFragment extends DialogFragment {
                 return;
             }
         }
-        mRecorder.setOutputFile(f);
+        mRecorder.setOutputFile(fd);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mRecorder.setAudioChannels(1);
         mRecorder.setAudioSamplingRate(44100);
@@ -187,10 +204,10 @@ public class RecordDialogFragment extends DialogFragment {
     }
     private String getPath(Uri uri){
         Log.d(TAG, "getPath: "+uri.getEncodedPath());
-        String[] projection = { MediaStore.MediaColumns.DISPLAY_NAME};
-        CursorLoader loader = new CursorLoader(getContext(), uri, projection, null, null, null);
-        Cursor cursor = loader.loadInBackground();
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Downloads.DISPLAY_NAME);
+        Cursor cursor=getActivity().getContentResolver().query(uri,null,null,null);
+
+
+        int column_index = cursor.getColumnIndexOrThrow(DocumentsContract.Document.COLUMN_DISPLAY_NAME);
         cursor.moveToFirst();
         return cursor.getString(column_index);
     }
@@ -202,6 +219,7 @@ public class RecordDialogFragment extends DialogFragment {
             binding.recordFilepath.setText(mFilePath);
             Intent intent=new Intent(Intent.ACTION_CREATE_DOCUMENT);
             intent.addCategory(Intent.CATEGORY_DEFAULT);
+
             intent.setType("audio/*");
             intent.putExtra(Intent.EXTRA_TITLE,"新文件"+mFileName);
             activityResultLauncher.launch(intent);
@@ -213,7 +231,9 @@ public class RecordDialogFragment extends DialogFragment {
         mRecorder.release();
         mRecorder = null;
         Bundle result=new Bundle();
+        //InputStreamReader()
         result.putString("path",mFilePath);
+        result.putParcelable("uri",fileUri);
         getParentFragmentManager().setFragmentResult("record",result);
     }
 }

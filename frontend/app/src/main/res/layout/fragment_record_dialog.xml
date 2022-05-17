@@ -10,7 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="200dp">
         <Chronometer
-            android:layout_width="match_parent"
+
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/chronometer"
             android:layout_gravity="top|center"
@@ -28,6 +29,7 @@
             android:src="@drawable/ic_voice_48px"
             android:id="@+id/start_record_btn"
             android:layout_gravity="bottom|center"
+            android:backgroundTint="@color/green"
             />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

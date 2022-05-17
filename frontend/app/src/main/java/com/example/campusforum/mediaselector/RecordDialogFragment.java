@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -137,8 +138,6 @@ public class RecordDialogFragment extends DialogFragment {
                             }
                             Log.d(TAG, "onActivityResult: uri:"+fileUri+" Path"+getPath(fileUri));
                             //开始录音
-                            chronometer.setBase(SystemClock.elapsedRealtime());
-                            chronometer.start();
                             try {
                                 startRecording();
                             } catch (FileNotFoundException e) {
@@ -198,6 +197,11 @@ public class RecordDialogFragment extends DialogFragment {
             mRecorder.prepare();
             mRecorder.start();
             mStartingTimeMillis = System.currentTimeMillis();
+
+            chronometer.setBase(SystemClock.elapsedRealtime());
+            chronometer.start();
+            binding.startRecordBtn.setImageResource(R.drawable.ic_stop_48px);
+            binding.startRecordBtn.setBackgroundTintList(new ColorStateList());
         } catch (IOException e) {
             Log.e(TAG, "prepare() failed"+e);
         }

@@ -7,20 +7,79 @@
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
-
-        <TextView
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/frag_post_browse_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="post browse fragment" />
+            android:layout_height="match_parent"/>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/to_user_page"
-            android:layout_width="wrap_content"
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linear_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="to user page" />
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="post browse fragment" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/to_user_page"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="to user page" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/add_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="add text view"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/get_url_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="get url image"/>
+
+            <fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard
+                android:id="@+id/player_standard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/choose_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="choose_image"/>
+
+            <com.makeramen.roundedimageview.RoundedImageView
+                android:id="@+id/image_view"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/play"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="play"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/pause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="pause"/>
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
     </androidx.appcompat.widget.LinearLayoutCompat>
+
+
 
 
 </FrameLayout>

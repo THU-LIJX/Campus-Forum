@@ -1,15 +1,302 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <TextView
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:background="@color/blue_600"/>
+        android:layout_height="wrap_content"
+        android:elevation="2dp">
 
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@color/white"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <com.makeramen.roundedimageview.RoundedImageView
+                android:id="@+id/post_item_avatar"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ranga"
+                android:tint="@color/blue_500"
+                app:riv_oval="true"
+                app:riv_border_width="3dp"
+                app:riv_border_color="@color/blue_600"
+                />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/post_item_user_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="User name"
+                        style="@style/TextAppearance.MaterialComponents.Headline6"/>
+
+                    <TextView
+                        android:id="@+id/post_item_user_id"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="User id"
+                        style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                <TextView
+                    android:id="@+id/post_item_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size "/>
+
+
+                <!-- 图片 -->
+                <com.google.android.material.circularreveal.CircularRevealGridLayout
+                    android:id="@+id/post_item_images"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:paddingHorizontal="5dp"
+                    android:rowCount="3"
+                    android:columnCount="3"
+                    android:visibility="gone">
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:visibility="gone"
+                        android:id="@+id/post_item_image1"
+                        android:layout_columnWeight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="140dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ranga"
+                        android:layout_margin="2dp"
+                        app:shapeAppearance="@style/ShapeAppearance.App.SmallComponent"/>
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:visibility="gone"
+                        android:id="@+id/post_item_image2"
+                        android:layout_columnWeight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="140dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ranga"
+                        android:layout_margin="2dp"
+                        app:shapeAppearance="@style/ShapeAppearance.App.SmallComponent"/>
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:visibility="gone"
+                        android:id="@+id/post_item_image3"
+                        android:layout_columnWeight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="140dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ranga"
+                        android:layout_margin="2dp"
+                        app:shapeAppearance="@style/ShapeAppearance.App.SmallComponent"/>
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:visibility="gone"
+                        android:id="@+id/post_item_image4"
+                        android:layout_columnWeight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ranga"
+                        android:layout_margin="2dp"
+                        app:shapeAppearance="@style/ShapeAppearance.App.SmallComponent"/>
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:visibility="gone"
+                        android:id="@+id/post_item_image5"
+                        android:layout_columnWeight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ranga"
+                        android:layout_margin="2dp"
+                        app:shapeAppearance="@style/ShapeAppearance.App.SmallComponent"/>
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:visibility="gone"
+                        android:id="@+id/post_item_image6"
+                        android:layout_columnWeight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ranga"
+                        android:layout_margin="2dp"
+                        app:shapeAppearance="@style/ShapeAppearance.App.SmallComponent"/>
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:visibility="gone"
+                        android:id="@+id/post_item_image7"
+                        android:layout_columnWeight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ranga"
+                        android:layout_margin="2dp"
+                        app:shapeAppearance="@style/ShapeAppearance.App.SmallComponent"/>
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:visibility="gone"
+                        android:id="@+id/post_item_image8"
+                        android:layout_columnWeight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ranga"
+                        android:layout_margin="2dp"
+                        app:shapeAppearance="@style/ShapeAppearance.App.SmallComponent"/>
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:visibility="gone"
+                        android:id="@+id/post_item_image9"
+                        android:layout_columnWeight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="100dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ranga"
+                        android:layout_margin="2dp"
+                        app:shapeAppearance="@style/ShapeAppearance.App.SmallComponent"/>
+                </com.google.android.material.circularreveal.CircularRevealGridLayout>
+
+                <!-- 视频 -->
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/post_item_video_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:paddingHorizontal="5dp"
+                    android:visibility="gone">
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard
+                            android:id="@+id/post_item_video"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </com.google.android.material.card.MaterialCardView>
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <!-- 音频 -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/post_item_audio"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:backgroundTint="@color/purple_200"
+                    app:shapeAppearance="@style/voiceBarShape"
+                    android:layout_marginHorizontal="2dp"
+                    android:visibility="gone"
+                    >
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="5dp"
+                        android:src="@drawable/ic_volume_up_20px"/>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="end"
+                        >
+                        <TextView
+                            android:id="@+id/post_item_audio_left_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="@style/TextAppearance.AppCompat.Body1"
+                            android:layout_marginEnd="15dp"
+                            android:text="200s"/>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                </com.google.android.material.card.MaterialCardView>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginEnd="10dp"
+                        android:minWidth="80dp">
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/post_item_comment_icon"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_chat_bubble_20px" />
+                        <TextView
+                            android:id="@+id/post_item_comment_num"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="2dp"
+                            android:text="22"
+                            />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginEnd="10dp"
+                        android:minWidth="80dp">
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/post_item_like_icon"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_thumb_up_20px" />
+                        <TextView
+                            android:id="@+id/post_item_like_num"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="2dp"
+                            android:text="22"
+                            />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginEnd="10dp"
+                        android:minWidth="80dp">
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/post_item_share_icon"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_share_20px" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_marginVertical="2dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        app:dividerColor="@color/gray_100"/>
+</androidx.appcompat.widget.LinearLayoutCompat>

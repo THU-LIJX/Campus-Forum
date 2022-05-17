@@ -13,4 +13,6 @@
     <color name="blue_500">#2BB2FE</color>
     <color name="blue_600">#29A3EE</color>
 
+    <color name="tb_media_picker_accent">#29A3EE</color>
+
 </resources>

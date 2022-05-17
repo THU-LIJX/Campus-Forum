@@ -1,14 +1,22 @@
 package com.example.campusforum;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Message;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
@@ -17,11 +25,13 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class HttpUtil {
+    static final String baseUrl = "http://qiuyuhan.xyz:8080";
     //本地跑后端，用10.0.2.2这个ip地址
     //static final String baseUrl = "http://10.0.2.2:8080/api";
-    static final  String baseUrl="http://qiuyuhan.xyz:8080/api";
+    //static final  String baseUrl="http://qiuyuhan.xyz:8080/api";
     private static final String TAG = "HTTPUtil";
     static OkHttpClient client;
 
@@ -82,13 +92,16 @@ public class HttpUtil {
     public static void sendGetRequest(String url, HashMap<String, String> query, okhttp3.Callback callback) {
         init_okhttpclient();
         // get query
-        if (!query.isEmpty()) {
+        if (query != null && !query.isEmpty()) {
             url = baseUrl + url + "?";
             for (String key: query.keySet()) {
                 url = url + key + "=" + query.get(key) + "&";
             }
             url = url.substring(0, url.length()-1);
+        } else {
+            url = baseUrl + url;
         }
+        System.out.println(url);
         Request request = new Request.Builder().url(url).get().build();
         client.newCall(request).enqueue(callback);
     }

@@ -94,7 +94,7 @@ public class RegisterFragment extends Fragment {
                 data.put("email", eml);
                 data.put("name", usr);
                 data.put("password", pwd);
-                HttpUtil.sendPostRequest("/register", data, new Callback() {
+                HttpUtil.sendPostRequest("/api/register", data, new Callback() {
                     @Override
                     public void onFailure(@NonNull Call call, @NonNull IOException e) {
                         System.out.println(e);

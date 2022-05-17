@@ -102,7 +102,7 @@ public class LoginFragment extends Fragment {
                 HashMap<String, String> data = new HashMap<>();
                 data.put("email", eml);
                 data.put("password", pwd);
-                HttpUtil.sendPostRequest("/login", data, new Callback() {
+                HttpUtil.sendPostRequest("/api/login", data, new Callback() {
                     @Override
                     public void onFailure(@NotNull Call call, @NotNull IOException e) {
                         System.out.println(e);

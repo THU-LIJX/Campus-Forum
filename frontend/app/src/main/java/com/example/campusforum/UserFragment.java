@@ -1,5 +1,6 @@
 package com.example.campusforum;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -71,6 +72,12 @@ public class UserFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstance) {
-
+        binding.toUserPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(UserFragment.this.getActivity(), UserActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }

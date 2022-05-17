@@ -32,6 +32,18 @@ func Auth() gin.HandlerFunc {
 		c.Next()
 	}
 }
+func Verified() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userI, _ := c.Get("user")
+		user := userI.(*model.User)
+		if !user.Verified {
+			c.AbortWithStatusJSON(403, gin.H{
+				"message": "请先验证账号再使用此功能",
+			})
+		}
+		c.Next()
+	}
+}
 func register(engine *gin.Engine) {
 	engine.GET("/ping", pingHandle)
 	engine.StaticFile("/favicon.ico", "./asset/images.webp")
@@ -39,6 +51,7 @@ func register(engine *gin.Engine) {
 
 	rootGroup := engine.Group("/api")
 	userGroup := rootGroup.Group("/user")
+
 	userGroup.Use(Auth())
 	userGroup.POST("/change/info", controller.ChangeUserInfo)
 	userGroup.POST("/change/avatar", controller.ChangeAvatar)
@@ -48,13 +61,17 @@ func register(engine *gin.Engine) {
 	userGroup.POST("/unsubscribe", controller.Unsubscribe)
 	userGroup.POST("/block", controller.Block)
 	userGroup.GET("/info", controller.UserInfo)
-	userGroup.POST("/post", controller.Post)
 	userGroup.GET("/blogs", controller.GetBlogs)
-	userGroup.POST("/comment", controller.Comment)
-	userGroup.POST("/delcomment", controller.DeleteComment)
-	userGroup.POST("/dislike", controller.Dislike)
-	userGroup.POST("/like", controller.Like)
 	userGroup.POST("/logout", controller.Logout)
+	userGroup.POST("/validation", controller.SendValidationEmail)
+
+	verifiedGroup := userGroup.Group("")
+	verifiedGroup.Use(Verified())
+	verifiedGroup.POST("/post", controller.Post)
+	verifiedGroup.POST("/comment", controller.Comment)
+	verifiedGroup.POST("/delcomment", controller.DeleteComment)
+	verifiedGroup.POST("/dislike", controller.Dislike)
+	verifiedGroup.POST("/like", controller.Like)
 
 	rootGroup.GET("/info", controller.QueryUser)
 	rootGroup.POST("/register", controller.Register)
@@ -62,4 +79,5 @@ func register(engine *gin.Engine) {
 	rootGroup.GET("/comment/:id", controller.GetComment)
 	//Post之类相关的可以设置verify登陆状态的中间件
 
+	rootGroup.GET("/verify/:token", controller.VerifyUser)
 }

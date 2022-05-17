@@ -50,5 +50,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/main_page_btm_navi"
         style="@style/Widget.App.BottomAppBar"/>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/main_page_to_post"
+        app:layout_constraintBottom_toBottomOf="@id/main_page_nav_host"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="30dp"
+        app:srcCompat="@drawable/ic_add_48px"
+         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,6 +3,26 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2775" />
+        <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/drawable/ic_account_circle_24px.xml" value="0.2775" />
+        <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/drawable/ic_add_48px.xml" value="0.2775" />
+        <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/drawable/ic_cottage_24px.xml" value="0.2775" />
+        <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/drawable/ic_cottage_fill_24px.xml" value="0.2775" />
+        <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/drawable/ic_face_24px.xml" value="0.2775" />
+        <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/drawable/ic_face_fill_24px.xml" value="0.2775" />
+        <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/drawable/ic_launcher_background.xml" value="0.2775" />
+        <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/drawable/ic_list_alt_24px.xml" value="0.2775" />
+        <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/drawable/ic_list_alt_fill_24px.xml" value="0.2775" />
+        <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/drawable/ic_mail_24px.xml" value="0.2775" />
+        <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/layout/activity_main_page.xml" value="0.264" />
+        <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/layout/activity_post_edit.xml" value="0.34057971014492755" />
+        <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/layout/fragment_draft.xml" value="0.26979166666666665" />
+        <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/layout/fragment_post_browse.xml" value="0.34057971014492755" />
+        <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/layout/fragment_record_dialog.xml" value="0.264" />
+        <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/layout/gv_filter_image.xml" value="0.1" />
+        <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/menu/main_page_btm_navi.xml" value="0.39947916666666666" />
+        <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/menu/main_page_top_bar.xml" value="0.20989583333333334" />
+        <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/menu/post_edit_top_bar.xml" value="0.39947916666666666" />
         <entry key="app/src/main/res/drawable/ic_account_circle_24px.xml" value="0.197" />
         <entry key="app/src/main/res/drawable/ic_add_a_photo_24px.xml" value="0.174" />
         <entry key="app/src/main/res/drawable/ic_arrow_back_24px.xml" value="0.1625" />

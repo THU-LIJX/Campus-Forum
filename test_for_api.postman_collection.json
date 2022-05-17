@@ -45,7 +45,7 @@
 					"formdata": [
 						{
 							"key": "email",
-							"value": "yh-qiu18@163.com",
+							"value": "yh_qiu18@163.com",
 							"type": "text"
 						},
 						{
@@ -73,7 +73,7 @@
 			"response": []
 		},
 		{
-			"name": "login（测试用户1）",
+			"name": "login（测试用户1，已认证）",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -105,7 +105,7 @@
 			"response": []
 		},
 		{
-			"name": "login（测试用户2）",
+			"name": "login（测试用户2，未认证）",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -632,6 +632,24 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "发送验证邮件",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/user/validation",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"user",
+						"validation"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
@@ -658,13 +676,13 @@
 		{
 			"key": "host",
 			"value": "http://localhost:8080/api",
-			"type": "string",
-			"disabled": true
+			"type": "string"
 		},
 		{
 			"key": "host",
 			"value": "http://qiuyuhan.xyz:8080/api",
-			"type": "string"
+			"type": "string",
+			"disabled": true
 		}
 	]
 }

@@ -14,5 +14,7 @@
     <color name="blue_600">#29A3EE</color>
 
     <color name="tb_media_picker_accent">#29A3EE</color>
-
+    <color name="app_color_f6">#f6f6f6</color>
+    <color name="green">#00ff00</color>
+    <color name="red">#ff0000</color>
 </resources>

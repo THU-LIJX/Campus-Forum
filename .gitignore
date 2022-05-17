@@ -2,6 +2,8 @@
 
 /backend/.idea
 javademo/gradle/wrapper/gradle-wrapper.properties
+javademo/.gradle
+javademo/.idea
 *.bin
 *.lock
 *.class

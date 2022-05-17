@@ -22,7 +22,10 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,19 +47,34 @@ import com.luck.picture.lib.entity.MediaExtraInfo;
 import com.luck.picture.lib.interfaces.OnQueryAllAlbumListener;
 import com.luck.picture.lib.interfaces.OnQueryDataSourceListener;
 import com.luck.picture.lib.loader.IBridgeMediaLoader;
+import com.luck.picture.lib.utils.ActivityCompatHelper;
+import com.luck.picture.lib.utils.BitmapUtils;
 import com.luck.picture.lib.utils.DensityUtil;
 import com.luck.picture.lib.utils.MediaUtils;
+import com.luck.picture.lib.utils.PictureFileUtils;
+import com.luck.picture.lib.utils.SdkVersionUtils;
+import com.luck.picture.lib.utils.ValueOf;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
@@ -67,6 +85,7 @@ public class PostEditActivity extends AppCompatActivity {
 
     boolean selectImage=true;//为false表示录音
     String audioPath; //存储选择的音频的路径
+    Uri audioUri;
     private GridImageAdapter mAdapter;
 
     private final List<LocalMedia>mData=new ArrayList<>();
@@ -84,10 +103,11 @@ public class PostEditActivity extends AppCompatActivity {
 
         binding = ActivityPostEditBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        //TODO: 添加对saveInstanceState的处理，从草稿箱跳入可以直接用
         // 配置录音相关
         FragmentManager fragmentManager=getSupportFragmentManager();
         RecordDialogFragment dialog=RecordDialogFragment.newInstance();
+        //binding.postEditTopBar.set
         binding.recordFloatingBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -113,6 +133,7 @@ public class PostEditActivity extends AppCompatActivity {
                                 public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
                                     String path=result.getString("path");
                                     Log.d(TAG, "onFragmentResult: "+path);
+                                    audioUri=result.getParcelable("uri");
                                     // 可以获取录音的结果或者选择文件的结果，把结果放在audioPath中去
                                     audioPath=path;
                                 }
@@ -187,15 +208,34 @@ public class PostEditActivity extends AppCompatActivity {
                         Log.d(TAG, "onOptionsItemSelected: selected");
                         publish();
                         return true;
+                    case R.id.close_edit:
+                        Log.d(TAG, "onMenuItemClick: close");
+                        //弹出是否保存到草稿
+
+                        return true;
                     default:
                         return false;
                 }
             }
         });
+        ArrayList<LocalMedia>l=new ArrayList<>();
 
+        //OK!可以从网络获取图片
+        l.add(LocalMedia.generateLocalMedia("http://qiuyuhan.xyz:8080/static/src/36/0.jpg","image/jpg"));
+        LocalMedia media=new LocalMedia();
+        //media.setPath("/storage/emulated/0/DCIM/Camera/IMG_20220514025554659.jpg");
+        //media.setPath("content://media/external/images/media/34");
+        //media.setRealPath("/storage/emulated/0/DCIM/Camera/IMG_20220514025554659.jpg");
+        media=buildLocalMedia("content://media/external/images/media/34");
+        l.add(media);
+
+        //l.add(LocalMedia.generateLocalMedia("http://qiuyuhan.xyz:8080/static/src/39/0.wav","audio/wav"));
+        analyticalSelectResults(l);
     }
 
+    private void saveContent(){
 
+    }
 
     private void analyticalSelectResults(ArrayList<LocalMedia> result) {
         for (LocalMedia media : result) {
@@ -211,20 +251,22 @@ public class PostEditActivity extends AppCompatActivity {
                 }
             }
             Log.i(TAG, "文件名: " + media.getFileName());
-//            Log.i(TAG, "是否压缩:" + media.isCompressed());
-//            Log.i(TAG, "压缩:" + media.getCompressPath());
-//            Log.i(TAG, "初始路径:" + media.getPath());
-//            Log.i(TAG, "绝对路径:" + media.getRealPath());
-//            Log.i(TAG, "是否裁剪:" + media.isCut());
-//            Log.i(TAG, "裁剪:" + media.getCutPath());
-//            Log.i(TAG, "是否开启原图:" + media.isOriginal());
-//            Log.i(TAG, "原图路径:" + media.getOriginalPath());
-//            Log.i(TAG, "沙盒路径:" + media.getSandboxPath());
-//            Log.i(TAG, "水印路径:" + media.getWatermarkPath());
-//            Log.i(TAG, "视频缩略图:" + media.getVideoThumbnailPath());
-//            Log.i(TAG, "原始宽高: " + media.getWidth() + "x" + media.getHeight());
-//            Log.i(TAG, "裁剪宽高: " + media.getCropImageWidth() + "x" + media.getCropImageHeight());
-//            Log.i(TAG, "文件大小: " + media.getSize());
+            Log.i(TAG, "是否压缩:" + media.isCompressed());
+            Log.i(TAG, "压缩:" + media.getCompressPath());
+            Log.i(TAG, "初始路径:" + media.getPath());
+            Log.i(TAG, "绝对路径:" + media.getRealPath());
+            Log.i(TAG, "是否裁剪:" + media.isCut());
+            Log.i(TAG, "裁剪:" + media.getCutPath());
+            Log.i(TAG, "是否开启原图:" + media.isOriginal());
+            Log.i(TAG, "原图路径:" + media.getOriginalPath());
+            Log.i(TAG, "沙盒路径:" + media.getSandboxPath());
+            Log.i(TAG, "水印路径:" + media.getWatermarkPath());
+            Log.i(TAG, "视频缩略图:" + media.getVideoThumbnailPath());
+            Log.i(TAG, "原始宽高: " + media.getWidth() + "x" + media.getHeight());
+            Log.i(TAG, "裁剪宽高: " + media.getCropImageWidth() + "x" + media.getCropImageHeight());
+            Log.i(TAG, "文件大小: " + media.getSize());
+
+
         }
 
         //更新显示
@@ -296,21 +338,40 @@ public class PostEditActivity extends AppCompatActivity {
         //Log.d(TAG,"fileType:"+fileType);
         builder.addFormDataPart("text",text);
         builder.addFormDataPart("type","sound");
+//        File file=new File(audioPath);
+//        String filename=file.getName();
+//        String type=filename.substring(filename.lastIndexOf("."));
+//        Log.d(TAG, "publish: file exists"+file.exists()+audioPath);
 
+//        if(!file.exists()){
+//            return ;
+//        }
+        try {
+            FileDescriptor fd=getContext().getContentResolver().openFileDescriptor(audioUri,"r")
+                    .getFileDescriptor();
+            FileInputStream inputStream=new FileInputStream(fd);
+            byte[] buffer=new byte[4096];
+            ByteArrayOutputStream out=new ByteArrayOutputStream();
+            int nRead;
 
+            while((nRead=inputStream.read(buffer,0,buffer.length))!=-1){
+                out.write(buffer,0,nRead);
+            }
+            //TODO 不要硬编码
+            builder.addFormDataPart(
+                    "src",
+                    "audio.wav",
+                    RequestBody.create(out.toByteArray(),MediaType.get("audio/wav"))
+            );
 
-        File file=new File(audioPath);
-        String filename=file.getName();
-        String type=filename.substring(filename.lastIndexOf("."));
-        Log.d(TAG, "publish: file exists"+file.exists()+audioPath);
-        if(!file.exists()){
-            return ;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        builder.addFormDataPart(
-                "src",
-                file.getName(),
-                RequestBody.create(file,MediaType.get("audio/"+type))
-        );
+
+
+
 
         RequestBody requestBody=builder.build();
         HttpUtil.sendRequestBody("/user/post", requestBody, new Callback() {
@@ -341,20 +402,53 @@ public class PostEditActivity extends AppCompatActivity {
         builder.addFormDataPart("text",text);
         builder.addFormDataPart("type",fileType);
         for(LocalMedia media:mAdapter.getData()){
-            Uri uri=Uri.parse(media.getAvailablePath());
-            File file=new File(getPath(uri));
-
-            Log.d(TAG, "publish: file exists"+file.exists()+getPath(uri));
-            if(!file.exists()){
-                return ;
+            //Uri uri=Uri.parse(media.getAvailablePath());
+            // 处理本地图片和在线图片
+            File file;
+            if(media.getRealPath()!=null){
+                file=new File(media.getRealPath());
+                Log.d(TAG, "publish: file exists"+file.exists()+file.getName());
+                if(!file.exists()){
+                    return ;
+                }
+                fileType=media.getMimeType();
+                Log.d(TAG, "publish : filetype"+fileType);
+                builder.addFormDataPart(
+                        "src",
+                        media.getFileName(),
+                        RequestBody.create(file,MediaType.get(fileType))
+                );
             }
-            fileType=media.getMimeType();
-            Log.d(TAG, "publish : filetype"+fileType);
-            builder.addFormDataPart(
-                    "src",
-                    media.getFileName(),
-                    RequestBody.create(file,MediaType.get(fileType))
-            );
+            else{
+                // 下载在线图片
+                OkHttpClient client = new OkHttpClient.Builder().readTimeout(5, TimeUnit.SECONDS).build();
+
+                Request request = new Request.Builder().url(media.getPath()).get().build();
+
+                Call call = client.newCall(request);
+
+                try {
+
+                    Response response = call.execute();
+                    fileType=media.getMimeType();
+
+                    Log.d(TAG, "publish : filetype"+fileType);
+
+                    builder.addFormDataPart(
+                            "src",
+                            System.currentTimeMillis()+"."+media.getMimeType().split("/")[1],
+                            RequestBody.create(response.body().bytes(),MediaType.get(fileType))
+                    );
+
+
+                } catch (IOException e) {
+
+                    e.printStackTrace();
+
+                }
+            }
+
+
         }
 
         RequestBody requestBody=builder.build();
@@ -376,15 +470,21 @@ public class PostEditActivity extends AppCompatActivity {
         });
     }
     private void publish(){
-        if(!selectImage){
-            publishAudio();
-            return;
-        }
-        if(mAdapter.getData().size()==0){
-            publishPureText();
-            return ;
-        }
-        publishImageOrVideo();
+        new Thread("publish") {
+            @Override
+            public void run() {
+                if (!selectImage) {
+                    publishAudio();
+                    return;
+                }
+                if (mAdapter.getData().size() == 0) {
+                    publishPureText();
+                    return;
+                }
+                publishImageOrVideo();
+            }
+        }.start();
+
 
     }
 
@@ -396,6 +496,71 @@ public class PostEditActivity extends AppCompatActivity {
         int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         cursor.moveToFirst();
         return cursor.getString(column_index);
+    }
+
+    LocalMedia buildLocalMedia(String generatePath) {
+        if (ActivityCompatHelper.isDestroy(getContext())) {
+            return null;
+        }
+        long id = 0, bucketId=0;
+        File cameraFile;
+        String mimeType;
+        if (PictureMimeType.isContent(generatePath)) {
+            Uri cameraUri = Uri.parse(generatePath);
+            String path = PictureFileUtils.getPath(getContext(), cameraUri);
+            cameraFile = new File(path);
+            mimeType = MediaUtils.getMimeTypeFromMediaUrl(cameraFile.getAbsolutePath());
+            if (PictureFileUtils.isMediaDocument(cameraUri)) {
+                String documentId = DocumentsContract.getDocumentId(cameraUri);
+                if (!TextUtils.isEmpty(documentId)) {
+                    String[] split = documentId.split(":");
+                    if (split.length > 1) {
+                        id = ValueOf.toLong(split[1]);
+                    }
+                }
+            } else if (PictureFileUtils.isDownloadsDocument(cameraUri)) {
+                id = ValueOf.toLong(DocumentsContract.getDocumentId(cameraUri));
+            } else {
+                int lastIndexOf = generatePath.lastIndexOf("/") + 1;
+                id = lastIndexOf > 0 ? ValueOf.toLong(generatePath.substring(lastIndexOf)) : System.currentTimeMillis();
+            }
+            if (PictureMimeType.isHasAudio(mimeType)) {
+                bucketId = MediaUtils.generateSoundsBucketId(getContext(), cameraFile, "");
+            } else {
+                bucketId = MediaUtils.generateCameraBucketId(getContext(), cameraFile, "");
+            }
+        } else {
+            cameraFile = new File(generatePath);
+            mimeType = MediaUtils.getMimeTypeFromMediaUrl(cameraFile.getAbsolutePath());
+            id = System.currentTimeMillis();
+//            if (PictureMimeType.isHasAudio(mimeType)) {
+//                bucketId = MediaUtils.generateSoundsBucketId(getContext(), cameraFile, config.outPutCameraDir);
+//            } else {
+//                bucketId = MediaUtils.generateCameraBucketId(getContext(), cameraFile, config.outPutCameraDir);
+//            }
+        }
+        if (PictureMimeType.isHasImage(mimeType)) {
+//            if (config.isCameraRotateImage) {
+//                BitmapUtils.rotateImage(getContext(), generatePath);
+//            }
+        }
+        MediaExtraInfo mediaExtraInfo;
+        if (PictureMimeType.isHasVideo(mimeType)) {
+            mediaExtraInfo = MediaUtils.getVideoSize(getContext(), generatePath);
+        } else if (PictureMimeType.isHasAudio(mimeType)) {
+            mediaExtraInfo = MediaUtils.getAudioSize(getContext(), generatePath);
+        } else {
+            mediaExtraInfo = MediaUtils.getImageSize(getContext(), generatePath);
+        }
+        String folderName = MediaUtils.generateCameraFolderName(cameraFile.getAbsolutePath());
+        LocalMedia media = LocalMedia.parseLocalMedia(id, generatePath, cameraFile.getAbsolutePath(),
+                cameraFile.getName(), folderName, mediaExtraInfo.getDuration(),SelectMimeType.ofAll() ,
+                mimeType, mediaExtraInfo.getWidth(), mediaExtraInfo.getHeight(), cameraFile.length(), bucketId,
+                cameraFile.lastModified() / 1000);
+        if (SdkVersionUtils.isQ()) {
+            media.setSandboxPath(PictureMimeType.isContent(generatePath) ? null : generatePath);
+        }
+        return media;
     }
 
 

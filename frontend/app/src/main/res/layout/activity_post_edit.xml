@@ -17,7 +17,6 @@
             android:id="@+id/post_edit_top_bar"
             app:title="编辑动态"
             app:menu="@menu/post_edit_top_bar"
-            app:navigationIcon="@drawable/ic_close_48px"
             style="@style/ThemeOverlay.MaterialComponents.Toolbar.Primary"
             />
     </com.google.android.material.appbar.AppBarLayout>

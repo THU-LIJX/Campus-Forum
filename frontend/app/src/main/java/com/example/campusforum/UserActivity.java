@@ -18,16 +18,9 @@ public class UserActivity extends AppCompatActivity {
         binding = ActivityUserBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        binding.activityUserEditProfile.setOnClickListener(new View.OnClickListener() {
+        binding.activityUserAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            }
-        });
-
-        binding.activityUserEditProfile.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                Intent intent = new Intent(UserActivity.this, UserEditActivity.class);
-                startActivity(intent);
             }
         });
     }

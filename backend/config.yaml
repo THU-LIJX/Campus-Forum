@@ -5,6 +5,7 @@ dbconf:
 hostconf:
   domain: "localhost"
   #domain: "qiuyuhan.xyz"
+  #domain: "10.0.2.2"
   static: "D:\\workPlace\\Android\\test"
   #static: "/home/ubuntu/static"
 # static: "/Users/bytedance/Documents/"

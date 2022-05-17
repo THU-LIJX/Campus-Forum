@@ -108,7 +108,7 @@ func Like(c *gin.Context) {
 		})
 		return
 	}
-	err = user.Like(blog)
+	err, likedby := user.Like(blog)
 	if err != nil {
 		c.JSON(400, gin.H{
 			"message": err.Error(),
@@ -117,6 +117,7 @@ func Like(c *gin.Context) {
 	}
 	c.JSON(200, gin.H{
 		"message": "ok",
+		"likedby": likedby,
 	})
 }
 
@@ -132,7 +133,7 @@ func Dislike(c *gin.Context) {
 		})
 		return
 	}
-	err = user.Dislike(blog)
+	err, likedby := user.Dislike(blog)
 	if err != nil {
 		c.JSON(400, gin.H{
 			"message": err.Error(),
@@ -141,5 +142,6 @@ func Dislike(c *gin.Context) {
 	}
 	c.JSON(200, gin.H{
 		"message": "ok",
+		"likedby": likedby,
 	})
 }

@@ -191,19 +191,21 @@ func (user *User) DeleteComment(comment *Comment) (err error) {
 }
 
 //TODO: 优化liked
-func (user *User) Like(blog *Blog) (err error) {
+func (user *User) Like(blog *Blog) (err error, likedby []int) {
 	_, err = blogs.UpdateOne(context.Background(), bson.D{{"id", blog.Id}}, bson.D{{"$addToSet", bson.M{"likedby": user.Id}}})
 	if err != nil {
 		log.Println("添加id失败")
 	}
 	blog, _ = GetBlog(blog.Id)
+	likedby = blog.LikedBy
 	blog.Liked = len(blog.LikedBy)
 	_, err = blogs.UpdateOne(context.Background(), bson.D{{"id", blog.Id}}, bson.D{{"$set", bson.M{"liked": blog.Liked}}})
 	return
 }
-func (user *User) Dislike(blog *Blog) (err error) {
+func (user *User) Dislike(blog *Blog) (err error, likedby []int) {
 	_, err = blogs.UpdateOne(context.Background(), bson.D{{"id", blog.Id}}, bson.D{{"$pull", bson.M{"likedby": user.Id}}})
 	blog, _ = GetBlog(blog.Id)
+	likedby = blog.LikedBy
 	blog.Liked = len(blog.LikedBy)
 	_, err = blogs.UpdateOne(context.Background(), bson.D{{"id", blog.Id}}, bson.D{{"$set", bson.M{"liked": blog.Liked}}})
 	return

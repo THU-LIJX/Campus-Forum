@@ -6,5 +6,16 @@
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="gray_50">#E9EFF4</color>
+    <color name="gray_100">#CBD7DF</color>
+    <color name="blue_500">#2BB2FE</color>
+    <color name="blue_600">#29A3EE</color>
+
+    <color name="app_color_f6">#f6f6f6</color>
+
+    <color name="green">#00ff00</color>
+    <color name="red">#ff0000</color>
+>>>>>>> Stashed changes
 </resources>

@@ -18,10 +18,19 @@
             app:layout_constraintTop_toTopOf="parent"
             />
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="center|left"
+            android:layout_marginStart="60dp"
             android:id="@+id/record_filepath"
+            />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/open_file_btn"
+            android:layout_marginEnd="60dp"
+            android:layout_gravity="right|center"
+            android:src="@drawable/ic_folder_48px"
             />
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:layout_width="wrap_content"
@@ -31,7 +40,15 @@
             android:layout_gravity="bottom|center"
             android:backgroundTint="@color/green"
             />
-
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_stop_48px"
+            android:id="@+id/stop_record_button"
+            android:layout_gravity="bottom|center"
+            android:backgroundTint="@color/red"
+            android:visibility="invisible"
+            />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
     <!-- TODO: Update blank fragment layout -->
 

@@ -7,6 +7,11 @@
         android:icon="@drawable/ic_publish_48px"
         android:title="publish"
         app:showAsAction="ifRoom" />
-
+    <item
+        android:id="@+id/close_edit"
+        android:enabled="true"
+        android:icon="@drawable/ic_close_48px"
+        android:title="clode"
+        app:showAsAction="ifRoom"/>
 
 </menu>

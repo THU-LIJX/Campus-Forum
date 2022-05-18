@@ -226,7 +226,7 @@ public class PostEditActivity extends AppCompatActivity {
         //media.setPath("/storage/emulated/0/DCIM/Camera/IMG_20220514025554659.jpg");
         //media.setPath("content://media/external/images/media/34");
         //media.setRealPath("/storage/emulated/0/DCIM/Camera/IMG_20220514025554659.jpg");
-        media=buildLocalMedia("content://media/external/images/media/34");
+        //media=buildLocalMedia("content://media/external/images/media/34");
         l.add(media);
 
         //l.add(LocalMedia.generateLocalMedia("http://qiuyuhan.xyz:8080/static/src/39/0.wav","audio/wav"));
@@ -312,7 +312,7 @@ public class PostEditActivity extends AppCompatActivity {
         HashMap<String,String>data=new HashMap<>();
         data.put("text",text);
         data.put("type","text");
-        HttpUtil.sendPostRequest("/user/post",data, new Callback() {
+        HttpUtil.sendPostRequest("/api/user/post",data, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 Log.d(TAG, "onFailure: "+e.getMessage());
@@ -374,7 +374,7 @@ public class PostEditActivity extends AppCompatActivity {
 
 
         RequestBody requestBody=builder.build();
-        HttpUtil.sendRequestBody("/user/post", requestBody, new Callback() {
+        HttpUtil.sendRequestBody("/api/user/post", requestBody, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 Log.d(TAG, "onFailure: "+e.getMessage());
@@ -452,7 +452,7 @@ public class PostEditActivity extends AppCompatActivity {
         }
 
         RequestBody requestBody=builder.build();
-        HttpUtil.sendRequestBody("/user/post", requestBody, new Callback() {
+        HttpUtil.sendRequestBody("/api/user/post", requestBody, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 Log.d(TAG, "onFailure: "+e.getMessage());

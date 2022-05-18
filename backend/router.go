@@ -72,6 +72,7 @@ func register(engine *gin.Engine) {
 	verifiedGroup.POST("/delcomment", controller.DeleteComment)
 	verifiedGroup.POST("/dislike", controller.Dislike)
 	verifiedGroup.POST("/like", controller.Like)
+	verifiedGroup.GET("/search", controller.Search)
 
 	rootGroup.GET("/info", controller.QueryUser)
 	rootGroup.POST("/register", controller.Register)

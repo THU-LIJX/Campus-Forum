@@ -36,9 +36,20 @@ func GetBlogs(c *gin.Context) {
 	if subscribed != "" {
 		flags |= model.SUBSCIBED
 	}
+	userId := -1
 	myself := c.Query("myself")
 	if myself != "" {
-		flags |= model.MYSELF
+		userId = user.Id
+	}
+	userIdStr := c.Query("user")
+	if userIdStr != "" {
+		userId, err = strconv.Atoi(userIdStr)
+		if err != nil {
+			c.JSON(500, gin.H{
+				"message": "请求参数错误：user=" + userIdStr,
+			})
+			return
+		}
 	}
 	pagesize, page := 10, 0
 	if temp := c.Query("pagesize"); temp != "" {
@@ -53,14 +64,14 @@ func GetBlogs(c *gin.Context) {
 			page = 0
 		}
 	}
-	res, err := user.ViewBlogs(flags, int64(pagesize), int64(page)) //分页是从0开始的
-
+	res, err := user.ViewBlogs(flags, int64(pagesize), int64(page), userId) //分页是从0开始的
 	if err != nil {
 		c.JSON(400, gin.H{
 			"message": err.Error(),
 		})
 		return
 	}
+
 	c.JSON(200, gin.H{
 		"message": "ok",
 		"blogs":   res,
@@ -150,5 +161,37 @@ func Post(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "ok",
 		"time":    now,
+	})
+}
+
+// 搜索还是需要用户认证，因为黑名单
+func Search(c *gin.Context) {
+	userI, _ := c.Get("user")
+	user := userI.(*model.User)
+	var err error
+
+	var filter model.BlogFilter
+	content := c.Query("content")
+	if content != "" {
+		filter.Content = content
+	}
+	userName := c.Query("user_name")
+	if userName != "" {
+		filter.UserName = userName
+	}
+	t := c.Query("type")
+	if t != "" {
+		filter.Type = t
+	}
+	blogs, err := user.SearchBlogs(&filter)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"message": err,
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "ok",
+		"blogs":   blogs,
 	})
 }

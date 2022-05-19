@@ -63,14 +63,33 @@ func Register(c *gin.Context) {
 	})
 }
 func QueryUser(c *gin.Context) {
+	var userID int
+	if c.Query("myself") != "" {
+		cookie, err := c.Cookie("campus_cookie")
+		if err != nil {
 
-	userID, _ := strconv.Atoi(c.Query("id"))
+			c.AbortWithStatusJSON(403, gin.H{
+				"message": "cookie 错误",
+			})
+		}
+		userSelf, err := model.GetUser(cookie)
+
+		if err != nil {
+			c.AbortWithStatusJSON(403, gin.H{
+				"message": "登陆状态过期",
+			})
+		}
+		userID = userSelf.Id
+	} else {
+		userID, _ = strconv.Atoi(c.Query("id"))
+	}
+
 	var user *model.User
 	//user.Id = userID
 	user, err := model.QueryUser(userID)
 	if err != nil {
 		c.JSON(400, gin.H{
-			"message": "error",
+			"message": err,
 		})
 	}
 	c.JSON(200, user)

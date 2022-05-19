@@ -1,27 +1,17 @@
 package com.example.campusforum;
 
-import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Rect;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.os.Parcel;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewDebug;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.GridLayout;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,31 +25,17 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
-import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.circularreveal.CircularRevealGridLayout;
-import com.google.android.material.imageview.ShapeableImageView;
-import com.previewlibrary.GPreviewBuilder;
 import com.previewlibrary.enitity.IThumbViewInfo;
 import com.previewlibrary.loader.IZoomMediaLoader;
 import com.previewlibrary.loader.MySimpleTarget;
 
-import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
-
-import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     static class Post implements Serializable {
@@ -72,19 +48,49 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         public int userId;
         public int type;
         public String content;
-        public List<String> dataSources;
-        public List<Integer> likeBy;
         public int likeNum;
         public String location;
+        public String username;
+        public String avatar;
+        public List<String> dataSources;
+        public List<Integer> likedBy;
+        public List<Comment> comments;
 
-        public Post(int postId, int userId, int type, String content, List<String> dataSources, List<Integer> likeBy, int likeNum) {
+        public Post(int postId, int userId, int type, String content, List<String> dataSources, List<Integer> likedBy, int likeNum) {
             this.postId = postId;
             this.userId = userId;
             this.type = type;
             this.content = content;
             this.dataSources = dataSources;
-            this.likeBy = likeBy;
+            this.likedBy = likedBy;
             this.likeNum = likeNum;
+        }
+
+        public Post(JSONObject jsonObject) {
+            try {
+                postId = jsonObject.getInt("id");
+                userId = jsonObject.getInt("user");
+                type = jsonObject.getInt("type");
+                content = jsonObject.getString("text");
+                username = jsonObject.getString("user_name");
+                avatar = jsonObject.getString("avatar");
+                likeNum = jsonObject.getInt("liked");
+
+                dataSources = new ArrayList<>();
+                JSONArray jsonArray = jsonObject.getJSONArray("src");
+                for (int i = 0; i < jsonArray.length(); i++) dataSources.add(jsonArray.getString(i));
+
+                likedBy = new ArrayList<>();
+                jsonArray = jsonObject.getJSONArray("likedby");
+                for (int i = 0; i < jsonArray.length(); i++) likedBy.add(jsonArray.getInt(i));
+
+                comments = new ArrayList<>();
+                jsonArray = jsonObject.getJSONArray("comment");
+                for (int i = 0; i < jsonArray.length(); i++) comments.add(new Comment(jsonArray.getJSONObject(i)));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -106,36 +112,44 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         public void setCommentAction(View.OnClickListener callback) {
             postItemView.setCommentAction(callback);
         }
+
+        public void setPostItemView(PostItemView postItemView) {
+            this.postItemView = postItemView;
+        }
     }
 
     private List<Post> mPostList;
-    private Fragment mFragment;
+    private Activity mActivity;
     public int audioPlaying = -1;      // 当前播放中的音频
 
-    public PostAdapter(List<Post> postList, Fragment fragment) {
+    public PostAdapter(List<Post> postList, Activity activity) {
         mPostList = postList;
-        mFragment = fragment;
+        mActivity = activity;
     }
 
+    int count = 0;
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         PostItemView view = new PostItemView(parent.getContext());
-        view.setActivity(mFragment.getActivity());
+        view.setActivity(mActivity);
         view.setAdapter(this);
+        count += 1;
+        System.out.println("create viewholder" + count);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(PostAdapter.ViewHolder viewHolder, int position) {
         Post post = mPostList.get(position);
+        System.out.println("bind post:" + post.postId);
         viewHolder.setPosition(position);
         viewHolder.setPost(post);
         viewHolder.setCommentAction(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(mFragment.getActivity(), PostInfoActivity.class);
+                Intent intent = new Intent(mActivity, PostInfoActivity.class);
                 intent.putExtra("post", post);
-                mFragment.startActivity(intent);
+                mActivity.startActivity(intent);
             }
         });
     }

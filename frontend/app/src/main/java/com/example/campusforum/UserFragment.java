@@ -76,6 +76,7 @@ public class UserFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(UserFragment.this.getActivity(), UserActivity.class);
+                intent.putExtra("id", User.currentUser.userId);
                 startActivity(intent);
             }
         });

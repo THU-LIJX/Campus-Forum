@@ -47,6 +47,18 @@ func AddUser(user *User) (err error) {
 func QueryUser(id int) (user *User, err error) {
 	user = new(User)
 	err = users.FindOne(context.Background(), bson.D{{"id", id}}).Decode(user)
+	if user.Blogs == nil {
+		user.Blogs = make([]int, 0)
+	}
+	if user.Subscriptions == nil {
+		user.Subscriptions = make([]int, 0)
+	}
+	if user.Drafts == nil {
+		user.Drafts = make([]int, 0)
+	}
+	if user.BlackList == nil {
+		user.BlackList = make([]int, 0)
+	}
 	return user, err
 }
 func ExistsUser(filter interface{}) bool {

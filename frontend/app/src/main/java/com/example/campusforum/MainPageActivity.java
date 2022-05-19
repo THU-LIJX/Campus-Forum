@@ -37,5 +37,7 @@ public class MainPageActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        User.setCurrentUser();
     }
 }

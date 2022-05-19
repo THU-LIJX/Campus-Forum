@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.os.Message;
@@ -48,13 +49,19 @@ import com.previewlibrary.enitity.IThumbViewInfo;
 import com.previewlibrary.loader.IZoomMediaLoader;
 import com.previewlibrary.loader.MySimpleTarget;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.transform.Result;
 
@@ -121,34 +128,84 @@ public class PostBrowseFragment extends Fragment {
         return binding.getRoot();
     }
 
+    private List<PostAdapter.Post> postList;
+    private PostAdapter postAdapter;
+    private LinearLayoutManager linearLayoutManager;
 
+    private int currentPage = -1;
+    private int pageSize = 5;
+    private String sortLiked = "DES";
+    private String sortTime = "DES";
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstance) {
 
-        List<PostAdapter.Post> postList = new ArrayList<>();
-        PostAdapter postAdapter = new PostAdapter(postList, this);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(view.getContext());
+        postList = new ArrayList<>();
+        postAdapter = new PostAdapter(postList, this.getActivity());
+        linearLayoutManager = new LinearLayoutManager(view.getContext());
         binding.fragPostBrowseRecyclerView.setAdapter(postAdapter);
         binding.fragPostBrowseRecyclerView.setLayoutManager(linearLayoutManager);
 
-        postList.add(new PostAdapter.Post(1, 1, 1, "FUCK", new ArrayList<String>(), new ArrayList<Integer>(), 1));
-        postList.add(new PostAdapter.Post(1, 1, 1, "FUCK", new ArrayList<String>(), new ArrayList<Integer>(), 1));
-        postList.add(new PostAdapter.Post(1, 1, 1, "FUCK", new ArrayList<String>(), new ArrayList<Integer>(), 1));
-        List<String> datas = new ArrayList<>();
-        datas.add("/static/src/28/0.jpg");
-        datas.add("/static/src/28/0.jpg");
-        datas.add("/static/src/28/0.jpg");
-        datas.add("/static/src/28/0.jpg");
-        postList.add(new PostAdapter.Post(1, 1, 2, "FUCK", datas, new ArrayList<Integer>(), 1));
-//        postList.add(new PostAdapter.Post(1, 1, 8, "FUCK", new ArrayList<String>(), new ArrayList<Integer>(), 1));
-        List<String> audioData = new ArrayList<>();
-        audioData.add("http://downsc.chinaz.net/Files/DownLoad/sound1/201906/11582.mp3");
-        postList.add(new PostAdapter.Post(1, 1, 4, "FUCK", audioData, new ArrayList<Integer>(), 1));
-        List<String> audioData2 = new ArrayList<>();
-        audioData2.add("http://downsc.chinaz.net/files/download/sound1/201206/1638.mp3");
-        postList.add(new PostAdapter.Post(1, 1, 4, "FUCK", audioData2, new ArrayList<Integer>(), 1));
+        // recyclerview滑到底部时加载更多动态
+        binding.fragPostBrowseRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    int lastPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
+                    if (lastPosition == postList.size() - 1) {
+                        getPost();
+                    }
+                }
+            }
+        });
 
+        // 初始化页面，获取一些动态
+        getPost();
+    }
+
+    private void getPost() {
+        HashMap<String, String> query = new HashMap<>();
+        query.put("pagesize", Integer.toString(pageSize));
+        query.put("page", Integer.toString(currentPage+1));
+        query.put("sort_time", sortTime);
+        query.put("sort_liked", sortLiked);
+        query.put("subscribed", "true"); // 显示自己和关注的人的动态
+        HttpUtil.sendGetRequest("/api/user/blogs", query, new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                try {
+                    String result = Objects.requireNonNull(response.body()).string();
+                    JSONObject jsonObject = new JSONObject(result);
+                    if (jsonObject.getString("message").equals("ok")) {
+                        // 如果没有内容，blogs字段为null
+                        JSONArray jsonArray = jsonObject.getJSONArray("blogs");
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    System.out.println("Post Length" + jsonArray.length());
+                                    for (int i = 0; i < jsonArray.length(); i++) {
+                                        postList.add(new PostAdapter.Post(jsonArray.getJSONObject(i)));
+                                        postAdapter.notifyItemInserted(postList.size()-1);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                        currentPage += 1;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     // 获取应用所需要的权限

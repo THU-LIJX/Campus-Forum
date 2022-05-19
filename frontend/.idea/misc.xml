@@ -37,8 +37,9 @@
         <entry key="app/src/main/res/layout/activity_login_and_register.xml" value="0.22" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_main_page.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_post_edit.xml" value="0.53125" />
         <entry key="app/src/main/res/layout/activity_post_info.xml" value="0.22" />
-        <entry key="app/src/main/res/layout/activity_user.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_user.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_user_edit.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_draft.xml" value="0.22" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.234375" />

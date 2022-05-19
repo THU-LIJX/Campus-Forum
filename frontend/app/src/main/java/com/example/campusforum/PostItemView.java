@@ -6,10 +6,12 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.GridLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,6 +21,7 @@ import androidx.appcompat.widget.LinearLayoutCompat;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.circularreveal.CircularRevealGridLayout;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.previewlibrary.GPreviewBuilder;
 
 import org.json.JSONArray;
@@ -61,12 +64,16 @@ public class PostItemView extends LinearLayoutCompat {
     private JCVideoPlayerStandard videoPlayer;         // 视频播放器
     private MaterialCardView audioContainer;           // 音频容器
     private TextView username;                         // 用户名
+    private TextView userId;                           // 用户id
     private TextView content;                          // 正文
     private TextView commentNum;                       // 评论数
     private TextView likeNum;                          // 点赞数
     private ShapeableImageView commentIcon;            // 评论图标
     private ShapeableImageView likeIcon;               // 点赞图标
     private ShapeableImageView shareIcon;              // 分享图标
+    private RoundedImageView avatar;                   // 头像
+
+    private List<GridLayout.LayoutParams> imageParams;  // 保存参数
 
     private Activity activity;                         // view所在的activity
     private PostAdapter postAdapter;                   // view所在的adapter(如果使用list展示)
@@ -78,12 +85,16 @@ public class PostItemView extends LinearLayoutCompat {
 
     // 初始化控件
     private void initView(Context context) {
+        LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.setLayoutDirection(VERTICAL);
+        this.setLayoutParams(layoutParams);
         View view = LayoutInflater.from(context).inflate(R.layout.post_item, this);
         gridLayoutImages = (CircularRevealGridLayout) view.findViewById(R.id.post_item_images);
         videoContainer = (LinearLayoutCompat) view.findViewById(R.id.post_item_video_container);
         videoPlayer = (JCVideoPlayerStandard) view.findViewById(R.id.post_item_video);
         audioContainer = (MaterialCardView) view.findViewById(R.id.post_item_audio);
         username = (TextView) view.findViewById(R.id.post_item_user_name);
+        userId = (TextView) view.findViewById(R.id.post_item_user_id);
         content = (TextView) view.findViewById(R.id.post_item_content);
         commentNum = (TextView) view.findViewById(R.id.post_item_comment_num);
         likeNum = (TextView) view.findViewById(R.id.post_item_like_num);
@@ -91,6 +102,7 @@ public class PostItemView extends LinearLayoutCompat {
         likeIcon = (ShapeableImageView) view.findViewById(R.id.post_item_like_icon);
         shareIcon = (ShapeableImageView) view.findViewById(R.id.post_item_share_icon);
         shareIcon = (ShapeableImageView) view.findViewById(R.id.post_item_image1);
+        avatar = (RoundedImageView) view.findViewById(R.id.post_item_avatar);
 
         images = new ArrayList<>();
         images.add((ShapeableImageView) view.findViewById(R.id.post_item_image1));
@@ -102,6 +114,11 @@ public class PostItemView extends LinearLayoutCompat {
         images.add((ShapeableImageView) view.findViewById(R.id.post_item_image7));
         images.add((ShapeableImageView) view.findViewById(R.id.post_item_image8));
         images.add((ShapeableImageView) view.findViewById(R.id.post_item_image9));
+
+        imageParams = new ArrayList<>();
+        for (int i = 0; i < 9; i++) {
+            imageParams.add(new GridLayout.LayoutParams(images.get(i).getLayoutParams()));
+        }
     }
 
     // 在setPost之前必须调用
@@ -129,28 +146,37 @@ public class PostItemView extends LinearLayoutCompat {
         switch (post.type) {
             case PostAdapter.Post.IMAGE_TYPE:
                 gridLayoutImages.setVisibility(View.VISIBLE);
+                videoContainer.setVisibility(View.GONE);
+                audioContainer.setVisibility(View.GONE);
                 setImages(post);
                 break;
             case PostAdapter.Post.VIDEO_TYPE:
+                gridLayoutImages.setVisibility(View.GONE);
                 videoContainer.setVisibility(View.VISIBLE);
+                audioContainer.setVisibility(View.GONE);
                 videoPlayer.setUp(HttpUtil.baseUrl + post.dataSources.get(0), JCVideoPlayerStandard.SCREEN_LAYOUT_NORMAL, "");
                 break;
             case PostAdapter.Post.AUDIO_TYPE:
+                gridLayoutImages.setVisibility(View.GONE);
+                videoContainer.setVisibility(View.GONE);
                 audioContainer.setVisibility(View.VISIBLE);
                 setAudio(post);
                 break;
         }
 
-        username.setText(Integer.toString(post.postId));          // 设置用户名
-        content.setText(post.content);                            // 设置正文
-        likeNum.setText(Integer.toString(post.likeNum));          // 设置点赞数
+        username.setText(post.username);                            // 设置用户名
+        userId.setText(Integer.toString(post.userId));              // 设置用户id
+        content.setText(post.content);                              // 设置正文
+        setLikeInfo(post);
+//        commentNum.setText(Integer.toString(post.comments.size())); // 设置评论数
 
         // 点赞/取消点赞
         likeIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 HashMap<String, String> data = new HashMap<>();
-                data.put("id", Integer.toString(post.userId));
+                data.put("blog", Integer.toString(post.postId));
+                System.out.println("fuck");
                 Callback callback = new Callback() {
                     @Override
                     public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -163,11 +189,13 @@ public class PostItemView extends LinearLayoutCompat {
                         JSONObject jsonOb;
                         try {
                             jsonOb = new JSONObject(result);
+                            System.out.println(jsonOb.getString("message"));
                             if (jsonOb.getString("message").equals("ok")) {
-                                JSONArray jsonArray = jsonOb.getJSONArray("likeby");
+                                JSONArray jsonArray = jsonOb.getJSONArray("likedby");
                                 List<Integer> tmpList = new ArrayList<>();
                                 for (int i = 0; i < jsonArray.length(); i++) tmpList.add(jsonArray.getInt(i));
-                                post.likeBy = tmpList;
+                                post.likedBy = tmpList;
+                                System.out.println(tmpList);
                                 setLikeInfo(post);
                             }
                         } catch (JSONException e) {
@@ -175,7 +203,7 @@ public class PostItemView extends LinearLayoutCompat {
                         }
                     }
                 };
-                if (post.likeBy.contains(post.userId)) {
+                if (post.likedBy.contains(post.userId)) {
                     // 取消点赞
                     HttpUtil.sendPostRequest("/api/user/dislike", data, callback);
                 } else {
@@ -192,6 +220,16 @@ public class PostItemView extends LinearLayoutCompat {
 
             }
         });
+
+        // 点击头像跳转到相应的个人主页
+        avatar.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(activity, UserActivity.class);
+                intent.putExtra("id", post.userId);
+                activity.startActivity(intent);
+            }
+        });
     }
 
     private void setImages(PostAdapter.Post post) {
@@ -201,12 +239,18 @@ public class PostItemView extends LinearLayoutCompat {
         if (post.dataSources.size() == 4) {
             rowNum = 2;
             colNum = 2;
-        } else {
+        }
+        else {
             colNum = 3;
             rowNum = (int) Math.ceil((double) post.dataSources.size() / 3.0);
         }
-        gridLayoutImages.setRowCount(rowNum);
+        gridLayoutImages.removeAllViews();
         gridLayoutImages.setColumnCount(colNum);
+        gridLayoutImages.setRowCount(rowNum);
+        for (int i = 0; i < rowNum * colNum; i++) {
+            gridLayoutImages.addView(images.get(i));
+            images.get(i).setVisibility(View.GONE);
+        }
 
         // 图片预览
         List<UserViewInfo> userViewInfoList = new ArrayList<>();
@@ -298,14 +342,19 @@ public class PostItemView extends LinearLayoutCompat {
     }
 
     private void setLikeInfo(PostAdapter.Post post) {
-        // 根据用户点赞与否设置点赞图标
-        if (post.likeBy.contains(post.userId)) {
-            likeIcon.setImageResource(R.drawable.ic_thumb_up_fill_20px);
-        } else {
-            likeIcon.setImageResource(R.drawable.ic_thumb_up_20px);
-        }
-        // 设置点赞数
-        likeNum.setText(Integer.toString(post.likeBy.size()));
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // 根据用户点赞与否设置点赞图标
+                if (post.likedBy.contains(post.userId)) {
+                    likeIcon.setImageResource(R.drawable.ic_thumb_up_fill_20px);
+                } else {
+                    likeIcon.setImageResource(R.drawable.ic_thumb_up_20px);
+                }
+                // 设置点赞数
+                likeNum.setText(Integer.toString(post.likedBy.size()));
+            }
+        });
     }
 
 }

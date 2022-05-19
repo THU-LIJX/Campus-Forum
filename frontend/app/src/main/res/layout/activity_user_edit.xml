@@ -19,6 +19,7 @@
             android:layout_height="wrap_content">
 
             <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/activity_edit_user_actionbar"
                 style="@style/Widget.MaterialComponents.Toolbar.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
@@ -39,7 +40,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="100dp"
                 android:background="@color/blue_600"/>
 
             <com.makeramen.roundedimageview.RoundedImageView
@@ -92,20 +93,38 @@
                     android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
 
+
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint=" Bio ">
+                android:hint=" Description ">
 
                 <EditText
                     android:layout_margin="5dp"
-                    android:id="@+id/edit_profile_bio"
+                    android:id="@+id/edit_profile_description"
+                    android:minHeight="100dp"
+                    android:gravity="top"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
 
 
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint=" Password (默认不修改)"
+                app:passwordToggleEnabled="true"
+                app:hintTextAppearance="@style/TextAppearance.MaterialComponents.Subtitle1">
+
+                <EditText
+                    android:layout_margin="5dp"
+                    android:id="@+id/edit_profile_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
 

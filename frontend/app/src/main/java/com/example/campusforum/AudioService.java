@@ -45,8 +45,7 @@ public class AudioService extends Service {
                     try {
                         mediaPlayer.reset();
                         audioSrc = data.getString("audio_src");
-//                        mediaPlayer.setDataSource(HttpUtil.baseUrl + audioSrc);
-                        mediaPlayer.setDataSource(audioSrc);
+                        mediaPlayer.setDataSource(HttpUtil.baseUrl + audioSrc);
                         mediaPlayer.prepareAsync();
                         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                             @Override

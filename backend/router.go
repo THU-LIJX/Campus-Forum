@@ -22,11 +22,18 @@ func Auth() gin.HandlerFunc {
 			})
 		}
 		user, err := model.GetUser(cookie)
+
 		if err != nil {
 			c.AbortWithStatusJSON(403, gin.H{
 				"message": "登陆状态过期",
 			})
 
+		}
+		err = user.Fetch()
+		if err != nil {
+			c.AbortWithStatusJSON(500, gin.H{
+				"message": "无法获取用户状态",
+			})
 		}
 		c.Set("user", user)
 		c.Next()

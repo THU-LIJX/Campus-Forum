@@ -27,6 +27,13 @@ func AddComment(comment *Comment) (err error) {
 }
 func GetComment(id int) (comment *Comment, err error) {
 	comment = new(Comment)
+
 	err = comments.FindOne(context.Background(), bson.D{{"id", id}}).Decode(comment)
+	if err != nil {
+		return nil, err
+	}
+	user, _ := QueryUser(comment.User)
+	comment.UserName = user.Name
+	comment.Avatar = user.Avatar
 	return
 }

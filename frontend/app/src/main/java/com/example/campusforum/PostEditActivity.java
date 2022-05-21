@@ -22,13 +22,16 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Parcel;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.example.campusforum.databinding.ActivityPostEditBinding;
 import com.example.campusforum.mediaselector.FullyGridLayoutManager;
@@ -55,14 +58,21 @@ import com.luck.picture.lib.utils.PictureFileUtils;
 import com.luck.picture.lib.utils.SdkVersionUtils;
 import com.luck.picture.lib.utils.ValueOf;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,12 +107,69 @@ public class PostEditActivity extends AppCompatActivity {
     private ImageEngine imageEngine;
 
     private ActivityResultLauncher<Intent> launcherResult;
+
+    private String draftPath;
+
+    private String draftFileName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent=getIntent();
+        draftPath= Environment.getExternalStorageDirectory()+"/Campus/";
+        if(intent!=null){
+            String draftStr=intent.getStringExtra("draft");
+            if(draftStr!=null){
+                try {
+                    recoverContent(draftStr);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Log.d(TAG, "onCreate: "+draftStr);
+            }else{
+                // 草稿箱存储
+                if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.MANAGE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(getContext(),new String[]{Manifest.permission.MANAGE_EXTERNAL_STORAGE},1);
+                }
+
+                File file=new File(draftPath);
+                if(!file.exists()){
+                    file.mkdir();
+                    Log.d(TAG, "onCreate: 创建草稿箱目录");
+                }
+                draftFileName="draft_"+(System.currentTimeMillis())+".json";
+                file=new File(draftPath+draftFileName);
+                if(!file.exists()){
+                    try {
+                        file.createNewFile();
+                        Log.d(TAG, "onCreate: 创建新文件用于草稿");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        }
+
+       
 
         binding = ActivityPostEditBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        binding.postText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                Log.d(TAG, "onKey: ");
+                try {
+                    saveContent();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return false;
+            }
+        });
         //TODO: 添加对saveInstanceState的处理，从草稿箱跳入可以直接用
         // 配置录音相关
         FragmentManager fragmentManager=getSupportFragmentManager();
@@ -131,9 +198,10 @@ public class PostEditActivity extends AppCompatActivity {
                             new FragmentResultListener() {
                                 @Override
                                 public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                                    //获取录音结果的路径
                                     String path=result.getString("path");
                                     Log.d(TAG, "onFragmentResult: "+path);
-                                    audioUri=result.getParcelable("uri");
+                                    //audioUri=result.getParcelable("uri");
                                     // 可以获取录音的结果或者选择文件的结果，把结果放在audioPath中去
                                     audioPath=path;
                                 }
@@ -221,20 +289,42 @@ public class PostEditActivity extends AppCompatActivity {
         ArrayList<LocalMedia>l=new ArrayList<>();
 
         //OK!可以从网络获取图片
-        l.add(LocalMedia.generateLocalMedia("http://qiuyuhan.xyz:8080/static/src/36/0.jpg","image/jpg"));
-        LocalMedia media=new LocalMedia();
+        //l.add(LocalMedia.generateLocalMedia("http://qiuyuhan.xyz:8080/static/src/36/0.jpg","image/jpg"));
+        //LocalMedia media=new LocalMedia();
         //media.setPath("/storage/emulated/0/DCIM/Camera/IMG_20220514025554659.jpg");
         //media.setPath("content://media/external/images/media/34");
         //media.setRealPath("/storage/emulated/0/DCIM/Camera/IMG_20220514025554659.jpg");
         //media=buildLocalMedia("content://media/external/images/media/34");
-        l.add(media);
+        //l.add(media);
 
         //l.add(LocalMedia.generateLocalMedia("http://qiuyuhan.xyz:8080/static/src/39/0.wav","audio/wav"));
         analyticalSelectResults(l);
     }
+    private void recoverContent(String jsonStr) throws JSONException {
+        JSONObject obj=new JSONObject(jsonStr);
+        binding.postText.setText(obj.getString("text"));
+        draftFileName=obj.getString("draftFileName");
+        Log.d(TAG, "recoverContent: "+draftFileName);
+    }
+    private void saveContent() throws JSONException, IOException {
+        JSONObject obj=new JSONObject();
+        obj.put("text",binding.postText.getText().toString());
+        JSONArray srcs=new JSONArray();
+        for(LocalMedia media:mAdapter.getData()){
 
-    private void saveContent(){
-
+            JSONObject mediaObj=new JSONObject();
+            mediaObj.put("path",media.getPath());
+            srcs.put(mediaObj);
+        }
+        obj.put("src",srcs);
+        obj.put("selectImage",selectImage);
+        obj.put("draftFileName",draftFileName);
+        File file=new File(draftPath+draftFileName);
+        FileOutputStream fileOutputStream=new FileOutputStream(file);
+        OutputStreamWriter outputStreamWriter=new OutputStreamWriter(fileOutputStream,"utf-8");
+        outputStreamWriter.write(obj.toString());
+        outputStreamWriter.flush();
+        outputStreamWriter.close();
     }
 
     private void analyticalSelectResults(ArrayList<LocalMedia> result) {
@@ -321,6 +411,7 @@ public class PostEditActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if(response.code()==200){
+                    postSuccess();
                     Intent intent=new Intent(getContext(),MainPageActivity.class);
                     startActivity(intent);
                 }else{
@@ -338,39 +429,43 @@ public class PostEditActivity extends AppCompatActivity {
         //Log.d(TAG,"fileType:"+fileType);
         builder.addFormDataPart("text",text);
         builder.addFormDataPart("type","sound");
-//        File file=new File(audioPath);
-//        String filename=file.getName();
-//        String type=filename.substring(filename.lastIndexOf("."));
-//        Log.d(TAG, "publish: file exists"+file.exists()+audioPath);
+        File file=new File(audioPath);
+        String filename=file.getName();
+        String type=filename.substring(filename.lastIndexOf("."));
+        Log.d(TAG, "publish: file exists"+file.exists()+audioPath);
 
-//        if(!file.exists()){
-//            return ;
-//        }
-        try {
-            FileDescriptor fd=getContext().getContentResolver().openFileDescriptor(audioUri,"r")
-                    .getFileDescriptor();
-            FileInputStream inputStream=new FileInputStream(fd);
-            byte[] buffer=new byte[4096];
-            ByteArrayOutputStream out=new ByteArrayOutputStream();
-            int nRead;
+        if(!file.exists()){
 
-            while((nRead=inputStream.read(buffer,0,buffer.length))!=-1){
-                out.write(buffer,0,nRead);
-            }
-            //TODO 不要硬编码
-            builder.addFormDataPart(
-                    "src",
-                    "audio.wav",
-                    RequestBody.create(out.toByteArray(),MediaType.get("audio/wav"))
-            );
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            return ;
         }
-
-
+        builder.addFormDataPart(
+                "src",
+                file.getName(),
+                RequestBody.create(file,MediaType.get("audio/"+type))
+        );
+//        try {
+//            FileDescriptor fd=getContext().getContentResolver().openFileDescriptor(audioUri,"r")
+//                    .getFileDescriptor();
+//            FileInputStream inputStream=new FileInputStream(fd);
+//            byte[] buffer=new byte[4096];
+//            ByteArrayOutputStream out=new ByteArrayOutputStream();
+//            int nRead;
+//
+//            while((nRead=inputStream.read(buffer,0,buffer.length))!=-1){
+//                out.write(buffer,0,nRead);
+//            }
+//            //TODO 不要硬编码
+//            builder.addFormDataPart(
+//                    "src",
+//                    "audio.wav",
+//                    RequestBody.create(out.toByteArray(),MediaType.get("audio/wav"))
+//            );
+//
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
 
         RequestBody requestBody=builder.build();
@@ -383,6 +478,7 @@ public class PostEditActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if(response.code()==200){
+                    postSuccess();
                     Intent intent=new Intent(getContext(),MainPageActivity.class);
                     startActivity(intent);
                 }else{
@@ -461,6 +557,7 @@ public class PostEditActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if(response.code()==200){
+                    postSuccess();
                     Intent intent=new Intent(getContext(),MainPageActivity.class);
                     startActivity(intent);
                 }else{
@@ -468,6 +565,11 @@ public class PostEditActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    private void postSuccess(){
+        Log.d(TAG, "postSuccess: 成功发送，删除文件");
+        File file=new File(draftPath+draftFileName);
+        file.delete();
     }
     private void publish(){
         new Thread("publish") {

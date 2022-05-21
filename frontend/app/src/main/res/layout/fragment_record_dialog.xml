@@ -9,29 +9,57 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="200dp">
-        <Chronometer
 
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/chronometer"
-            android:layout_gravity="top|center"
-            app:layout_constraintTop_toTopOf="parent"
-            />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|left"
-            android:layout_marginStart="60dp"
-            android:id="@+id/record_filepath"
-            />
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/open_file_btn"
-            android:layout_marginEnd="60dp"
-            android:layout_gravity="right|center"
-            android:src="@drawable/ic_folder_48px"
-            />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_gravity="center"
+            android:id="@+id/post_item_audio"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"
+            android:backgroundTint="@color/white"
+            app:shapeAppearance="@style/voiceBarShape"
+            android:layout_marginHorizontal="2dp"
+            android:visibility="visible"
+            >
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="5dp"
+                android:src="@drawable/ic_volume_up_20px"
+                android:translationZ="0dp"
+                />
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/record_progress"
+                app:trackThickness="30dp"
+                app:trackCornerRadius="15dp"
+                android:translationZ="-1dp"
+                />
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center_vertical"
+                android:gravity="end"
+                >
+                <Chronometer
+                    style="@style/TextAppearance.AppCompat.Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/chronometer"
+                    android:layout_gravity="top|center"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginEnd="10dp"
+                    />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </com.google.android.material.card.MaterialCardView>
+
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

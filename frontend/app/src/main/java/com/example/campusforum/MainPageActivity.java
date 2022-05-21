@@ -45,29 +45,29 @@ public class MainPageActivity extends AppCompatActivity {
         binding.mainPageToPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent intent = new Intent(MainPageActivity.this,PostEditActivity.class);
-//                startActivity(intent);
+                Intent intent = new Intent(MainPageActivity.this,PostEditActivity.class);
+                startActivity(intent);
                 //测试subscribe
-                HashMap<String,String>data=new HashMap<>();
-                data.put("id",Integer.toString(54));
-                HttpUtil.sendPostRequest("/api/user/subscribe", data, new Callback() {
-                    @Override
-                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
-
-                    }
-
-                    @Override
-                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                        try {
-                            String res= Objects.requireNonNull(response.body()).string();
-                            Log.d("Test", "onResponse: "+res);
-                            JSONObject jsonObject=new JSONObject(res);
-                            Log.d("Test", "onResponse: message"+jsonObject.getString("message"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+//                HashMap<String,String>data=new HashMap<>();
+//                data.put("id",Integer.toString(54));
+//                HttpUtil.sendPostRequest("/api/user/subscribe", data, new Callback() {
+//                    @Override
+//                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+//                        try {
+//                            String res= Objects.requireNonNull(response.body()).string();
+//                            Log.d("Test", "onResponse: "+res);
+//                            JSONObject jsonObject=new JSONObject(res);
+//                            Log.d("Test", "onResponse: message"+jsonObject.getString("message"));
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                });
             }
         });
     }

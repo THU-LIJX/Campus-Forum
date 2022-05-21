@@ -216,6 +216,9 @@ func FillBlogs(blogs []*Blog) error {
 			}
 			v.CommentList = append(v.CommentList, comment)
 		}
+		if v.Sources == nil {
+			v.Sources = make([]string, 0)
+		}
 	}
 	return nil
 }

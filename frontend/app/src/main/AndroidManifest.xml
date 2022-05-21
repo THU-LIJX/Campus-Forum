@@ -19,8 +19,18 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <queries package="${applicationId}">
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE"></action>
+        </intent>
+        <intent>
+            <action android:name="android.media.action.ACTION_VIDEO_CAPTURE"></action>
+        </intent>
+    </queries>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -31,28 +41,35 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CampusForum">
         <activity
+            android:name=".SubListActivity"
+            android:exported="false" />
+        <activity
             android:name=".PostInfoActivity"
             android:exported="false" />
+
         <service
             android:name=".AudioService"
             android:enabled="true"
             android:exported="true" />
+
         <activity
             android:name=".UserActivity"
             android:exported="false" />
         <activity
             android:name=".PostEditActivity"
-            android:exported="false" >
-<!--            <intent-filter>-->
-<!--                <action android:name="android.provider.MediaStore.RECORD_SOUND" />-->
-<!--                <category android:name="android.intent.category.DEFAULT" />-->
-<!--            </intent-filter>-->
+            android:exported="false">
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.provider.MediaStore.RECORD_SOUND" /> -->
+            <!-- <category android:name="android.intent.category.DEFAULT" /> -->
+            <!-- </intent-filter> -->
         </activity>
         <activity
             android:name=".LoginAndRegisterActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -61,18 +78,7 @@
             android:exported="false" />
         <activity
             android:name=".MainPageActivity"
-            android:exported="false"></activity>
+            android:exported="false" />
     </application>
-    <queries package="${applicationId}">
-        <intent>
-            <action android:name="android.media.action.IMAGE_CAPTURE">
 
-            </action>
-        </intent>
-        <intent>
-            <action android:name="android.media.action.ACTION_VIDEO_CAPTURE">
-
-            </action>
-        </intent>
-    </queries>
 </manifest>

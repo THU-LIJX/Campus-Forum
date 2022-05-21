@@ -23,7 +23,7 @@
                 style="@style/Widget.MaterialComponents.Toolbar.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:menu="@menu/main_page_top_bar"
+                app:menu="@menu/user_top_bar"
                 app:navigationIcon="@drawable/ic_arrow_back_24px" />
         </com.google.android.material.appbar.AppBarLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
@@ -57,11 +57,10 @@
                 android:id="@+id/activity_user_func_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
                 android:layout_gravity="end"
                 android:layout_marginTop="-55dp"
                 android:layout_marginEnd="5dp"
-                />
+                android:text="" />
 
             <TextView
                 android:id="@+id/activity_user_username"
@@ -85,6 +84,7 @@
                 style="@style/TextAppearance.AppCompat.Body1"/>
 
             <TextView
+                android:id="@+id/activity_user_subscriptions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="关注信息"

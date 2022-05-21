@@ -2,6 +2,7 @@ package com.example.campusforum;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -11,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.example.campusforum.databinding.ActivityUserBinding;
@@ -73,6 +75,45 @@ public class UserActivity extends AppCompatActivity {
             }
         });
 
+        // 点击关注的人显示关注列表
+        binding.activityUserSubscriptions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(UserActivity.this, SubListActivity.class);
+                intent.putExtra("type", SubListActivity.SUB_LIST);
+                intent.putExtra("id", userId);
+                startActivity(intent);
+            }
+        });
+
+        binding.activityUserActionbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.block && userId != User.currentUser.userId) {
+                    HashMap<String, String> data = new HashMap<>();
+                    data.put("id", Integer.toString(userId));
+                    HttpUtil.sendPostRequest("/api/user/block", data, new Callback() {
+                        @Override
+                        public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        @Override
+                        public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                            try {
+                                String result = Objects.requireNonNull(response.body()).string();
+                                JSONObject jsonObject = new JSONObject(result);
+                                Log.d("block", "ok");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+                return false;
+            }
+        });
+
         // 获取用户信息并填充
         init();
     }
@@ -114,6 +155,7 @@ public class UserActivity extends AppCompatActivity {
                             binding.activityUserUsername.setText(user.username);
                             binding.activityUserUserid.setText(Integer.toString(user.userId));
                             binding.activityUserUserDescription.setText(user.description);
+                            binding.activityUserSubscriptions.setText("已关注"+ user.subscriptions.size() + "人");
                             // 如果用户没设置，使用默认头像
                             if (user.avatar.equals("")) {
                                 binding.activityUserAvatar.setImageResource(R.drawable.ranga);

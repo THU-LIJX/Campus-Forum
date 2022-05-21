@@ -15,6 +15,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -24,7 +25,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Parcel;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
@@ -133,19 +136,13 @@ public class PostBrowseFragment extends Fragment {
     private LinearLayoutManager linearLayoutManager;
 
     private int currentPage = -1;
-    private int pageSize = 5;
+    private int pageSize = 10;
     private String sortLiked = "DES";
     private String sortTime = "DES";
+    private boolean subscribed = true;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstance) {
-
-        postList = new ArrayList<>();
-        postAdapter = new PostAdapter(postList, this.getActivity());
-        linearLayoutManager = new LinearLayoutManager(view.getContext());
-        binding.fragPostBrowseRecyclerView.setAdapter(postAdapter);
-        binding.fragPostBrowseRecyclerView.setLayoutManager(linearLayoutManager);
-
         // recyclerview滑到底部时加载更多动态
         binding.fragPostBrowseRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -160,7 +157,59 @@ public class PostBrowseFragment extends Fragment {
             }
         });
 
-        // 初始化页面，获取一些动态
+        // 菜单设置
+        binding.fragmentPostBrowseTopBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.time_asc:
+                        sortTime = "ASC";
+                        break;
+                    case R.id.time_des:
+                        sortTime = "DES";
+                        break;
+                    case R.id.like_asc:
+                        sortLiked = "ASC";
+                        break;
+                    case R.id.like_des:
+                        sortLiked = "DES";
+                        break;
+                    case R.id.all:
+                        subscribed = false;
+                        break;
+                    case R.id.subscribe:
+                        subscribed = true;
+                        break;
+                }
+                init();
+                return false;
+            }
+        });
+
+        // 初始化页面
+        init();
+    }
+
+    // 是否第一次调用onResume
+    private boolean firstCall = true;
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (firstCall) {
+            firstCall = false;
+        } else {
+            init();
+        }
+    }
+
+
+    private void init() {
+        currentPage = -1;
+        postList = new ArrayList<>();
+        postAdapter = new PostAdapter(postList, this.getActivity());
+        linearLayoutManager = new LinearLayoutManager(getContext());
+        binding.fragPostBrowseRecyclerView.setAdapter(postAdapter);
+        binding.fragPostBrowseRecyclerView.setLayoutManager(linearLayoutManager);
         getPost();
     }
 
@@ -170,7 +219,10 @@ public class PostBrowseFragment extends Fragment {
         query.put("page", Integer.toString(currentPage+1));
         query.put("sort_time", sortTime);
         query.put("sort_liked", sortLiked);
-        query.put("subscribed", "true"); // 显示自己和关注的人的动态
+        // 和后端约定的接口
+        if (subscribed) {
+            query.put("subscribed", Boolean.toString(subscribed)); // 显示自己和关注的人的动态
+        }
         HttpUtil.sendGetRequest("/api/user/blogs", query, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {

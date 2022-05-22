@@ -71,6 +71,7 @@ func register(engine *gin.Engine) {
 	userGroup.GET("/blogs", controller.GetBlogs)
 	userGroup.POST("/logout", controller.Logout)
 	userGroup.POST("/validation", controller.SendValidationEmail)
+	userGroup.GET("/notices", controller.GetNotices)
 
 	verifiedGroup := userGroup.Group("")
 	verifiedGroup.Use(Verified())
@@ -85,6 +86,7 @@ func register(engine *gin.Engine) {
 	rootGroup.POST("/register", controller.Register)
 	rootGroup.POST("/login", controller.Login)
 	rootGroup.GET("/comment/:id", controller.GetComment)
+	rootGroup.GET("blog/:id", controller.GetSingleBlog)
 	//Post之类相关的可以设置verify登陆状态的中间件
 
 	rootGroup.GET("/verify/:token", controller.VerifyUser)

@@ -114,6 +114,12 @@ public class PostEditActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+       
+
+        binding = ActivityPostEditBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         Intent intent=getIntent();
         draftPath= Environment.getExternalStorageDirectory()+"/Campus/";
         if(intent!=null){
@@ -150,12 +156,6 @@ public class PostEditActivity extends AppCompatActivity {
                 }
             }
         }
-
-       
-
-        binding = ActivityPostEditBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
         binding.postText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {

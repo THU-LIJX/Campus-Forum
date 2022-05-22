@@ -342,3 +342,21 @@ func VerifyUser(c *gin.Context) {
 	})
 
 }
+func GetNotices(c *gin.Context) {
+	userI, _ := c.Get("user")
+	user := userI.(*model.User)
+	statistics, notices, err := user.GetNotices()
+	if err != nil {
+		c.JSON(500, gin.H{
+			"message": err,
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"like":    statistics[model.LIKE],
+		"comment": statistics[model.COMMENT],
+		"post":    statistics[model.POST],
+		"notices": notices,
+		"message": "ok",
+	})
+}

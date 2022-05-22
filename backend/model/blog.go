@@ -61,6 +61,7 @@ func AddBlog(blog *Blog) (err error) {
 func GetBlog(id int) (blog *Blog, err error) {
 	blog = new(Blog)
 	err = blogs.FindOne(context.Background(), bson.D{{"id", id}}).Decode(blog)
+	FillBlogs([]*Blog{blog})
 	return blog, err
 }
 func (user *User) ViewBlogs(flags uint16, pagesize, page int64, userId int) (res []*Blog, err error) {

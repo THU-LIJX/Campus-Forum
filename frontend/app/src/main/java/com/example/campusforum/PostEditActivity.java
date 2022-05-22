@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -38,6 +39,7 @@ import com.example.campusforum.mediaselector.FullyGridLayoutManager;
 import com.example.campusforum.mediaselector.GlideEngine;
 import com.example.campusforum.mediaselector.GridImageAdapter;
 import com.example.campusforum.mediaselector.RecordDialogFragment;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.luck.picture.lib.basic.PictureSelectionModel;
 import com.luck.picture.lib.basic.PictureSelector;
 import com.luck.picture.lib.config.PictureMimeType;
@@ -74,7 +76,9 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -111,115 +115,31 @@ public class PostEditActivity extends AppCompatActivity {
     private String draftPath;
 
     private String draftFileName;
+
+    private SimpleDateFormat simpleDateFormat;
+
+    private FragmentManager fragmentManager;
+
+    private RecordDialogFragment dialog;//录音的组件
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
+        simpleDateFormat=new SimpleDateFormat();
+        simpleDateFormat.applyPattern("yyyy-MM-dd HH:mm:ss");
        
 
         binding = ActivityPostEditBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        Intent intent=getIntent();
-        draftPath= Environment.getExternalStorageDirectory()+"/Campus/";
-        if(intent!=null){
-            String draftStr=intent.getStringExtra("draft");
-            if(draftStr!=null){
-                try {
-                    recoverContent(draftStr);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                Log.d(TAG, "onCreate: "+draftStr);
-            }else{
-                // 草稿箱存储
-                if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.MANAGE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED){
-                    ActivityCompat.requestPermissions(getContext(),new String[]{Manifest.permission.MANAGE_EXTERNAL_STORAGE},1);
-                }
 
-                File file=new File(draftPath);
-                if(!file.exists()){
-                    file.mkdir();
-                    Log.d(TAG, "onCreate: 创建草稿箱目录");
-                }
-                draftFileName="draft_"+(System.currentTimeMillis())+".json";
-                file=new File(draftPath+draftFileName);
-                if(!file.exists()){
-                    try {
-                        file.createNewFile();
-                        Log.d(TAG, "onCreate: 创建新文件用于草稿");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-        }
-        binding.postText.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                Log.d(TAG, "onKey: ");
-                try {
-                    saveContent();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return false;
-            }
-        });
         //TODO: 添加对saveInstanceState的处理，从草稿箱跳入可以直接用
         // 配置录音相关
-        FragmentManager fragmentManager=getSupportFragmentManager();
-        RecordDialogFragment dialog=RecordDialogFragment.newInstance();
+        fragmentManager=getSupportFragmentManager();
+        dialog=RecordDialogFragment.newInstance();
         //binding.postEditTopBar.set
         binding.recordFloatingBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(selectImage){
-                    // 获取录音和写入文件的权限
-                    if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.RECORD_AUDIO)
-                            != PackageManager.PERMISSION_GRANTED){
-                        Log.d(TAG, "onClick: 无录音权限");
-                        ActivityCompat.requestPermissions(getContext(),new String[]{Manifest.permission.RECORD_AUDIO},1);
-                    }
-                    if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.MANAGE_EXTERNAL_STORAGE)
-                            != PackageManager.PERMISSION_GRANTED){
-                        Log.d(TAG, "onClick: 无文件权限");
-                        ActivityCompat.requestPermissions(getContext(),new String[]{Manifest.permission.MANAGE_EXTERNAL_STORAGE},1);
-                    }
-
-                    // 创建录音用的fragment
-
-                    fragmentManager.beginTransaction().add(R.id.recorder_container,dialog).commit();
-                    fragmentManager.setFragmentResultListener("record", getContext(),
-                            new FragmentResultListener() {
-                                @Override
-                                public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-                                    //获取录音结果的路径
-                                    String path=result.getString("path");
-                                    Log.d(TAG, "onFragmentResult: "+path);
-                                    //audioUri=result.getParcelable("uri");
-                                    // 可以获取录音的结果或者选择文件的结果，把结果放在audioPath中去
-                                    audioPath=path;
-                                }
-                            });
-                    // 关闭与图片相关的显示
-                    binding.imgRecycler.setEnabled(false);
-                    binding.imgRecycler.setVisibility(View.INVISIBLE);
-                    selectImage=false;
-                    //binding.recordFloatingBar.setBackgroundResource(R.drawable.ic_image_48px);
-                    binding.recordFloatingBar.setImageResource(R.drawable.ic_image_48px);
-                }else{
-                    //切回显示图片的选择
-                    fragmentManager.beginTransaction().remove(dialog).commit();
-                    binding.imgRecycler.setEnabled(true);
-                    binding.imgRecycler.setVisibility(View.VISIBLE);
-                    selectImage=true;
-                    binding.recordFloatingBar.setImageResource(R.drawable.ic_voice_48px);
-                }
+                switchSelectState();
 
             }
         });
@@ -279,6 +199,25 @@ public class PostEditActivity extends AppCompatActivity {
                     case R.id.close_edit:
                         Log.d(TAG, "onMenuItemClick: close");
                         //弹出是否保存到草稿
+                        MaterialAlertDialogBuilder builder=new MaterialAlertDialogBuilder(getContext());
+                        builder.setTitle("退出确认")
+                                .setMessage("是否保存到草稿箱？")
+                                .setPositiveButton(R.string.confirm_save, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        finish();
+                                    }
+                                })
+                                .setNegativeButton(R.string.confirm_cancel, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    File file=new File(draftPath+draftFileName);
+                                    file.delete();
+                                    finish();
+                                }
+                        }).show();
+
+
 
                         return true;
                     default:
@@ -286,7 +225,59 @@ public class PostEditActivity extends AppCompatActivity {
                 }
             }
         });
-        ArrayList<LocalMedia>l=new ArrayList<>();
+
+        //从草稿箱中恢复
+        Intent intent=getIntent();
+        draftPath= Environment.getExternalStorageDirectory()+"/Campus/";
+        if(intent!=null){
+            String draftStr=intent.getStringExtra("draft");
+            if(draftStr!=null){
+                try {
+                    recoverContent(draftStr);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Log.d(TAG, "onCreate: "+draftStr);
+            }else{
+                // 草稿箱存储
+                if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.MANAGE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(getContext(),new String[]{Manifest.permission.MANAGE_EXTERNAL_STORAGE},1);
+                }
+
+                File file=new File(draftPath);
+                if(!file.exists()){
+                    file.mkdir();
+                    Log.d(TAG, "onCreate: 创建草稿箱目录");
+                }
+                draftFileName="draft_"+(System.currentTimeMillis())+".json";
+                file=new File(draftPath+draftFileName);
+                if(!file.exists()){
+                    try {
+                        file.createNewFile();
+                        Log.d(TAG, "onCreate: 创建新文件用于草稿");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        }
+        binding.postText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                Log.d(TAG, "onKey: ");
+                try {
+                    saveContent();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return false;
+            }
+        });
+        //ArrayList<LocalMedia>l=new ArrayList<>();
 
         //OK!可以从网络获取图片
         //l.add(LocalMedia.generateLocalMedia("http://qiuyuhan.xyz:8080/static/src/36/0.jpg","image/jpg"));
@@ -298,27 +289,121 @@ public class PostEditActivity extends AppCompatActivity {
         //l.add(media);
 
         //l.add(LocalMedia.generateLocalMedia("http://qiuyuhan.xyz:8080/static/src/39/0.wav","audio/wav"));
-        analyticalSelectResults(l);
+        //analyticalSelectResults(l);
+
+    }
+
+    // 用于切换到图片选择或录音
+    private void switchSelectState(){
+        if(selectImage){
+            // 获取录音和写入文件的权限
+            if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.RECORD_AUDIO)
+                    != PackageManager.PERMISSION_GRANTED){
+                Log.d(TAG, "onClick: 无录音权限");
+                ActivityCompat.requestPermissions(getContext(),new String[]{Manifest.permission.RECORD_AUDIO},1);
+            }
+            if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.MANAGE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED){
+                Log.d(TAG, "onClick: 无文件权限");
+                ActivityCompat.requestPermissions(getContext(),new String[]{Manifest.permission.MANAGE_EXTERNAL_STORAGE},1);
+            }
+
+            // 创建录音用的fragment
+
+            fragmentManager.beginTransaction().add(R.id.recorder_container,dialog).commit();
+            fragmentManager.setFragmentResultListener("record", getContext(),
+                    new FragmentResultListener() {
+                        @Override
+                        public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                            //获取录音结果的路径
+                            String path=result.getString("path");
+                            Log.d(TAG, "onFragmentResult: "+path);
+                            //audioUri=result.getParcelable("uri");
+                            // 可以获取录音的结果或者选择文件的结果，把结果放在audioPath中去
+                            audioPath=path;
+                            try {
+                                saveContent();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+            // 关闭与图片相关的显示
+            binding.imgRecycler.setEnabled(false);
+            binding.imgRecycler.setVisibility(View.INVISIBLE);
+            selectImage=false;
+            //binding.recordFloatingBar.setBackgroundResource(R.drawable.ic_image_48px);
+            binding.recordFloatingBar.setImageResource(R.drawable.ic_image_48px);
+        }else{
+            //切回显示图片的选择
+            fragmentManager.beginTransaction().remove(dialog).commit();
+            binding.imgRecycler.setEnabled(true);
+            binding.imgRecycler.setVisibility(View.VISIBLE);
+            selectImage=true;
+            binding.recordFloatingBar.setImageResource(R.drawable.ic_voice_48px);
+        }
     }
     private void recoverContent(String jsonStr) throws JSONException {
         JSONObject obj=new JSONObject(jsonStr);
         binding.postText.setText(obj.getString("text"));
         draftFileName=obj.getString("draftFileName");
+        selectImage=!obj.getBoolean("selectImage");//要取反才对
+        Log.d(TAG, "recoverContent: selectImage"+selectImage);
+        switchSelectState();
+        JSONArray srcs=obj.getJSONArray("src");
+        String t=obj.getString("type");
+        if(t.equals("audio")){
+            JSONObject o= (JSONObject) srcs.get(0);
+            audioPath=o.getString("path");
+        }else if (t.equals("image")||t.equals("video")){
+            ArrayList<LocalMedia>l=new ArrayList<>();
+            for(int i=0;i<srcs.length();i++){
+
+                JSONObject o= (JSONObject) srcs.get(0);
+                LocalMedia media=buildLocalMedia(o.getString("path"));
+                l.add(media);
+            }
+            analyticalSelectResults(l);
+        }
+
         Log.d(TAG, "recoverContent: "+draftFileName);
     }
     private void saveContent() throws JSONException, IOException {
         JSONObject obj=new JSONObject();
         obj.put("text",binding.postText.getText().toString());
         JSONArray srcs=new JSONArray();
-        for(LocalMedia media:mAdapter.getData()){
+        if(selectImage){
+            for(LocalMedia media:mAdapter.getData()){
 
+                JSONObject mediaObj=new JSONObject();
+                mediaObj.put("path",media.getPath());
+                srcs.put(mediaObj);
+            }
+        }else{
             JSONObject mediaObj=new JSONObject();
-            mediaObj.put("path",media.getPath());
+            mediaObj.put("path",audioPath);
             srcs.put(mediaObj);
         }
+        if(srcs.length()==0){
+            obj.put("type","text");
+        }else if(selectImage){
+            String fileType=mAdapter.getData().get(0).getMimeType().split("/")[0];
+            //Log.d(TAG,"fileType:"+fileType);
+            obj.put("type",fileType);
+        }else{
+            obj.put("type","audio");
+        }
+
         obj.put("src",srcs);
         obj.put("selectImage",selectImage);
+
         obj.put("draftFileName",draftFileName);
+        Date date=new Date();
+
+        obj.put("time",simpleDateFormat.format(date));
+        Log.d(TAG, "saveContent: "+obj);
         File file=new File(draftPath+draftFileName);
         FileOutputStream fileOutputStream=new FileOutputStream(file);
         OutputStreamWriter outputStreamWriter=new OutputStreamWriter(fileOutputStream,"utf-8");
@@ -370,8 +455,16 @@ public class PostEditActivity extends AppCompatActivity {
 
                 mAdapter.getData().addAll(result);
                 mAdapter.notifyItemRangeInserted(0, result.size());
+                try {
+                    saveContent();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
+
     }
     private ActivityResultLauncher<Intent> createActivityResultLauncher() {
         return registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),

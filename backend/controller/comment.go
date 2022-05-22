@@ -64,10 +64,20 @@ func Comment(c *gin.Context) {
 		})
 		return
 	}
-
+	blog, err = model.GetBlog(blogID)
+	blog.CommentList = make([]*model.Comment, 0)
+	for _, cid := range blog.Comment {
+		comment, err := model.GetComment(cid)
+		if err != nil {
+			//TODO 目前直接没管
+			continue
+		}
+		blog.CommentList = append(blog.CommentList, comment)
+	}
 	c.JSON(200, gin.H{
-		"message": "ok",
-		"time":    now,
+		"message":  "ok",
+		"time":     now,
+		"comments": blog.CommentList,
 	})
 }
 
@@ -77,6 +87,7 @@ func DeleteComment(c *gin.Context) {
 	idstr := c.PostForm("id")
 	id, _ := strconv.Atoi(idstr)
 	comment, err := model.GetComment(id)
+	blogID := comment.Blog
 	if err != nil {
 		c.JSON(400, gin.H{
 			"message": err.Error(),
@@ -90,8 +101,19 @@ func DeleteComment(c *gin.Context) {
 		})
 		return
 	}
+	blog, err := model.GetBlog(blogID)
+	blog.CommentList = make([]*model.Comment, 0)
+	for _, cid := range blog.Comment {
+		comment, err := model.GetComment(cid)
+		if err != nil {
+			//TODO 目前直接没管
+			continue
+		}
+		blog.CommentList = append(blog.CommentList, comment)
+	}
 	c.JSON(200, gin.H{
-		"message": "ok",
+		"message":  "ok",
+		"comments": blog.CommentList,
 	})
 
 }

@@ -18,6 +18,7 @@ var usersCounter *Counter
 var blogsCounter *Counter
 var commentsCounter *Counter
 var draftsCounter *Counter
+var noticesCounter *Counter
 
 func initCounter() {
 	counters = store.GetMongo().Database("test").Collection("counters")
@@ -25,6 +26,7 @@ func initCounter() {
 	blogsCounter, _ = getCounter("blogs")
 	commentsCounter, _ = getCounter("comments")
 	draftsCounter, _ = getCounter("drafts")
+	noticesCounter, _ = getCounter("notices")
 }
 
 func GetDraftsCounter() *Counter {
@@ -45,6 +47,7 @@ func (c *Counter) Commit() (err error) {
 	err = setCounter(c)
 	return err
 }
+
 func getCounter(id string) (counter *Counter, err error) {
 	counter = new(Counter)
 	err = counters.FindOne(context.TODO(), bson.D{{"id", id}}).Decode(&counter)

@@ -17,19 +17,21 @@ import (
 )
 
 type User struct {
-	Id            int    `json:"id" bson:"id"`
-	Name          string `json:"name" bson:"name"`
-	Email         string `json:"email" bson:"email"`
-	Password      string `bson:"password" json:"-"`
-	Description   string `json:"description" bson:"description"`
-	Avatar        string `json:"avatar" bson:"avatar"`
-	Verified      bool   `json:"verified" bson:"verified"`
-	Blogs         []int  `json:"blogs" bson:"blogs"`
-	Drafts        []int  `json:"drafts" json:"drafts"`
-	Subscriptions []int  `json:"subscriptions" bson:"subscriptions"`
-	BlackList     []int  `json:"blacklist" bson:"blacklist"`
-
-	Extension interface{} `json:"extension" bson:"extension"` //后期前端想展示的其他个人信息字段统一放进来
+	Id            int         `json:"id" bson:"id"`
+	Name          string      `json:"name" bson:"name"`
+	Email         string      `json:"email" bson:"email"`
+	Password      string      `bson:"password" json:"-"`
+	Description   string      `json:"description" bson:"description"`
+	Avatar        string      `json:"avatar" bson:"avatar"`
+	Verified      bool        `json:"verified" bson:"verified"`
+	Blogs         []int       `json:"blogs" bson:"blogs"`
+	Drafts        []int       `json:"drafts" json:"drafts"`
+	Subscriptions []int       `json:"subscriptions" bson:"subscriptions"`
+	BlackList     []int       `json:"blacklist" bson:"blacklist"`
+	Notices       []int       `json:"notices" bson:"notices"`
+	Subscribed    []int       `json:"subscribed" bson:"subscribed"`
+	Extension     interface{} `json:"extension" bson:"extension"` //后期前端想展示的其他个人信息字段统一放进来
+	LastNoticed   time.Time   `bson:"last_noticed" json:"last_noticed"`
 }
 
 var users *mongo.Collection
@@ -47,6 +49,18 @@ func AddUser(user *User) (err error) {
 func QueryUser(id int) (user *User, err error) {
 	user = new(User)
 	err = users.FindOne(context.Background(), bson.D{{"id", id}}).Decode(user)
+	if user.Blogs == nil {
+		user.Blogs = make([]int, 0)
+	}
+	if user.Subscriptions == nil {
+		user.Subscriptions = make([]int, 0)
+	}
+	if user.Drafts == nil {
+		user.Drafts = make([]int, 0)
+	}
+	if user.BlackList == nil {
+		user.BlackList = make([]int, 0)
+	}
 	return user, err
 }
 func ExistsUser(filter interface{}) bool {
@@ -96,35 +110,61 @@ func (user *User) Commit() (err error) {
 }
 
 func (user *User) Subscribe(id int) (err error) {
-	if user.Subscriptions == nil {
-		user.Subscriptions = make([]int, 0)
+	_, err = users.UpdateOne(context.Background(), bson.D{{"id", user.Id}}, bson.D{
+		{"$addToSet", bson.M{"subscriptions": id}},
+	})
+	if err != nil {
+		return err
 	}
-	if utils.FindInArray(user.Subscriptions, id) == -1 {
-		user.Subscriptions = append(user.Subscriptions, id)
-		err := user.Commit()
-		log.Println(user)
-		if err != nil {
-			return err
-		}
+	_, err = users.UpdateOne(context.Background(), bson.D{{"id", id}}, bson.D{
+		{"$addToSet", bson.M{"subscribed": user.Id}},
+	})
+	if err != nil {
+		return err
 	}
+	user.Fetch()
+	//if user.Subscriptions == nil {
+	//	user.Subscriptions = make([]int, 0)
+	//}
+	//if utils.FindInArray(user.Subscriptions, id) == -1 {
+	//	user.Subscriptions = append(user.Subscriptions, id)
+	//	err := user.Commit()
+	//	log.Println(user)
+	//	if err != nil {
+	//		return err
+	//	}
+	//}
 	return nil
 }
 
 func (user *User) Unsubscribe(id int) (err error) {
-	if user.Subscriptions == nil {
-		user.Subscriptions = make([]int, 0)
+	_, err = users.UpdateOne(context.Background(), bson.D{{"id", user.Id}}, bson.D{
+		{"$pull", bson.M{"subscriptions": id}},
+	})
+	if err != nil {
+		return err
 	}
-	if p := utils.FindInArray(user.Subscriptions, id); p != -1 {
-		l := len(user.Subscriptions)
-
-		user.Subscriptions[p] = user.Subscriptions[l-1]
-		user.Subscriptions = user.Subscriptions[:l-1]
-		err := user.Commit()
-		log.Println(user)
-		if err != nil {
-			return err
-		}
+	_, err = users.UpdateOne(context.Background(), bson.D{{"id", id}}, bson.D{
+		{"$pull", bson.M{"subscribed": user.Id}},
+	})
+	if err != nil {
+		return err
 	}
+	user.Fetch()
+	//if user.Subscriptions == nil {
+	//	user.Subscriptions = make([]int, 0)
+	//}
+	//if p := utils.FindInArray(user.Subscriptions, id); p != -1 {
+	//	l := len(user.Subscriptions)
+	//
+	//	user.Subscriptions[p] = user.Subscriptions[l-1]
+	//	user.Subscriptions = user.Subscriptions[:l-1]
+	//	err := user.Commit()
+	//	log.Println(user)
+	//	if err != nil {
+	//		return err
+	//	}
+	//}
 	return nil
 }
 
@@ -145,13 +185,21 @@ func (user *User) Block(id int) (err error) {
 
 func (user *User) Post(blog *Blog) (err error) {
 	//单纯存储
+	err = user.Fetch()
+	if err != nil {
+		return err
+	}
 	err = AddBlog(blog)
 	if err != nil {
 		return
 	}
 	user.Blogs = append(user.Blogs, blog.Id)
 	err = user.Commit()
-	return
+	if err != nil {
+		return err
+	}
+
+	return SendNotice(user.Subscribed, user.Id, blog.Id, POST)
 }
 
 //TODO: 点赞，评论
@@ -168,8 +216,9 @@ func (user *User) Comment(blog *Blog, comment *Comment) (err error) {
 	if err != nil {
 		return err
 	}
-	//TODO: 应该对评论序号进行回滚，但是因为我们项目太小所以无所谓
-	return
+	// Notice
+
+	return SendNotice([]int{blog.User}, user.Id, blog.Id, COMMENT)
 }
 func (user *User) DeleteComment(comment *Comment) (err error) {
 
@@ -200,7 +249,12 @@ func (user *User) Like(blog *Blog) (err error, likedby []int) {
 	likedby = blog.LikedBy
 	blog.Liked = len(blog.LikedBy)
 	_, err = blogs.UpdateOne(context.Background(), bson.D{{"id", blog.Id}}, bson.D{{"$set", bson.M{"liked": blog.Liked}}})
-	return
+	if err != nil {
+		return err, nil
+	}
+	// Notice
+	err = SendNotice([]int{blog.User}, user.Id, blog.Id, LIKE)
+	return err, likedby
 }
 func (user *User) Dislike(blog *Blog) (err error, likedby []int) {
 	_, err = blogs.UpdateOne(context.Background(), bson.D{{"id", blog.Id}}, bson.D{{"$pull", bson.M{"likedby": user.Id}}})
@@ -239,5 +293,12 @@ func (user *User) SendValidationEmail() (err error) {
 	e.Subject = "验证用户身份"
 	e.Text = []byte("http://" + config.Domain() + ":8080/api/verify/" + token) //TODO 这里硬编码了端口
 	err = e.Send("smtp.qq.com:25", smtp.PlainAuth("", "1403292286@qq.com", "kpcimoxvgthdgifc", "smtp.qq.com"))
+	return err
+}
+
+func AddNoticeToUser(noticeId, userId int) error {
+	_, err := users.UpdateOne(context.Background(), bson.D{{"id", userId}}, bson.D{
+		{"$push", bson.M{"notices": noticeId}},
+	})
 	return err
 }

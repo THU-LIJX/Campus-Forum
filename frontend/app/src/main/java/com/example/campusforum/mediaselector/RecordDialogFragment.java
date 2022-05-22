@@ -49,6 +49,7 @@ public class RecordDialogFragment extends DialogFragment {
     boolean recording =true;
     private String mFileName = null;
     private String mFilePath = null;
+    int maxRecordingSeconds=20;
     Uri fileUri;
     FileDescriptor fd;
     ParcelFileDescriptor pfd;
@@ -108,8 +109,11 @@ public class RecordDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
 
-                onRecord(recording);
-                recording =!recording;
+                try {
+                    startRecording();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
         });
         binding.stopRecordButton.setOnClickListener(new View.OnClickListener() {
@@ -118,25 +122,15 @@ public class RecordDialogFragment extends DialogFragment {
                 stopRecording();
             }
         });
-        binding.openFileBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(Intent.ACTION_GET_CONTENT);
-                //intent.addCategory(Intent.CATEGORY_APP_GALLERY);
-
-                intent.setType("audio/*");
-                //intent.putExtra(Intent.EXTRA_TITLE,"新文件"+mFileName);
-                selectFileResultLauncher.launch(intent);
-            }
-        });
         chronometer= binding.chronometer;
+        chronometer.setText("0s");
         activityResultLauncher=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
                     public void onActivityResult(ActivityResult result) {
                         if(result.getResultCode()== Activity.RESULT_OK&&result.getData()!=null){
                             fileUri=result.getData().getData();
-                            binding.recordFilepath.setText(getFilename(fileUri));
+                            //binding.recordFilepath.setText(getFilename(fileUri));
                             //mFilePath=uri.getPath()
                             try {
                                 pfd=getActivity().getContentResolver().openFileDescriptor(fileUri, "wr");
@@ -154,27 +148,26 @@ public class RecordDialogFragment extends DialogFragment {
                         }
                     }
                 });
-        selectFileResultLauncher=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        if(result.getResultCode()==Activity.RESULT_OK&&result.getData()!=null){
-                            Bundle res=new Bundle();
-                            //InputStreamReader()
-                            fileUri=result.getData().getData();
-                            binding.recordFilepath.setText(getFilename(fileUri));
-                            res.putParcelable("uri",fileUri);
-                            getParentFragmentManager().setFragmentResult("record",res);
-                        }
-                    }
-                });
+//        selectFileResultLauncher=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+//                new ActivityResultCallback<ActivityResult>() {
+//                    @Override
+//                    public void onActivityResult(ActivityResult result) {
+//                        if(result.getResultCode()==Activity.RESULT_OK&&result.getData()!=null){
+//                            Bundle res=new Bundle();
+//                            //InputStreamReader()
+//                            fileUri=result.getData().getData();
+//                            binding.recordFilepath.setText(getFilename(fileUri));
+//                            res.putParcelable("uri",fileUri);
+//                            getParentFragmentManager().setFragmentResult("record",res);
+//                        }
+//                    }
+//                });
         super.onViewCreated(view, savedInstanceState);
     }
 
     private void onRecord(boolean start){
         //Intent intent=new Intent(getActivity(),RecordingService.class);
         if(start){
-            //录制 TODO 改变按钮
 
             Log.d(TAG, "onRecord: Start");
             if(ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.RECORD_AUDIO)
@@ -194,7 +187,7 @@ public class RecordDialogFragment extends DialogFragment {
     }
 
     public void startRecording() throws FileNotFoundException {
-
+        setFileNameAndPath();
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
@@ -209,7 +202,8 @@ public class RecordDialogFragment extends DialogFragment {
                 return;
             }
         }
-        mRecorder.setOutputFile(fd);
+        mRecorder.setOutputFile(f);
+        mRecorder.setMaxDuration(1000*200);//单位是毫秒
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mRecorder.setAudioChannels(1);
         mRecorder.setAudioSamplingRate(44100);
@@ -222,6 +216,21 @@ public class RecordDialogFragment extends DialogFragment {
 
             chronometer.setBase(SystemClock.elapsedRealtime());
             chronometer.start();
+            chronometer.setFormat("");
+            chronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+                long value=0;
+                @Override
+                public void onChronometerTick(Chronometer chronometer) {
+                    value++;
+                    if(value==maxRecordingSeconds){
+                        chronometer.stop();
+                        stopRecording();
+                    }
+                    chronometer.setText(String.format("%ds", value));
+                    binding.recordProgress.setProgress((int) ((float)value/maxRecordingSeconds*100),true);
+                    //Log.d(TAG, "onChronometerTick: "+chronometer.getText()+" format:"+chronometer.getFormat());
+                }
+            });
             binding.startRecordBtn.setVisibility(View.INVISIBLE);
             binding.stopRecordButton.setVisibility(View.VISIBLE);
         } catch (IOException e) {
@@ -243,12 +252,12 @@ public class RecordDialogFragment extends DialogFragment {
             mFilePath = Environment.getExternalStorageDirectory()+"/Music/"+mFileName;
             //mFilePath=Environment.getExternalStorageDirectory()+"/DCIM/Camera/"+mFileName;
             //binding.recordFilepath.setText(mFilePath);
-            Intent intent=new Intent(Intent.ACTION_CREATE_DOCUMENT);
-            intent.addCategory(Intent.CATEGORY_DEFAULT);
-
-            intent.setType("audio/*");
-            intent.putExtra(Intent.EXTRA_TITLE,"新文件"+mFileName);
-            activityResultLauncher.launch(intent);
+//            Intent intent=new Intent(Intent.ACTION_CREATE_DOCUMENT);
+//            intent.addCategory(Intent.CATEGORY_DEFAULT);
+//
+//            intent.setType("audio/*");
+//            intent.putExtra(Intent.EXTRA_TITLE,"新文件"+mFileName);
+//            activityResultLauncher.launch(intent);
 
     }
 
@@ -259,11 +268,10 @@ public class RecordDialogFragment extends DialogFragment {
         Bundle result=new Bundle();
         //InputStreamReader()
         result.putString("path",mFilePath);
-        result.putParcelable("uri",fileUri);
+        //result.putParcelable("uri",fileUri);
         getParentFragmentManager().setFragmentResult("record",result);
         chronometer.stop();
         binding.startRecordBtn.setVisibility(View.VISIBLE);
-
         binding.stopRecordButton.setVisibility(View.INVISIBLE);
     }
 }

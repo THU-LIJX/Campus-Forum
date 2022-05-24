@@ -93,7 +93,7 @@ public class DraftFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         draftList = new ArrayList<>();
-        draftPath = Environment.getExternalStorageDirectory() + "/Campus/";
+        draftPath = Environment.getExternalStorageDirectory() + "/Documents/Campus/";
         File dir = new File(draftPath);
         if (dir.exists()) {
             File[] array = dir.listFiles();

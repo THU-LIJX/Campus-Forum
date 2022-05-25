@@ -68,6 +68,7 @@ public class PostItemView extends LinearLayoutCompat {
     private MaterialCardView audioContainer;           // 音频容器
     private TextView username;                         // 用户名
     private TextView userId;                           // 用户id
+    private TextView postId;                           // 动态id
     private TextView content;                          // 正文
     private TextView commentNum;                       // 评论数
     private TextView likeNum;                          // 点赞数
@@ -100,6 +101,7 @@ public class PostItemView extends LinearLayoutCompat {
         audioContainer = (MaterialCardView) view.findViewById(R.id.post_item_audio);
         username = (TextView) view.findViewById(R.id.post_item_user_name);
         userId = (TextView) view.findViewById(R.id.post_item_user_id);
+        postId = (TextView) view.findViewById(R.id.post_item_post_id);
         content = (TextView) view.findViewById(R.id.post_item_content);
         commentNum = (TextView) view.findViewById(R.id.post_item_comment_num);
         likeNum = (TextView) view.findViewById(R.id.post_item_like_num);
@@ -172,6 +174,7 @@ public class PostItemView extends LinearLayoutCompat {
 
         username.setText(post.username);                            // 设置用户名
         userId.setText(Integer.toString(post.userId));              // 设置用户id
+        postId.setText("动态id:" + post.postId);                      // 设置动态id
         content.setText(post.content);                              // 设置正文
         commentNum.setText(Integer.toString(post.comments.size())); // 设置评论数
         setLikeInfo(post);
@@ -196,11 +199,12 @@ public class PostItemView extends LinearLayoutCompat {
                             jsonOb = new JSONObject(result);
                             System.out.println(jsonOb.getString("message"));
                             if (jsonOb.getString("message").equals("ok")) {
+                                Log.d("fuck", "here");
                                 JSONArray jsonArray = jsonOb.getJSONArray("likedby");
                                 List<Integer> tmpList = new ArrayList<>();
                                 for (int i = 0; i < jsonArray.length(); i++) tmpList.add(jsonArray.getInt(i));
                                 post.likedBy = tmpList;
-                                System.out.println(tmpList);
+                                System.out.println("tmpList:" + tmpList);
                                 setLikeInfo(post);
                             }
                         } catch (JSONException e) {

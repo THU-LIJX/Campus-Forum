@@ -24,10 +24,10 @@
 
     <queries package="${applicationId}">
         <intent>
-            <action android:name="android.media.action.IMAGE_CAPTURE"></action>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
         </intent>
         <intent>
-            <action android:name="android.media.action.ACTION_VIDEO_CAPTURE"></action>
+            <action android:name="android.media.action.ACTION_VIDEO_CAPTURE" />
         </intent>
     </queries>
 
@@ -40,6 +40,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CampusForum">
+        <activity
+            android:name=".NotiActivity"
+            android:exported="false" />
         <activity
             android:name=".SubListActivity"
             android:exported="false" />

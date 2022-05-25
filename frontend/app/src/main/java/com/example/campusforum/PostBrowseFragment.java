@@ -162,6 +162,10 @@ public class PostBrowseFragment extends Fragment {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
+                    case R.id.notification:
+                        Intent intent = new Intent(getActivity(), NotiActivity.class);
+                        startActivity(intent);
+                        break;
                     case R.id.time_asc:
                         sortTime = "ASC";
                         break;

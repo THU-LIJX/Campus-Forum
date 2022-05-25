@@ -8,4 +8,11 @@
         android:title="通知"
         android:contentDescription="通知"
         app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/global_search"
+        android:icon="@drawable/ic_search_24px"
+        android:title="搜索"
+        android:contentDescription="搜索"
+        app:showAsAction="always" />
 </menu>

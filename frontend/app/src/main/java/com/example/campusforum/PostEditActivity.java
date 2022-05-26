@@ -556,6 +556,7 @@ public class PostEditActivity extends AppCompatActivity {
     private void recoverContent(String jsonStr) throws JSONException {
         JSONObject obj=new JSONObject(jsonStr);
         binding.postText.setText(obj.getString("text"));
+        binding.titleText.setText(obj.getString("title"));
         draftFileName=obj.getString("draftFileName");
         selectImage=!obj.getBoolean("selectImage");//要取反才对
         Log.d(TAG, "recoverContent: selectImage"+selectImage);
@@ -581,6 +582,7 @@ public class PostEditActivity extends AppCompatActivity {
     private void saveContent() throws JSONException, IOException {
         JSONObject obj=new JSONObject();
         obj.put("text",binding.postText.getText().toString());
+        obj.put("title",binding.titleText.getText().toString());
         JSONArray srcs=new JSONArray();
         if(selectImage){
             for(LocalMedia media:mAdapter.getData()){
@@ -703,6 +705,7 @@ public class PostEditActivity extends AppCompatActivity {
         HashMap<String,String>data=new HashMap<>();
         data.put("text",text);
         data.put("type","text");
+        data.put("title",binding.titleText.getText().toString());
         data.put("location",address);
         HttpUtil.sendPostRequest("/api/user/post",data, new Callback() {
             @Override
@@ -730,6 +733,7 @@ public class PostEditActivity extends AppCompatActivity {
         //String fileType=mAdapter.getData().get(0).getMimeType().split("/")[0];
         //Log.d(TAG,"fileType:"+fileType);
         builder.addFormDataPart("text",text);
+        builder.addFormDataPart("title",binding.titleText.getText().toString());
         builder.addFormDataPart("type","sound");
         builder.addFormDataPart("location",address);
         File file=new File(audioPath);
@@ -801,6 +805,7 @@ public class PostEditActivity extends AppCompatActivity {
         builder.addFormDataPart("text",text);
         builder.addFormDataPart("type",fileType);
         builder.addFormDataPart("location",address);
+        builder.addFormDataPart("title",binding.titleText.getText().toString());
         for(LocalMedia media:mAdapter.getData()){
             //Uri uri=Uri.parse(media.getAvailablePath());
             // 处理本地图片和在线图片

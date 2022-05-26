@@ -55,6 +55,7 @@ public class DraftAdapter extends RecyclerView.Adapter<DraftAdapter.DraftCardHol
             }
             holder.dateText.setText(date);
             holder.text.setText(text);
+            holder.title.setText(draftList.get(position).getString("title"));
             Log.d(TAG, "onBindViewHolder: position:"+position);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -83,6 +84,7 @@ public class DraftAdapter extends RecyclerView.Adapter<DraftAdapter.DraftCardHol
     class DraftCardHolder extends RecyclerView.ViewHolder{
         public final TextView text;
         public final TextView dateText;
+        public final TextView title;
         final DraftAdapter adapter;
         CardView cardView;
         ImageView cardIcon;
@@ -92,6 +94,7 @@ public class DraftAdapter extends RecyclerView.Adapter<DraftAdapter.DraftCardHol
             cardView=itemView.findViewById(R.id.draft_card);
             cardIcon=itemView.findViewById(R.id.draft_icon);
             dateText=itemView.findViewById(R.id.draft_date);
+            title=itemView.findViewById(R.id.draft_title);
             this.adapter=adapter;
         }
     }

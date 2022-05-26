@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../../../layout/custom_preview.xml" value="0.34739583333333335" />
         <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2775" />
         <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/drawable/ic_account_circle_24px.xml" value="0.2775" />
         <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/drawable/ic_add_48px.xml" value="0.2775" />
@@ -23,6 +24,7 @@
         <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/menu/main_page_btm_navi.xml" value="0.39947916666666666" />
         <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/menu/main_page_top_bar.xml" value="0.20989583333333334" />
         <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/menu/post_edit_top_bar.xml" value="0.39947916666666666" />
+        <entry key="app/src/main/res/drawable-v24/ic_search_24px.xml" value="0.337" />
         <entry key="app/src/main/res/drawable/ic_account_circle_24px.xml" value="0.197" />
         <entry key="app/src/main/res/drawable/ic_add_a_photo_24px.xml" value="0.174" />
         <entry key="app/src/main/res/drawable/ic_arrow_back_24px.xml" value="0.1625" />
@@ -42,6 +44,8 @@
         <entry key="app/src/main/res/layout/activity_noti.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_post_edit.xml" value="0.53125" />
         <entry key="app/src/main/res/layout/activity_post_info.xml" value="0.22" />
+
+        <entry key="app/src/main/res/layout/activity_search.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_sub_list.xml" value="0.22" />
         <entry key="app/src/main/res/layout/activity_user.xml" value="0.22" />
         <entry key="app/src/main/res/layout/activity_user_edit.xml" value="0.25" />
@@ -53,11 +57,15 @@
         <entry key="app/src/main/res/layout/fragment_user.xml" value="0.253125" />
         <entry key="app/src/main/res/layout/noti_item.xml" value="0.1824074074074074" />
         <entry key="app/src/main/res/layout/post_item.xml" value="0.22" />
-        <entry key="app/src/main/res/layout/sub_item.xml" value="0.1" />
+
+        <entry key="app/src/main/res/layout/serach_list_item.xml" value="0.18958333333333333" />
         <entry key="app/src/main/res/menu/main_page_btm_navi.xml" value="0.1" />
-        <entry key="app/src/main/res/menu/main_page_top_bar.xml" value="0.1" />
+        <entry key="app/src/main/res/menu/main_page_top_bar.xml" value="0.2786458333333333" />
+        <entry key="app/src/main/res/menu/search_filter.xml" value="0.18958333333333333" />
+        <entry key="app/src/main/res/layout/sub_item.xml" value="0.1" />
         <entry key="app/src/main/res/menu/post_edit_top_bar.xml" value="0.34270833333333334" />
         <entry key="app/src/main/res/menu/test_menu.xml" value="0.3927083333333333" />
+
         <entry key="app/src/main/res/menu/user_edit_bar.xml" value="0.1" />
         <entry key="app/src/main/res/menu/user_top_bar.xml" value="0.18" />
         <entry key="app/src/main/res/xml/network_security_config.xml" value="0.2557291666666667" />

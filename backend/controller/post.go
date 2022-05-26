@@ -87,6 +87,7 @@ func Post(c *gin.Context) {
 	userI, _ := c.Get("user")
 	user := userI.(*model.User)
 	now := time.Now()
+	title := c.PostForm("title")
 	text := c.PostForm("text")
 	loc := c.PostForm("location")
 	tp := c.PostForm("type")
@@ -143,6 +144,7 @@ func Post(c *gin.Context) {
 		Id:       counter.Value,
 		User:     user.Id,
 		Time:     now,
+		Title:    title,
 		Text:     text,
 		Liked:    0,
 		LikedBy:  []int{},

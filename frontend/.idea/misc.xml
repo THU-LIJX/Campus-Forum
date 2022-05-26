@@ -24,18 +24,26 @@
         <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/menu/main_page_btm_navi.xml" value="0.39947916666666666" />
         <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/menu/main_page_top_bar.xml" value="0.20989583333333334" />
         <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/menu/post_edit_top_bar.xml" value="0.39947916666666666" />
+        <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.236" />
         <entry key="app/src/main/res/drawable-v24/ic_search_24px.xml" value="0.337" />
         <entry key="app/src/main/res/drawable/ic_account_circle_24px.xml" value="0.197" />
         <entry key="app/src/main/res/drawable/ic_add_a_photo_24px.xml" value="0.174" />
+        <entry key="app/src/main/res/drawable/ic_add_location_48px.xml" value="0.236" />
         <entry key="app/src/main/res/drawable/ic_arrow_back_24px.xml" value="0.1625" />
         <entry key="app/src/main/res/drawable/ic_block_24px.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_chat_bubble_20px.xml" value="0.3125" />
         <entry key="app/src/main/res/drawable/ic_cottage_24px.xml" value="0.197" />
         <entry key="app/src/main/res/drawable/ic_cottage_fill_24px.xml" value="0.197" />
         <entry key="app/src/main/res/drawable/ic_delete_forbid_24px.xml" value="0.144" />
+        <entry key="app/src/main/res/drawable/ic_image_48px.xml" value="0.236" />
         <entry key="app/src/main/res/drawable/ic_info.xml" value="0.14" />
+        <entry key="app/src/main/res/drawable/ic_list_alt_24px.xml" value="0.236" />
+        <entry key="app/src/main/res/drawable/ic_manage_search_24px.xml" value="0.236" />
         <entry key="app/src/main/res/drawable/ic_noti.xml" value="0.197" />
+        <entry key="app/src/main/res/drawable/ic_person_search_24px.xml" value="0.236" />
+        <entry key="app/src/main/res/drawable/ic_search_24px.xml" value="0.236" />
         <entry key="app/src/main/res/drawable/ic_share_20px.xml" value="0.3125" />
+        <entry key="app/src/main/res/drawable/ic_share_24px.xml" value="0.236" />
         <entry key="app/src/main/res/drawable/ic_volume_up_20px.xml" value="0.3125" />
         <entry key="app/src/main/res/drawable/mail-48px.xml" value="0.2525" />
         <entry key="app/src/main/res/layout/activity_login_and_register.xml" value="0.22" />
@@ -55,7 +63,7 @@
         <entry key="app/src/main/res/layout/fragment_register.xml" value="0.2484375" />
         <entry key="app/src/main/res/layout/fragment_user.xml" value="0.253125" />
         <entry key="app/src/main/res/layout/noti_item.xml" value="0.1824074074074074" />
-        <entry key="app/src/main/res/layout/post_item.xml" value="0.24916534423828127" />
+        <entry key="app/src/main/res/layout/post_item.xml" value="0.22" />
         <entry key="app/src/main/res/layout/serach_list_item.xml" value="0.18958333333333333" />
         <entry key="app/src/main/res/layout/sub_item.xml" value="0.1" />
         <entry key="app/src/main/res/menu/main_page_btm_navi.xml" value="0.1" />

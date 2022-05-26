@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"strings"
 	"time"
 )
 
@@ -30,6 +31,7 @@ type Blog struct {
 	Id          int        `json:"id" bson:"id"`
 	User        int        `json:"user" bson:"user"`
 	Time        time.Time  `json:"time" bson:"time"`
+	Title       string     `json:"title" bson:"title"`
 	Text        string     `json:"text" bson:"text"`
 	Type        int        `json:"type" bson:"type"`
 	Sources     []string   `json:"src" bson:"src"`         //资源列表
@@ -43,6 +45,7 @@ type Blog struct {
 }
 
 type BlogFilter struct {
+	Title    string `bson:"title"`
 	Content  string `bson:"content"`
 	UserName string `bson:"user_name"`
 	Type     string `bson:"type"`
@@ -144,10 +147,20 @@ func (user *User) SearchBlogs(blogFilter *BlogFilter) (res []*Blog, err error) {
 			},
 			},
 		}
+
+	makePattern := func(str string) string {
+		chars := strings.Split(str, "")
+		return ".*" + strings.Join(chars, ".*") + ".*"
+	}
 	if blogFilter.Content != "" {
 		fmt.Println("Filter Content" + blogFilter.Content)
 		filter["text"] = bson.M{
-			"$regex": primitive.Regex{Pattern: ".*" + blogFilter.Content + ".*", Options: "si"}, // i 忽略大小写，s为单行模式，换行也会匹配
+			"$regex": primitive.Regex{Pattern: makePattern(blogFilter.Content), Options: "si"}, // i 忽略大小写，s为单行模式，换行也会匹配
+		}
+	}
+	if blogFilter.Title != "" {
+		filter["title"] = bson.M{
+			"$regex": primitive.Regex{Pattern: makePattern(blogFilter.Title), Options: "si"}, // i 忽略大小写，s为单行模式，换行也会匹配
 		}
 	}
 	if blogFilter.Type != "" {
@@ -162,6 +175,7 @@ func (user *User) SearchBlogs(blogFilter *BlogFilter) (res []*Blog, err error) {
 			filter["type"] = VIDEO
 		}
 	}
+
 	if blogFilter.UserName != "" {
 		userFilter := bson.M{
 			"name": bson.M{

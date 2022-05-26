@@ -36,30 +36,12 @@ import okhttp3.Response;
 public class MainPageActivity extends AppCompatActivity {
     private static final String TAG = "FUCK";
     ActivityMainPageBinding binding;
-    MaterialToolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainPageBinding.inflate(getLayoutInflater());
-        toolbar = binding.mainPageTopBar;
         setContentView(binding.getRoot());
-
-        // 设置top bar onclick 属性
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.global_search:
-                        search();
-                        return true;
-                    case R.id.notification:
-                        return true;
-                    default:
-                        return onOptionsItemSelected(item);
-                }
-            }
-        });
 
         // 获取NavController
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.main_page_nav_host);
@@ -109,25 +91,6 @@ public class MainPageActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         getMenuInflater().inflate(R.menu.main_page_top_bar, menu);
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.global_search:
-                search();
-                return true;
-            case R.id.notification:
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    public void search() {
-        Intent intent = new Intent(MainPageActivity.this, SearchActivity.class);
-        startActivity(intent);
     }
 
 }

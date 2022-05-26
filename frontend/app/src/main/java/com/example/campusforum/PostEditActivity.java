@@ -42,18 +42,13 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.campusforum.databinding.ActivityPostEditBinding;
 import com.example.campusforum.mediaselector.FullyGridLayoutManager;
 import com.example.campusforum.mediaselector.GlideEngine;
 import com.example.campusforum.mediaselector.GridImageAdapter;
 import com.example.campusforum.mediaselector.RecordDialogFragment;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.luck.picture.lib.basic.PictureSelectionModel;
 import com.luck.picture.lib.basic.PictureSelector;
@@ -139,8 +134,6 @@ public class PostEditActivity extends AppCompatActivity {
 
     private RecordDialogFragment dialog;//录音的组件
 
-    private FusedLocationProviderClient fusedLocationProviderClient;
-
     private LocationManager locationManager;
 
     private String address="";
@@ -167,6 +160,27 @@ public class PostEditActivity extends AppCompatActivity {
         }
         return add;
     }
+
+    /**
+     * 根据LocationManager获取定位信息的提供者
+     * @param locationManager
+     * @return
+     */
+    private static String getProvider(LocationManager locationManager){
+
+        //获取位置信息提供者列表
+        List<String> providerList = locationManager.getProviders(true);
+
+        if (providerList.contains(LocationManager.NETWORK_PROVIDER)){
+            //获取NETWORK定位
+            return LocationManager.NETWORK_PROVIDER;
+        }else if (providerList.contains(LocationManager.GPS_PROVIDER)){
+            //获取GPS定位
+            return LocationManager.GPS_PROVIDER;
+        }
+        return null;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -180,7 +194,6 @@ public class PostEditActivity extends AppCompatActivity {
         // 配置获取位置相关信息
         locationManager=(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);;
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         binding.getLocationBtn.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.R)
             @Override
@@ -277,17 +290,44 @@ public class PostEditActivity extends AppCompatActivity {
 //                                }
 //                            }
 //                        });
-                locationManager.getCurrentLocation(LocationManager.GPS_PROVIDER, null,
-                        getApplication().getMainExecutor(), new Consumer<Location>() {
-                            @Override
-                            public void accept(Location location) {
-                                Log.d(TAG, "accept: Get location"+location);
-                                address=getLocationAddress(location);
-                                Log.d(TAG,"Get Address:"+address);
-                                binding.getLocationBtn.setText(address);
+                try {
+                    /*获取LocationManager对象*/
+                    Context context = getContext();
+                    LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+                    String provider = getProvider(locationManager);
+                    if (provider == null) {
+                        Toast.makeText(context, "定位失败", Toast.LENGTH_SHORT).show();
+                    }
+                    //系统权限检查警告，需要做权限判断
+                    if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        // TODO: Consider calling ActivityCompat#requestPermissions
+                    }
+                    Location location = locationManager.getLastKnownLocation(provider);
+                    Log.d("location", location.getLongitude() + ":" + location.getLatitude());
+                    Geocoder gc = new Geocoder(getContext(), Locale.CHINESE);
+                    List<Address> locationList = null;
+                    try {
+                        locationList = gc.getFromLocation(location.getLatitude(), location.getLongitude(), 10);
+                        address = locationList.get(0).getAddressLine(0);
+                        binding.getLocationBtn.setText(address);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    locationManager.getCurrentLocation(LocationManager.GPS_PROVIDER, null,
+                            getApplication().getMainExecutor(), new Consumer<Location>() {
+                                @Override
+                                public void accept(Location location) {
+                                    Log.d(TAG, "accept: Get location"+location);
+                                    address=getLocationAddress(location);
+                                    Log.d(TAG,"Get Address:"+address);
+                                    binding.getLocationBtn.setText(address);
+                                }
+                            });
+                }
 
-                            }
-                        });
+
             }
         });
 

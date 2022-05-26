@@ -10,6 +10,12 @@
         app:showAsAction="always"/>
 
     <item
+        android:id="@+id/global_search"
+        android:icon="@drawable/ic_search_24px"
+        android:title="搜索"
+        android:contentDescription="搜索"
+        app:showAsAction="always" />
+  <item
         android:id="@+id/time_asc"
         android:title="按时间顺序"
         android:contentDescription="按时间顺序"

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SearchActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <!-- TODO: Update blank fragment layout -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/search_filter"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请选择筛选动态类型"
+            app:startIconDrawable="@drawable/ic_arrow_back_24px"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <AutoCompleteTextView
+                android:id="@+id/search_select"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+<!--        <Button-->
+<!--            android:id="@+id/search_filter"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="筛选"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent"/>-->
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/search_user_name_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入要查询的用户名"
+            android:textSize="16sp"
+            android:layout_marginTop="10dp"
+            app:startIconDrawable="@drawable/ic_account_circle_24px"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/search_filter">
+
+            <EditText
+                android:id="@+id/search_user_name"
+                android:text="nimasile"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+<!--            <com.google.android.material.textfield.TextInputEditText-->
+<!--                android:id="@+id/search_user_name"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content">-->
+<!--            </com.google.android.material.textfield.TextInputEditText>-->
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/search_view"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:hint="请输入关键词"
+            android:textSize="16sp"
+            android:layout_marginTop="10dp"
+            android:background="@color/gray_50"
+            app:startIconDrawable="@drawable/ic_account_circle_24px"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/search_user_name_2">
+            <com.google.android.material.textfield.TextInputEditText
+                android:text="nimasile"
+                android:id="@+id/search_key_word"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="搜索"
+            app:layout_constraintTop_toTopOf="@+id/search_view"
+            app:layout_constraintStart_toEndOf="@+id/search_view">
+        </com.google.android.material.button.MaterialButton>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/activity_search_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/search_view"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

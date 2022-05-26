@@ -24,7 +24,7 @@
 
     <queries package="${applicationId}">
         <intent>
-            <action android:name="android.media.action.IMAGE_CAPTURE" />
+            <action android:name="android.media.action.ACTION_VIDEO_CAPTURE"></action>
         </intent>
         <intent>
             <action android:name="android.media.action.ACTION_VIDEO_CAPTURE" />
@@ -41,6 +41,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CampusForum">
         <activity
+            android:name=".SearchActivity"
+            android:exported="false" />
+      <activity
             android:name=".NotiActivity"
             android:exported="false" />
         <activity

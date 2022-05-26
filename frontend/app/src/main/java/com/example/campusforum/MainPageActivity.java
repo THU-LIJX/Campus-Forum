@@ -2,17 +2,23 @@ package com.example.campusforum;
 // 应用的主页面
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.example.campusforum.databinding.ActivityMainPageBinding;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -28,13 +34,32 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class MainPageActivity extends AppCompatActivity {
+    private static final String TAG = "FUCK";
     ActivityMainPageBinding binding;
+    MaterialToolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainPageBinding.inflate(getLayoutInflater());
+        toolbar = binding.mainPageTopBar;
         setContentView(binding.getRoot());
+
+        // 设置top bar onclick 属性
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.global_search:
+                        search();
+                        return true;
+                    case R.id.notification:
+                        return true;
+                    default:
+                        return onOptionsItemSelected(item);
+                }
+            }
+        });
 
         // 获取NavController
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.main_page_nav_host);
@@ -71,6 +96,38 @@ public class MainPageActivity extends AppCompatActivity {
             }
         });
 
+//        binding.mainPageTopBar.setNavigationOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view) {
+//            }
+//        });
         User.setCurrentUser();
     }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
+        getMenuInflater().inflate(R.menu.main_page_top_bar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.global_search:
+                search();
+                return true;
+            case R.id.notification:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void search() {
+        Intent intent = new Intent(MainPageActivity.this, SearchActivity.class);
+        startActivity(intent);
+    }
+
 }

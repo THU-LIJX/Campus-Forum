@@ -22,11 +22,18 @@ func Auth() gin.HandlerFunc {
 			})
 		}
 		user, err := model.GetUser(cookie)
+
 		if err != nil {
 			c.AbortWithStatusJSON(403, gin.H{
 				"message": "登陆状态过期",
 			})
 
+		}
+		err = user.Fetch()
+		if err != nil {
+			c.AbortWithStatusJSON(500, gin.H{
+				"message": "无法获取用户状态",
+			})
 		}
 		c.Set("user", user)
 		c.Next()
@@ -64,6 +71,7 @@ func register(engine *gin.Engine) {
 	userGroup.GET("/blogs", controller.GetBlogs)
 	userGroup.POST("/logout", controller.Logout)
 	userGroup.POST("/validation", controller.SendValidationEmail)
+	userGroup.GET("/notices", controller.GetNotices)
 
 	verifiedGroup := userGroup.Group("")
 	verifiedGroup.Use(Verified())
@@ -78,6 +86,7 @@ func register(engine *gin.Engine) {
 	rootGroup.POST("/register", controller.Register)
 	rootGroup.POST("/login", controller.Login)
 	rootGroup.GET("/comment/:id", controller.GetComment)
+	rootGroup.GET("blog/:id", controller.GetSingleBlog)
 	//Post之类相关的可以设置verify登陆状态的中间件
 
 	rootGroup.GET("/verify/:token", controller.VerifyUser)

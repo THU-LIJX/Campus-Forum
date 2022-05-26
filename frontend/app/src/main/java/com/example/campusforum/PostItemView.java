@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.icu.text.SymbolTable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,7 +18,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.core.app.ShareCompat;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.circularreveal.CircularRevealGridLayout;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -65,6 +68,7 @@ public class PostItemView extends LinearLayoutCompat {
     private MaterialCardView audioContainer;           // 音频容器
     private TextView username;                         // 用户名
     private TextView userId;                           // 用户id
+    private TextView postId;                           // 动态id
     private TextView content;                          // 正文
     private TextView commentNum;                       // 评论数
     private TextView likeNum;                          // 点赞数
@@ -72,6 +76,7 @@ public class PostItemView extends LinearLayoutCompat {
     private ShapeableImageView likeIcon;               // 点赞图标
     private ShapeableImageView shareIcon;              // 分享图标
     private RoundedImageView avatar;                   // 头像
+    private MaterialButton funcBtn;                    // 关注/取消关注按钮
 
     private List<GridLayout.LayoutParams> imageParams;  // 保存参数
 
@@ -79,6 +84,7 @@ public class PostItemView extends LinearLayoutCompat {
     private PostAdapter postAdapter;                   // view所在的adapter(如果使用list展示)
     private Integer position;                          // view的位置(如果使用list展示)
     private String audioState = PAUSING;               // audio状态
+    private PostAdapter.Post post;                     // post
 
     static private final String PLAYING = "PLAYING";
     static private final String PAUSING = "PAUSING";
@@ -95,14 +101,15 @@ public class PostItemView extends LinearLayoutCompat {
         audioContainer = (MaterialCardView) view.findViewById(R.id.post_item_audio);
         username = (TextView) view.findViewById(R.id.post_item_user_name);
         userId = (TextView) view.findViewById(R.id.post_item_user_id);
+        postId = (TextView) view.findViewById(R.id.post_item_post_id);
         content = (TextView) view.findViewById(R.id.post_item_content);
         commentNum = (TextView) view.findViewById(R.id.post_item_comment_num);
         likeNum = (TextView) view.findViewById(R.id.post_item_like_num);
         commentIcon = (ShapeableImageView) view.findViewById(R.id.post_item_comment_icon);
         likeIcon = (ShapeableImageView) view.findViewById(R.id.post_item_like_icon);
         shareIcon = (ShapeableImageView) view.findViewById(R.id.post_item_share_icon);
-        shareIcon = (ShapeableImageView) view.findViewById(R.id.post_item_image1);
         avatar = (RoundedImageView) view.findViewById(R.id.post_item_avatar);
+        funcBtn = (MaterialButton) view.findViewById(R.id.post_item_func_btn);
 
         images = new ArrayList<>();
         images.add((ShapeableImageView) view.findViewById(R.id.post_item_image1));
@@ -142,6 +149,7 @@ public class PostItemView extends LinearLayoutCompat {
     }
 
     public void setPost(PostAdapter.Post post) {
+        this.post = post;
         // 根据Post类型显示不同组件
         switch (post.type) {
             case PostAdapter.Post.IMAGE_TYPE:
@@ -166,9 +174,10 @@ public class PostItemView extends LinearLayoutCompat {
 
         username.setText(post.username);                            // 设置用户名
         userId.setText(Integer.toString(post.userId));              // 设置用户id
+        postId.setText("动态id:" + post.postId);                      // 设置动态id
         content.setText(post.content);                              // 设置正文
+        commentNum.setText(Integer.toString(post.comments.size())); // 设置评论数
         setLikeInfo(post);
-//        commentNum.setText(Integer.toString(post.comments.size())); // 设置评论数
 
         // 点赞/取消点赞
         likeIcon.setOnClickListener(new View.OnClickListener() {
@@ -176,7 +185,6 @@ public class PostItemView extends LinearLayoutCompat {
             public void onClick(View view) {
                 HashMap<String, String> data = new HashMap<>();
                 data.put("blog", Integer.toString(post.postId));
-                System.out.println("fuck");
                 Callback callback = new Callback() {
                     @Override
                     public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -191,11 +199,12 @@ public class PostItemView extends LinearLayoutCompat {
                             jsonOb = new JSONObject(result);
                             System.out.println(jsonOb.getString("message"));
                             if (jsonOb.getString("message").equals("ok")) {
+                                Log.d("fuck", "here");
                                 JSONArray jsonArray = jsonOb.getJSONArray("likedby");
                                 List<Integer> tmpList = new ArrayList<>();
                                 for (int i = 0; i < jsonArray.length(); i++) tmpList.add(jsonArray.getInt(i));
                                 post.likedBy = tmpList;
-                                System.out.println(tmpList);
+                                System.out.println("tmpList:" + tmpList);
                                 setLikeInfo(post);
                             }
                         } catch (JSONException e) {
@@ -217,7 +226,14 @@ public class PostItemView extends LinearLayoutCompat {
         shareIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                String txt = post.content;
+                String mimeType = "text/plain";
+                ShareCompat.IntentBuilder
+                        .from(activity)
+                        .setType(mimeType)
+                        .setChooserTitle("分享到")
+                        .setText(txt)
+                        .startChooser();
             }
         });
 
@@ -230,6 +246,35 @@ public class PostItemView extends LinearLayoutCompat {
                 activity.startActivity(intent);
             }
         });
+
+        // 设置头像
+        if (post.avatar.equals("")) {
+            // 如果用户没有设置头像，则使用默认头像
+            avatar.setImageResource(R.drawable.ranga);
+        } else {
+            // 获取用户的头像
+            HttpUtil.sendGetRequest(post.avatar, null, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    InputStream inputStream = response.body().byteStream();
+                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            avatar.setImageBitmap(bitmap);
+                        }
+                    });
+                }
+            });
+        }
+
+        // 设置关注/取消关注按钮
+        setFuncBtn(post);
     }
 
     private void setImages(PostAdapter.Post post) {
@@ -346,7 +391,9 @@ public class PostItemView extends LinearLayoutCompat {
             @Override
             public void run() {
                 // 根据用户点赞与否设置点赞图标
-                if (post.likedBy.contains(post.userId)) {
+                Log.d("hello", Integer.toString(User.currentUser.userId));
+                System.out.println(post.likedBy);
+                if (post.likedBy.contains(User.currentUser.userId)) {
                     likeIcon.setImageResource(R.drawable.ic_thumb_up_fill_20px);
                 } else {
                     likeIcon.setImageResource(R.drawable.ic_thumb_up_20px);
@@ -357,4 +404,115 @@ public class PostItemView extends LinearLayoutCompat {
         });
     }
 
+    private void setFuncBtn(PostAdapter.Post post) {
+        // 已关注
+        if (User.currentUser.subscriptions.contains(post.userId)) {
+            funcBtn.setText("followed");
+            funcBtn.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onFollowedClick(post);
+                }
+            });
+        } else {
+            funcBtn.setText("follow");
+            funcBtn.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onFollowClick(post);
+                }
+            });
+        }
+    }
+
+    private void onFollowClick(PostAdapter.Post post) {
+        funcBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onFollowedClick(post);
+            }
+        });
+        funcBtn.setText("followed");
+        HashMap<String, String> data = new HashMap<>();
+        data.put("id", Integer.toString(post.userId));
+        HttpUtil.sendPostRequest("/api/user/subscribe", data, new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                try {
+                    String result = Objects.requireNonNull(response.body()).string();
+                    JSONObject jsonObject = new JSONObject(result);
+                    if (jsonObject.getString("message").equals("ok")) {
+                        User.currentUser.subscriptions.add(post.userId);
+                        System.out.println(User.currentUser.subscriptions);
+                        Log.d("subscribe", "ok");
+                    }
+                    if (postAdapter != null) {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                postAdapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void onFollowedClick(PostAdapter.Post post) {
+        funcBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onFollowClick(post);
+            }
+        });
+        funcBtn.setText("follow");
+        HashMap<String, String> data = new HashMap<>();
+        data.put("id", Integer.toString(post.userId));
+        HttpUtil.sendPostRequest("/api/user/unsubscribe", data, new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                try {
+                    String result = Objects.requireNonNull(response.body()).string();
+                    JSONObject jsonObject = new JSONObject(result);
+                    if (jsonObject.getString("message").equals("ok")) {
+                        User.currentUser.subscriptions.remove(Integer.valueOf(post.userId));
+                        System.out.println(User.currentUser.subscriptions);
+                        Log.d("unsubcribe", "ok");
+                    }
+                    if (postAdapter != null) {
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                postAdapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void refresh() {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                commentNum.setText(Integer.toString(post.comments.size()));
+            }
+        });
+    }
 }

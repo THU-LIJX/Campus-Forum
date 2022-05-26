@@ -195,3 +195,25 @@ func Search(c *gin.Context) {
 		"blogs":   blogs,
 	})
 }
+
+func GetSingleBlog(c *gin.Context) {
+	idStr := c.Param("id")
+	bid, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"message": err,
+		})
+		return
+	}
+	blog, err := model.GetBlog(bid)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"message": err,
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "ok",
+		"blog":    blog,
+	})
+}

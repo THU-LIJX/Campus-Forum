@@ -15,4 +15,34 @@
         android:title="搜索"
         android:contentDescription="搜索"
         app:showAsAction="always" />
+  <item
+        android:id="@+id/time_asc"
+        android:title="按时间顺序"
+        android:contentDescription="按时间顺序"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/time_des"
+        android:title="按时间倒序"
+        android:contentDescription="按时间倒序"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/like_asc"
+        android:title="按点赞顺序"
+        android:contentDescription="按点赞顺序"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/like_des"
+        android:title="按点赞倒序"
+        android:contentDescription="按点赞倒序"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/all"
+        android:title="查看所有人"
+        android:contentDescription="查看所有人"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/subscribe"
+        android:title="查看关注的人"
+        android:contentDescription="查看关注的人"
+        app:showAsAction="never"/>
 </menu>

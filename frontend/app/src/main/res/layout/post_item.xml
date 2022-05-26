@@ -34,27 +34,49 @@
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/post_item_user_name"
+                    <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="User name"
-                        style="@style/TextAppearance.MaterialComponents.Headline6"/>
+                        android:orientation="horizontal"
+                        android:layout_weight="1">
 
-                    <TextView
-                        android:id="@+id/post_item_user_id"
+                        <TextView
+                            android:id="@+id/post_item_user_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="User name"
+                            style="@style/TextAppearance.MaterialComponents.Headline6"/>
+
+                        <TextView
+                            android:id="@+id/post_item_user_id"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:text="User id"
+                            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+                        <TextView
+                            android:id="@+id/post_item_post_id"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:text="post id"
+                            style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/post_item_func_btn"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:text="User id"
-                        style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
-
+                        android:layout_height="40dp"
+                        android:layout_gravity="end"
+                        android:text="follow"
+                        android:layout_marginEnd="3dp"
+                        />
                 </androidx.appcompat.widget.LinearLayoutCompat>
-
 
                 <TextView
                     android:id="@+id/post_item_content"

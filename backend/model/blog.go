@@ -150,7 +150,9 @@ func (user *User) SearchBlogs(blogFilter *BlogFilter) (res []*Blog, err error) {
 
 	makePattern := func(str string) string {
 		chars := strings.Split(str, "")
-		return ".*" + strings.Join(chars, ".*") + ".*"
+		pattern := ".*" + strings.Join(chars, ".*") + ".*"
+		fmt.Println(pattern)
+		return pattern
 	}
 	if blogFilter.Content != "" {
 		fmt.Println("Filter Content" + blogFilter.Content)

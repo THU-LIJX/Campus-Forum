@@ -3,6 +3,7 @@ package controller
 import (
 	"backend/config"
 	"backend/model"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"os"
@@ -184,6 +185,11 @@ func Search(c *gin.Context) {
 	t := c.Query("type")
 	if t != "" {
 		filter.Type = t
+	}
+	title := c.Query("title")
+	fmt.Printf("query title,%v", title)
+	if title != "" {
+		filter.Title = title
 	}
 	blogs, err := user.SearchBlogs(&filter)
 	if err != nil {

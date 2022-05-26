@@ -64,4 +64,7 @@ dependencies {
     // 引入 glide
     implementation 'com.github.bumptech.glide:glide:4.13.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.13.0'
+
+    //引入定位
+    implementation 'com.google.android.gms:play-services-location:19.0.1'
 }

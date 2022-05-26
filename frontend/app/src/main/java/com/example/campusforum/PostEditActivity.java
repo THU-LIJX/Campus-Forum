@@ -5,6 +5,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -17,11 +18,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.location.Address;
+import android.location.Criteria;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcel;
@@ -39,6 +48,12 @@ import com.example.campusforum.mediaselector.FullyGridLayoutManager;
 import com.example.campusforum.mediaselector.GlideEngine;
 import com.example.campusforum.mediaselector.GridImageAdapter;
 import com.example.campusforum.mediaselector.RecordDialogFragment;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.luck.picture.lib.basic.PictureSelectionModel;
 import com.luck.picture.lib.basic.PictureSelector;
@@ -81,7 +96,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -97,16 +114,16 @@ public class PostEditActivity extends AppCompatActivity {
     ActivityPostEditBinding binding;
     private static final String TAG = "PostEditActivity";
 
-    boolean selectImage=true;//为false表示录音
+    boolean selectImage = true;//为false表示录音
     String audioPath; //存储选择的音频的路径
     Uri audioUri;
     private GridImageAdapter mAdapter;
 
-    private final List<LocalMedia>mData=new ArrayList<>();
+    private final List<LocalMedia> mData = new ArrayList<>();
 
-    private final int maxSelectNum=9;//最多选几个
+    private final int maxSelectNum = 9;//最多选几个
 
-    private final int maxSelectVideoNum=1;//最多选一个video
+    private final int maxSelectVideoNum = 1;//最多选一个video
 
     private ImageEngine imageEngine;
 
@@ -121,18 +138,159 @@ public class PostEditActivity extends AppCompatActivity {
     private FragmentManager fragmentManager;
 
     private RecordDialogFragment dialog;//录音的组件
+
+    private FusedLocationProviderClient fusedLocationProviderClient;
+
+    private LocationManager locationManager;
+
+    private String address="";
+
+    private String getLocationAddress(Location location) {
+        String add = "";
+        Geocoder geoCoder = new Geocoder(getBaseContext(), Locale.CHINESE);
+        try {
+            List<Address> addresses = geoCoder.getFromLocation(
+                    location.getLatitude(), location.getLongitude(),
+                    1);
+            Address address = addresses.get(0);
+            Log.i(TAG, "getLocationAddress: " + address.toString());
+            // Address[addressLines=[0:"中国",1:"北京市海淀区",2:"华奥饭店公司写字间中关村创业大街"]latitude=39.980973,hasLongitude=true,longitude=116.301712]
+            int maxLine = address.getMaxAddressLineIndex();
+            if (maxLine >= 3) {
+                add = address.getAddressLine(1) + address.getAddressLine(2);
+            } else {
+                add = address.getAddressLine(0);
+            }
+        } catch (IOException e) {
+            add = "";
+            e.printStackTrace();
+        }
+        return add;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        simpleDateFormat=new SimpleDateFormat();
+        simpleDateFormat = new SimpleDateFormat();
         simpleDateFormat.applyPattern("yyyy-MM-dd HH:mm:ss");
-       
+
 
         binding = ActivityPostEditBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        //TODO: 添加对saveInstanceState的处理，从草稿箱跳入可以直接用
-        // 配置录音相关
+        // 配置获取位置相关信息
+        locationManager=(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);;
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        binding.getLocationBtn.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.R)
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: Clicked");
+                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    ActivityCompat.requestPermissions(getContext(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
+                    ActivityCompat.requestPermissions(getContext(),new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},1);
+                    //return;
+                }
+//                // 生成一个Criteria对象
+//                Criteria criteria = new Criteria();
+//                // 设置查询条件
+//                criteria.setAccuracy(Criteria.ACCURACY_FINE); // 设置准确而非粗糙的精度
+//                criteria.setPowerRequirement(Criteria.POWER_LOW); // 设置相对省电而非耗电，一般高耗电量会换来更精确的位置信息
+//                criteria.setAltitudeRequired(false); // 不需要提供海拔信息
+//                criteria.setSpeedRequired(false); // 不需要速度信息
+//                criteria.setCostAllowed(false); // 不能产生费用
+//                // 第一个参数，传递criteria对象
+//                // 第二个参数，若为false,在所有Provider中寻找，不管该Provider是否处于可用状态，均使用该Provider。
+//                // 若为true，则在所有可用的Provider中寻找。比如GPS处于禁用状态，则忽略GPS Provider。
+//                // 1、可用中最好的
+//                String locationProvider = locationManager.getBestProvider(criteria, true);
+//                if(locationProvider==null){
+//                    List<String> providers = locationManager.getProviders(true);
+//                    if (providers != null && providers.size() > 0) {
+//                        locationProvider = providers.get(0);
+//                    }
+//
+//                }
+//                // 都不支持则直接返回
+//                if (TextUtils.isEmpty(locationProvider)) {
+//                    return;
+//                }
+//                Log.d(TAG, "locationProvider:"+locationProvider);
+//                Location location = locationManager.getLastKnownLocation(locationProvider);
+//                Log.i(TAG, "requestLatitudeAndLongtitude: location 1 =" + location);
+//
+//                if (location != null) {
+//                    //updateCacheLocation(context, location.getLatitude(), location.getLongitude());
+//
+//                    Log.d(TAG, "Get location and not null!"+location);
+//                } else {
+//                    locationManager.requestLocationUpdates(locationProvider, 1000 * 60 * 60, 1000, new LocationListener() {
+//                        @Override
+//                        public void onLocationChanged(@NonNull Location location) {
+//                            if(location==null){
+//                                Log.d(TAG, "onLocationChanged: can not get!");
+//                            }else{
+//                                Log.d(TAG, "onLocationChanged: get new location!"+location);
+//                            }
+//                        }
+//                    });
+//
+//                }
+
+//                LocationRequest mLocationRequest=LocationRequest.create();
+//                mLocationRequest.setInterval(60000);
+//                mLocationRequest.setFastestInterval(5000);
+//                mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//                LocationCallback mLocationCallback = new LocationCallback() {
+//                    @Override
+//                    public void onLocationResult(LocationResult locationResult) {
+//                        Log.d(TAG, "onLocationResult: get result");
+//                        if (locationResult == null) {
+//                            Log.d(TAG, "onLocationResult: null");
+//                            return;
+//                        }
+//                        for (Location location : locationResult.getLocations()) {
+//
+//                            if (location != null) {
+//                                //TODO: UI updates.
+//                                Log.d(TAG, "onLocationResult: result"+location);
+//                            }
+//                        }
+//                    }
+//                };
+//                fusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+//                fusedLocationProviderClient.getLastLocation()
+//                        .addOnSuccessListener(getContext(), new OnSuccessListener<Location>() {
+//                            @Override
+//                            public void onSuccess(Location location) {
+//                                Log.d(TAG, "onSuccess: Get result");
+//                                if (location!=null){
+//                                    Log.d(TAG, "onSuccess: "+location);
+//                                }
+//                            }
+//                        });
+                locationManager.getCurrentLocation(LocationManager.GPS_PROVIDER, null,
+                        getApplication().getMainExecutor(), new Consumer<Location>() {
+                            @Override
+                            public void accept(Location location) {
+                                Log.d(TAG, "accept: Get location"+location);
+                                address=getLocationAddress(location);
+                                Log.d(TAG,"Get Address:"+address);
+                                binding.getLocationBtn.setText(address);
+
+                            }
+                        });
+            }
+        });
+
         fragmentManager=getSupportFragmentManager();
         dialog=RecordDialogFragment.newInstance();
         //binding.postEditTopBar.set
@@ -228,7 +386,7 @@ public class PostEditActivity extends AppCompatActivity {
 
         //从草稿箱中恢复
         Intent intent=getIntent();
-        draftPath= Environment.getExternalStorageDirectory()+"/Campus/";
+        draftPath= Environment.getExternalStorageDirectory()+"/Documents/Campus/";
         if(intent!=null){
             String draftStr=intent.getStringExtra("draft");
             if(draftStr!=null){
@@ -242,13 +400,23 @@ public class PostEditActivity extends AppCompatActivity {
                 // 草稿箱存储
                 if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.MANAGE_EXTERNAL_STORAGE)
                         != PackageManager.PERMISSION_GRANTED){
-                    ActivityCompat.requestPermissions(getContext(),new String[]{Manifest.permission.MANAGE_EXTERNAL_STORAGE},1);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        ActivityCompat.requestPermissions(getContext(),new String[]{Manifest.permission.MANAGE_EXTERNAL_STORAGE},1);
+                    }
+                }
+                if(ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                !=PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(getContext(),new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
                 }
 
                 File file=new File(draftPath);
                 if(!file.exists()){
-                    file.mkdir();
-                    Log.d(TAG, "onCreate: 创建草稿箱目录");
+                    if(!file.mkdirs()){
+                        Log.d(TAG, "onCreate: 创建目录失败");
+                    }else{
+                        Log.d(TAG, "onCreate: 创建草稿箱目录成功");
+                    }
+
                 }
                 draftFileName="draft_"+(System.currentTimeMillis())+".json";
                 file=new File(draftPath+draftFileName);
@@ -495,6 +663,7 @@ public class PostEditActivity extends AppCompatActivity {
         HashMap<String,String>data=new HashMap<>();
         data.put("text",text);
         data.put("type","text");
+        data.put("location",address);
         HttpUtil.sendPostRequest("/api/user/post",data, new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -522,6 +691,7 @@ public class PostEditActivity extends AppCompatActivity {
         //Log.d(TAG,"fileType:"+fileType);
         builder.addFormDataPart("text",text);
         builder.addFormDataPart("type","sound");
+        builder.addFormDataPart("location",address);
         File file=new File(audioPath);
         String filename=file.getName();
         String type=filename.substring(filename.lastIndexOf("."));
@@ -590,6 +760,7 @@ public class PostEditActivity extends AppCompatActivity {
         Log.d(TAG,"fileType:"+fileType);
         builder.addFormDataPart("text",text);
         builder.addFormDataPart("type",fileType);
+        builder.addFormDataPart("location",address);
         for(LocalMedia media:mAdapter.getData()){
             //Uri uri=Uri.parse(media.getAvailablePath());
             // 处理本地图片和在线图片

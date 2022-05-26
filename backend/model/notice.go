@@ -43,6 +43,13 @@ func SendNotice(receiver []int, userId int, blogId int, action string) error {
 	if err != nil {
 		return err
 	}
+	if user.Notices == nil {
+		user.Notices = make([]int, 0)
+		err = user.Commit()
+		if err != nil {
+			return err
+		}
+	}
 	notice := &Notice{
 		User:     userId,
 		UserName: user.Name,

@@ -79,10 +79,25 @@
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <TextView
+                    android:id="@+id/post_item_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="title"
+                    style="@style/TextAppearance.MaterialComponents.Headline5" />
+
+                <TextView
                     android:id="@+id/post_item_content"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size "/>
+
+                <TextView
+                    android:id="@+id/post_item_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="location"
+                    style="@style/TextAppearance.MaterialComponents.Subtitle2" />
+
 
 
                 <!-- 图片 -->

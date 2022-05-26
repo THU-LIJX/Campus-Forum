@@ -47,6 +47,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         public int postId;
         public int userId;
         public int type;
+        public String title;
         public String content;
         public int likeNum;
         public String location;
@@ -56,22 +57,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         public List<Integer> likedBy;
         public List<Comment> comments;
 
-        public Post(int postId, int userId, int type, String content, List<String> dataSources, List<Integer> likedBy, int likeNum) {
-            this.postId = postId;
-            this.userId = userId;
-            this.type = type;
-            this.content = content;
-            this.dataSources = dataSources;
-            this.likedBy = likedBy;
-            this.likeNum = likeNum;
-        }
-
         public Post(JSONObject jsonObject) {
             try {
                 postId = jsonObject.getInt("id");
                 userId = jsonObject.getInt("user");
                 type = jsonObject.getInt("type");
+                title = jsonObject.getString("title");
                 content = jsonObject.getString("text");
+                location = jsonObject.getString("string");
                 username = jsonObject.getString("user_name");
                 avatar = jsonObject.getString("avatar");
                 likeNum = jsonObject.getInt("liked");

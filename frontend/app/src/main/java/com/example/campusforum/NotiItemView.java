@@ -104,6 +104,29 @@ public class NotiItemView extends LinearLayoutCompat {
                 action.setText(notification.username + "发布了动态" + notification.postId);
                 break;
         }
+        if (notification.avatar.equals("")) {
+            avatar.setImageResource(R.drawable.ranga);
+        } else {
+            // 获取头像并设置
+            HttpUtil.sendGetRequest(notification.avatar, null, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    InputStream inputStream = response.body().byteStream();
+                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            avatar.setImageBitmap(bitmap);
+                        }
+                    });
+                }
+            });
+        }
 
         mainContent.setOnClickListener(new OnClickListener() {
             @Override

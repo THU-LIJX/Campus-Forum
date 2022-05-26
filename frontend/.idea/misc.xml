@@ -44,7 +44,6 @@
         <entry key="app/src/main/res/layout/activity_noti.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_post_edit.xml" value="0.53125" />
         <entry key="app/src/main/res/layout/activity_post_info.xml" value="0.22" />
-
         <entry key="app/src/main/res/layout/activity_search.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_sub_list.xml" value="0.22" />
         <entry key="app/src/main/res/layout/activity_user.xml" value="0.22" />
@@ -56,16 +55,14 @@
         <entry key="app/src/main/res/layout/fragment_register.xml" value="0.2484375" />
         <entry key="app/src/main/res/layout/fragment_user.xml" value="0.253125" />
         <entry key="app/src/main/res/layout/noti_item.xml" value="0.1824074074074074" />
-        <entry key="app/src/main/res/layout/post_item.xml" value="0.22" />
-
+        <entry key="app/src/main/res/layout/post_item.xml" value="0.24916534423828127" />
         <entry key="app/src/main/res/layout/serach_list_item.xml" value="0.18958333333333333" />
+        <entry key="app/src/main/res/layout/sub_item.xml" value="0.1" />
         <entry key="app/src/main/res/menu/main_page_btm_navi.xml" value="0.1" />
         <entry key="app/src/main/res/menu/main_page_top_bar.xml" value="0.2786458333333333" />
-        <entry key="app/src/main/res/menu/search_filter.xml" value="0.18958333333333333" />
-        <entry key="app/src/main/res/layout/sub_item.xml" value="0.1" />
         <entry key="app/src/main/res/menu/post_edit_top_bar.xml" value="0.34270833333333334" />
+        <entry key="app/src/main/res/menu/search_filter.xml" value="0.18958333333333333" />
         <entry key="app/src/main/res/menu/test_menu.xml" value="0.3927083333333333" />
-
         <entry key="app/src/main/res/menu/user_edit_bar.xml" value="0.1" />
         <entry key="app/src/main/res/menu/user_top_bar.xml" value="0.18" />
         <entry key="app/src/main/res/xml/network_security_config.xml" value="0.2557291666666667" />

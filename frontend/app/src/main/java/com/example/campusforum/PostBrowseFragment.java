@@ -161,9 +161,14 @@ public class PostBrowseFragment extends Fragment {
         binding.fragmentPostBrowseTopBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                Intent intent;
                 switch (item.getItemId()) {
                     case R.id.notification:
-                        Intent intent = new Intent(getActivity(), NotiActivity.class);
+                        intent = new Intent(getActivity(), NotiActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.global_search:
+                        intent = new Intent(getActivity(), SearchActivity.class);
                         startActivity(intent);
                         break;
                     case R.id.time_asc:

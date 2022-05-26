@@ -69,7 +69,9 @@ public class PostItemView extends LinearLayoutCompat {
     private TextView username;                         // 用户名
     private TextView userId;                           // 用户id
     private TextView postId;                           // 动态id
+    private TextView title;                            // 标题
     private TextView content;                          // 正文
+    private TextView location;                         // 位置
     private TextView commentNum;                       // 评论数
     private TextView likeNum;                          // 点赞数
     private ShapeableImageView commentIcon;            // 评论图标
@@ -102,7 +104,9 @@ public class PostItemView extends LinearLayoutCompat {
         username = (TextView) view.findViewById(R.id.post_item_user_name);
         userId = (TextView) view.findViewById(R.id.post_item_user_id);
         postId = (TextView) view.findViewById(R.id.post_item_post_id);
+        title = (TextView) view.findViewById(R.id.post_item_title);
         content = (TextView) view.findViewById(R.id.post_item_content);
+        location = (TextView) view.findViewById(R.id.post_item_location);
         commentNum = (TextView) view.findViewById(R.id.post_item_comment_num);
         likeNum = (TextView) view.findViewById(R.id.post_item_like_num);
         commentIcon = (ShapeableImageView) view.findViewById(R.id.post_item_comment_icon);
@@ -174,10 +178,18 @@ public class PostItemView extends LinearLayoutCompat {
 
         username.setText(post.username);                            // 设置用户名
         userId.setText(Integer.toString(post.userId));              // 设置用户id
-        postId.setText("动态id:" + post.postId);                      // 设置动态id
+        postId.setText("动态id:" + post.postId);                     // 设置动态id
+        title.setText(post.title);                                  // 设置标题
         content.setText(post.content);                              // 设置正文
+        location.setText(post.location);                            // 设置位置
         commentNum.setText(Integer.toString(post.comments.size())); // 设置评论数
         setLikeInfo(post);
+        // 如果位置为空，则不显示
+        if (post.location.equals("")) {
+            location.setVisibility(GONE);
+        } else {
+            location.setVisibility(VISIBLE);
+        }
 
         // 点赞/取消点赞
         likeIcon.setOnClickListener(new View.OnClickListener() {

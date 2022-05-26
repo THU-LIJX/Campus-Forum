@@ -2,6 +2,8 @@ package com.example.campusforum;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -30,6 +32,14 @@ import okhttp3.Response;
 public class SearchActivity extends AppCompatActivity {
     private static final String TAG = "FUCK";
     ActivitySearchBinding binding;
+    private List<PostAdapter.Post> postList;
+    private PostAdapter postAdapter;
+    private LinearLayoutManager linearLayoutManager;
+    private int currentPage = -1;
+    private int pageSize = 5;
+    private String sortLiked = "DES";
+    private String sortTime = "DES";
+
 
 
     @Override
@@ -37,11 +47,12 @@ public class SearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         binding = ActivitySearchBinding.inflate(getLayoutInflater());
-        //? 搜索中的信息如下
-//        Editable search = binding.searchContentText.getText();
-//        if (search == null) {
-//            Log.d(TAG, "Trash");
-//
+        postList = new ArrayList<>();
+        postAdapter = new PostAdapter(postList, this);
+        linearLayoutManager = new LinearLayoutManager(this);
+        binding.activitySearchRecyclerView.setAdapter(postAdapter);
+        binding.activitySearchRecyclerView.setLayoutManager(linearLayoutManager);
+
 
         ArrayList<String> items = new ArrayList<>();
         //! text、image、sound、video
@@ -53,10 +64,30 @@ public class SearchActivity extends AppCompatActivity {
         binding.searchSelect.setAdapter(adapter);
         setContentView(binding.getRoot());
 
+        binding.activitySearchRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    int lastPosition = ((LinearLayoutManager) Objects.requireNonNull(recyclerView.getLayoutManager())).findLastVisibleItemPosition();
+                    if (lastPosition == postList.size() - 1) {
+                        getSearchResult();
+                    }
+                }
+            }
+        });
+
+
         binding.btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String searchContent = Objects.requireNonNull(binding.searchKeyWord.getText()).toString();
+                getSearchResult();
+            }
+        });
+    }
+
+    private void getSearchResult() {
+        String searchContent = Objects.requireNonNull(binding.searchKeyWord.getText()).toString();
                 String searchUserNameContent = binding.searchUserName.getText().toString();
                 String searchTypeContent = binding.searchSelect.getText().toString();
                 Log.d(TAG, "onClick: "+ searchTypeContent);
@@ -80,7 +111,10 @@ public class SearchActivity extends AppCompatActivity {
                         data.put("type", "video");
                         Log.d(TAG, "传入参数：" + searchContent + "," + searchUserNameContent + ",video");
                         break;
-
+                    default:
+                        data.put("type", "photo?");
+                        Log.d(TAG, "getSearchResult: 进入搜索界面");
+                        break;
                 }
 
                HttpUtil.sendGetRequest("/api/user/search", data, new Callback() {
@@ -96,17 +130,30 @@ public class SearchActivity extends AppCompatActivity {
                             JSONObject jsonObject = new JSONObject(result);
                             if (jsonObject.getString("message").equals("ok")) {
                                 JSONArray jsonArray= jsonObject.getJSONArray("blogs");
-                                Log.d(TAG, jsonArray.toString());
+//                                Log.d(TAG, jsonArray.toString());
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            System.out.println("Post Length" + jsonArray.length());
+                                            for (int i = 0; i < jsonArray.length(); i++) {
+                                                postList.add(new PostAdapter.Post(jsonArray.getJSONObject(i)));
+                                                postAdapter.notifyItemInserted(postList.size()-1);
+                                            }
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                });
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                    }
                });
-            }
-        });
-
     }
+
+
 //    private showMenu(View v, ) {
 
 //}

@@ -64,7 +64,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                 type = jsonObject.getInt("type");
                 title = jsonObject.getString("title");
                 content = jsonObject.getString("text");
-                location = jsonObject.getString("string");
+                location = jsonObject.getString("location");
                 username = jsonObject.getString("user_name");
                 avatar = jsonObject.getString("avatar");
                 likeNum = jsonObject.getInt("liked");

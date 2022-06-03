@@ -20,6 +20,7 @@
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/activity_user_actionbar"
+                android:background="@color/primaryColor"
                 style="@style/Widget.MaterialComponents.Toolbar.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
@@ -39,7 +40,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
-                android:background="@color/blue_600"/>
+                android:background="@color/primaryColor"/>
 
             <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/activity_user_avatar"
@@ -60,27 +61,43 @@
                 android:layout_gravity="end"
                 android:layout_marginTop="-55dp"
                 android:layout_marginEnd="5dp"
-                android:text="" />
+                android:text="编辑信息" />
 
-            <TextView
-                android:id="@+id/activity_user_username"
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Username"
-                style="@style/TextAppearance.MaterialComponents.Headline5" />
-            
-            <TextView
-                android:id="@+id/activity_user_userid"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="user id"
-                style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/activity_user_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Username"
+                    android:layout_marginHorizontal="5dp"
+                    style="@style/TextAppearance.MaterialComponents.Headline5" />
+
+                <TextView
+                    android:id="@+id/activity_user_userid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="user id"
+                    android:textColor="@color/primaryColor"
+                    android:layout_marginHorizontal="5dp"
+                    style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                    app:layout_constraintStart_toEndOf="@+id/activity_user_username"
+                    app:layout_constraintBottom_toBottomOf="@+id/activity_user_username"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
             <TextView
                 android:id="@+id/activity_user_user_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="user description"
+                android:layout_marginHorizontal="5dp"
+                android:textColor="#3d3d3d"
                 style="@style/TextAppearance.AppCompat.Body1"/>
 
             <TextView
@@ -88,6 +105,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="关注信息"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginBottom="10dp"
                 style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
             <androidx.recyclerview.widget.RecyclerView

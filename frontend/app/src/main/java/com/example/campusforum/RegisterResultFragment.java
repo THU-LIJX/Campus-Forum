@@ -2,11 +2,16 @@ package com.example.campusforum;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.campusforum.databinding.FragmentRegisterResultBinding;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -14,7 +19,7 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class RegisterResultFragment extends Fragment {
-
+    private FragmentRegisterResultBinding binding;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -59,6 +64,17 @@ public class RegisterResultFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_register_result, container, false);
+        binding = FragmentRegisterResultBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstance) {
+        binding.fragResultBtnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Navigation.findNavController(binding.getRoot()).navigate(R.id.action_register_result_fragment_to_login_fragment);
+            }
+        });
     }
 }

@@ -4,45 +4,91 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_login"
     tools:context=".LoginFragment">
 
     <!-- TODO: Update blank fragment layout -->
+
+
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/linearLayoutCompat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="0dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="100dp"
+            android:layout_marginBottom="50dp"
+            android:text="登录"
+            android:textColor="#ffffff"
+            android:textAlignment="center"
+            android:textSize="40sp">
+
+        </TextView>
+
+        <androidx.constraintlayout.utils.widget.MotionLabel
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="5dp"
+            android:text="账号">
+
+        </androidx.constraintlayout.utils.widget.MotionLabel>
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="email address">
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="50dp"
+            app:hintEnabled="false"
 
-            <EditText
+            >
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/frag_login_edt_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress" />
+                android:inputType="textEmailAddress"
+                android:hint="email address"
+                android:alpha="0.6"
+                android:background="#E1F5FE"
+                />
 
         </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.constraintlayout.utils.widget.MotionLabel
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="5dp"
+            android:text="密码">
+        </androidx.constraintlayout.utils.widget.MotionLabel>
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="password">
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            app:hintEnabled="false">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/frag_login_edt_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                android:hint="password"
+                android:alpha="0.6"
+                android:background="#E1F5FE"
+                />
         </com.google.android.material.textfield.TextInputLayout>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
-
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
@@ -55,13 +101,15 @@
             android:id="@+id/frag_login_btn_crt_acc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="create account"/>
+            android:backgroundTint="@color/primaryLightColor"
+            android:text="注册"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/frag_login_btn_login"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="login"
+            android:backgroundTint="@color/primaryLightColor"
+            android:text="登录"
 
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"

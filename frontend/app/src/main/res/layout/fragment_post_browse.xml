@@ -26,9 +26,9 @@
 
                 <com.google.android.material.appbar.MaterialToolbar
                     android:id="@+id/fragment_post_browse_top_bar"
-                    style="@style/Widget.MaterialComponents.Toolbar.Primary"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
+                    android:background="@color/primaryColor"
                     app:menu="@menu/main_page_top_bar"
                     app:navigationIcon="@drawable/ic_account_circle_24px"
                     app:title="Campus"

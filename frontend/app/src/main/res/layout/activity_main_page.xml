@@ -26,7 +26,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/main_page_btm_navi"
-        style="@style/Widget.App.BottomAppBar"/>
+        android:background="@color/primaryColor"
+        app:itemIconTint="@drawable/bottom_menu_item_selected"
+        app:itemTextColor="@drawable/bottom_menu_item_selected"
+        />
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

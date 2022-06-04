@@ -164,10 +164,6 @@ public class PostBrowseFragment extends Fragment {
             public boolean onMenuItemClick(MenuItem item) {
                 Intent intent;
                 switch (item.getItemId()) {
-                    case R.id.notification:
-                        intent = new Intent(getActivity(), NotiActivity.class);
-                        startActivity(intent);
-                        break;
                     case R.id.global_search:
                         intent = new Intent(getActivity(), SearchActivity.class);
                         startActivity(intent);

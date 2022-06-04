@@ -19,6 +19,7 @@
             android:layout_height="wrap_content">
 
             <com.google.android.material.appbar.MaterialToolbar
+                android:background="@color/primaryColor"
                 android:id="@+id/activity_edit_user_actionbar"
                 style="@style/Widget.MaterialComponents.Toolbar.Primary"
                 android:layout_width="match_parent"
@@ -41,7 +42,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
-                android:background="@color/blue_600"/>
+                android:background="@color/primaryColor"
+                />
 
             <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/activity_user_avatar"

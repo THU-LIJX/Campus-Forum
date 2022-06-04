@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/app_bar_layout"
+        android:background="@color/primaryColor"
        >
         <com.google.android.material.appbar.MaterialToolbar
             android:layout_width="match_parent"
@@ -20,74 +21,109 @@
             style="@style/ThemeOverlay.MaterialComponents.Toolbar.Primary"
             />
     </com.google.android.material.appbar.AppBarLayout>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/title_linedTextField"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
-        android:hint="输入标题">
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:hint="输入标题"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/app_bar_layout">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/title_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/title_text"/>
+            android:layout_height="wrap_content" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/outlinedTextField"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/title_linedTextField"
-        android:hint="分享你的生活">
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:hint="分享你的生活"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_linedTextField">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/post_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="250dp"
-
-            android:id="@+id/post_text"/>
+            android:gravity="top"
+            android:minHeight="200dp" />
 
     </com.google.android.material.textfield.TextInputLayout>
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/img_recycler"
-        app:layout_constraintTop_toBottomOf="@id/outlinedTextField"/>
-    <androidx.fragment.app.FragmentContainerView
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:id="@+id/recorder_container"
-        app:layout_constraintTop_toBottomOf="@id/outlinedTextField"
-        />
 
-    <Button
-        android:layout_width="150dp"
-        android:layout_height="60dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recorder_container"
-        android:layout_margin="16dp"
-        app:icon="@drawable/ic_add_location_48px"
-        app:iconSize="40dp"
-        app:iconTint="@color/black"
-        style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
-        android:backgroundTint="@color/blue_500"
-        android:text="获取位置"
-        android:ellipsize="end"
-        android:maxLines="2"
-        android:textColor="@color/black"
-        android:id="@+id/get_location_btn"
-
-        />
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/record_floating_bar"
-        android:layout_margin="16dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/resource_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/post_button_container"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recorder_container"
-        app:srcCompat="@drawable/ic_voice_48px"
-        android:contentDescription="Record" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/outlinedTextField">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/img_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/recorder_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/post_button_container"
+        app:layout_constraintBottom_toBottomOf="parent"
+
+        app:layout_constraintTop_toBottomOf="@id/resource_container"
+        >
+        <Button
+            android:id="@+id/get_location_btn"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+            android:layout_width="150dp"
+            android:layout_height="60dp"
+            android:layout_margin="15dp"
+            android:backgroundTint="@color/primaryColor"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="获取位置"
+            android:textColor="@color/black"
+            app:icon="@drawable/ic_add_location_48px"
+            app:iconSize="40dp"
+            app:iconTint="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintVertical_bias="0.891" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/record_floating_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:contentDescription="Record"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintVertical_bias="0.868"
+            app:srcCompat="@drawable/ic_voice_48px" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

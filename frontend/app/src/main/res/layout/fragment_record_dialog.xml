@@ -66,7 +66,7 @@
             android:src="@drawable/ic_voice_48px"
             android:id="@+id/start_record_btn"
             android:layout_gravity="bottom|center"
-            android:backgroundTint="@color/green"
+            android:backgroundTint="@color/primaryColor"
             />
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:layout_width="wrap_content"

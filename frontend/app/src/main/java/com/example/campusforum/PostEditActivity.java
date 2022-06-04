@@ -29,6 +29,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -212,84 +213,7 @@ public class PostEditActivity extends AppCompatActivity {
                     ActivityCompat.requestPermissions(getContext(),new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},1);
                     //return;
                 }
-//                // 生成一个Criteria对象
-//                Criteria criteria = new Criteria();
-//                // 设置查询条件
-//                criteria.setAccuracy(Criteria.ACCURACY_FINE); // 设置准确而非粗糙的精度
-//                criteria.setPowerRequirement(Criteria.POWER_LOW); // 设置相对省电而非耗电，一般高耗电量会换来更精确的位置信息
-//                criteria.setAltitudeRequired(false); // 不需要提供海拔信息
-//                criteria.setSpeedRequired(false); // 不需要速度信息
-//                criteria.setCostAllowed(false); // 不能产生费用
-//                // 第一个参数，传递criteria对象
-//                // 第二个参数，若为false,在所有Provider中寻找，不管该Provider是否处于可用状态，均使用该Provider。
-//                // 若为true，则在所有可用的Provider中寻找。比如GPS处于禁用状态，则忽略GPS Provider。
-//                // 1、可用中最好的
-//                String locationProvider = locationManager.getBestProvider(criteria, true);
-//                if(locationProvider==null){
-//                    List<String> providers = locationManager.getProviders(true);
-//                    if (providers != null && providers.size() > 0) {
-//                        locationProvider = providers.get(0);
-//                    }
-//
-//                }
-//                // 都不支持则直接返回
-//                if (TextUtils.isEmpty(locationProvider)) {
-//                    return;
-//                }
-//                Log.d(TAG, "locationProvider:"+locationProvider);
-//                Location location = locationManager.getLastKnownLocation(locationProvider);
-//                Log.i(TAG, "requestLatitudeAndLongtitude: location 1 =" + location);
-//
-//                if (location != null) {
-//                    //updateCacheLocation(context, location.getLatitude(), location.getLongitude());
-//
-//                    Log.d(TAG, "Get location and not null!"+location);
-//                } else {
-//                    locationManager.requestLocationUpdates(locationProvider, 1000 * 60 * 60, 1000, new LocationListener() {
-//                        @Override
-//                        public void onLocationChanged(@NonNull Location location) {
-//                            if(location==null){
-//                                Log.d(TAG, "onLocationChanged: can not get!");
-//                            }else{
-//                                Log.d(TAG, "onLocationChanged: get new location!"+location);
-//                            }
-//                        }
-//                    });
-//
-//                }
 
-//                LocationRequest mLocationRequest=LocationRequest.create();
-//                mLocationRequest.setInterval(60000);
-//                mLocationRequest.setFastestInterval(5000);
-//                mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-//                LocationCallback mLocationCallback = new LocationCallback() {
-//                    @Override
-//                    public void onLocationResult(LocationResult locationResult) {
-//                        Log.d(TAG, "onLocationResult: get result");
-//                        if (locationResult == null) {
-//                            Log.d(TAG, "onLocationResult: null");
-//                            return;
-//                        }
-//                        for (Location location : locationResult.getLocations()) {
-//
-//                            if (location != null) {
-//                                //TODO: UI updates.
-//                                Log.d(TAG, "onLocationResult: result"+location);
-//                            }
-//                        }
-//                    }
-//                };
-//                fusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
-//                fusedLocationProviderClient.getLastLocation()
-//                        .addOnSuccessListener(getContext(), new OnSuccessListener<Location>() {
-//                            @Override
-//                            public void onSuccess(Location location) {
-//                                Log.d(TAG, "onSuccess: Get result");
-//                                if (location!=null){
-//                                    Log.d(TAG, "onSuccess: "+location);
-//                                }
-//                            }
-//                        });
                 try {
                     /*获取LocationManager对象*/
                     Context context = getContext();
@@ -485,19 +409,13 @@ public class PostEditActivity extends AppCompatActivity {
                 return false;
             }
         });
-        //ArrayList<LocalMedia>l=new ArrayList<>();
-
-        //OK!可以从网络获取图片
-        //l.add(LocalMedia.generateLocalMedia("http://qiuyuhan.xyz:8080/static/src/36/0.jpg","image/jpg"));
-        //LocalMedia media=new LocalMedia();
-        //media.setPath("/storage/emulated/0/DCIM/Camera/IMG_20220514025554659.jpg");
-        //media.setPath("content://media/external/images/media/34");
-        //media.setRealPath("/storage/emulated/0/DCIM/Camera/IMG_20220514025554659.jpg");
-        //media=buildLocalMedia("content://media/external/images/media/34");
-        //l.add(media);
-
-        //l.add(LocalMedia.generateLocalMedia("http://qiuyuhan.xyz:8080/static/src/39/0.wav","audio/wav"));
-        //analyticalSelectResults(l);
+        try {
+            saveContent();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -515,6 +433,22 @@ public class PostEditActivity extends AppCompatActivity {
                 Log.d(TAG, "onClick: 无文件权限");
                 ActivityCompat.requestPermissions(getContext(),new String[]{Manifest.permission.MANAGE_EXTERNAL_STORAGE},1);
             }
+            // 设置录音相关
+            MediaPlayer mediaPlayer = new MediaPlayer();
+            if(audioPath!=null){
+                try {
+
+                    mediaPlayer.setDataSource(audioPath);
+                    mediaPlayer.prepare();
+                    long duration = mediaPlayer.getDuration(); //时长
+                    long seconds = TimeUnit.MILLISECONDS.toSeconds(duration);
+                    dialog.setDuration(seconds);
+                    dialog.setFilePath(audioPath);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
 
             // 创建录音用的fragment
 
@@ -560,7 +494,7 @@ public class PostEditActivity extends AppCompatActivity {
         draftFileName=obj.getString("draftFileName");
         selectImage=!obj.getBoolean("selectImage");//要取反才对
         Log.d(TAG, "recoverContent: selectImage"+selectImage);
-        switchSelectState();
+
         JSONArray srcs=obj.getJSONArray("src");
         String t=obj.getString("type");
         if(t.equals("audio")){
@@ -570,13 +504,13 @@ public class PostEditActivity extends AppCompatActivity {
             ArrayList<LocalMedia>l=new ArrayList<>();
             for(int i=0;i<srcs.length();i++){
 
-                JSONObject o= (JSONObject) srcs.get(0);
+                JSONObject o= (JSONObject) srcs.get(i);
                 LocalMedia media=buildLocalMedia(o.getString("path"));
                 l.add(media);
             }
             analyticalSelectResults(l);
         }
-
+        switchSelectState();
         Log.d(TAG, "recoverContent: "+draftFileName);
     }
     private void saveContent() throws JSONException, IOException {

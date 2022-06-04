@@ -14,7 +14,9 @@
         app:defaultNavHost="true"
         app:layout_constraintBottom_toTopOf="@+id/main_page_btm_navi"
         app:layout_constraintTop_toTopOf="parent"
-        app:navGraph="@navigation/main_page_nav_graph">
+        app:layout_constraintVertical_bias="0.0"
+        app:navGraph="@navigation/main_page_nav_graph"
+        tools:layout_editor_absoluteX="0dp">
 
     </androidx.fragment.app.FragmentContainerView>
 
@@ -36,8 +38,8 @@
         android:id="@+id/main_page_to_post"
         app:layout_constraintBottom_toBottomOf="@id/main_page_nav_host"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="30dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="15dp"
         app:srcCompat="@drawable/ic_add_48px"
          />
 

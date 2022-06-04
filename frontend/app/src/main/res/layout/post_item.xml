@@ -55,6 +55,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
+                            android:textColor="@color/primaryColor"
                             android:text="User id"
                             style="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
@@ -83,12 +84,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="title"
+                    android:textFontWeight="700"
+                    android:layout_marginBottom="10dp"
                     style="@style/TextAppearance.MaterialComponents.Headline5" />
 
                 <TextView
                     android:id="@+id/post_item_content"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:letterSpacing="0.03"
                     android:text="text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size text size "/>
 
                 <TextView

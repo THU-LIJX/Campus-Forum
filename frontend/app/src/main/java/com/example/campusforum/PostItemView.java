@@ -43,7 +43,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class PostItemView extends LinearLayoutCompat {
+public class  PostItemView extends LinearLayoutCompat {
 
     // 在java代码里new时会用到
     public PostItemView(Context context) {
@@ -177,8 +177,8 @@ public class PostItemView extends LinearLayoutCompat {
         }
 
         username.setText(post.username);                            // 设置用户名
-        userId.setText(Integer.toString(post.userId));              // 设置用户id
-        postId.setText("动态id:" + post.postId);                     // 设置动态id
+        userId.setText("@" + Integer.toString(post.userId));              // 设置用户id
+        postId.setText("#" + post.postId);                     // 设置动态id
         title.setText(post.title);                                  // 设置标题
         content.setText(post.content);                              // 设置正文
         location.setText(post.location);                            // 设置位置

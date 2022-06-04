@@ -195,7 +195,6 @@ public class UserActivity extends AppCompatActivity {
         // 用户查看自己的个人主页
         if (userId == User.currentUser.userId) {
             // 显示edit profile按钮
-            binding.activityUserFuncBtn.setText("Edit profile");
             binding.activityUserFuncBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
                     Intent intent = new Intent(UserActivity.this, UserEditActivity.class);

@@ -26,6 +26,7 @@
         <entry key="..\:/workPlace/Android/Campus-Forum/frontend/app/src/main/res/menu/post_edit_top_bar.xml" value="0.39947916666666666" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.236" />
         <entry key="app/src/main/res/drawable-v24/ic_search_24px.xml" value="0.337" />
+        <entry key="app/src/main/res/drawable/bg_src.xml" value="0.3855" />
         <entry key="app/src/main/res/drawable/ic_account_circle_24px.xml" value="0.197" />
         <entry key="app/src/main/res/drawable/ic_add_a_photo_24px.xml" value="0.174" />
         <entry key="app/src/main/res/drawable/ic_add_location_48px.xml" value="0.236" />
@@ -54,16 +55,18 @@
         <entry key="app/src/main/res/layout/activity_post_info.xml" value="0.22" />
         <entry key="app/src/main/res/layout/activity_search.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_sub_list.xml" value="0.22" />
-        <entry key="app/src/main/res/layout/activity_user.xml" value="0.22" />
+        <entry key="app/src/main/res/layout/activity_user.xml" value="0.375" />
         <entry key="app/src/main/res/layout/activity_user_edit.xml" value="0.25" />
         <entry key="app/src/main/res/layout/comment_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_draft.xml" value="0.22" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.234375" />
+        <entry key="app/src/main/res/layout/fragment_noti.xml" value="0.2740628166160081" />
         <entry key="app/src/main/res/layout/fragment_post_browse.xml" value="0.2390625" />
         <entry key="app/src/main/res/layout/fragment_register.xml" value="0.2484375" />
+        <entry key="app/src/main/res/layout/fragment_register_result.xml" value="0.335" />
         <entry key="app/src/main/res/layout/fragment_user.xml" value="0.253125" />
         <entry key="app/src/main/res/layout/noti_item.xml" value="0.1824074074074074" />
-        <entry key="app/src/main/res/layout/post_item.xml" value="0.22" />
+        <entry key="app/src/main/res/layout/post_item.xml" value="0.375" />
         <entry key="app/src/main/res/layout/serach_list_item.xml" value="0.18958333333333333" />
         <entry key="app/src/main/res/layout/sub_item.xml" value="0.1" />
         <entry key="app/src/main/res/menu/main_page_btm_navi.xml" value="0.1" />

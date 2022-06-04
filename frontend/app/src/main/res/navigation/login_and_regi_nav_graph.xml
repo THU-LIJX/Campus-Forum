@@ -23,11 +23,18 @@
         <action
             android:id="@+id/action_register_fragment_to_register_result_fragment"
             app:destination="@id/register_result_fragment" />
+        <action
+            android:id="@+id/action_register_fragment_to_login_fragment"
+            app:destination="@id/login_fragment" />
     </fragment>
 
     <fragment
         android:id="@+id/register_result_fragment"
         android:name="com.example.campusforum.RegisterResultFragment"
         android:label="register_result_fragment"
-        tools:layout="@layout/fragment_register_result" />
+        tools:layout="@layout/fragment_register_result" >
+        <action
+            android:id="@+id/action_register_result_fragment_to_login_fragment"
+            app:destination="@id/login_fragment" />
+    </fragment>
 </navigation>

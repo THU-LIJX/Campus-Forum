@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
@@ -36,6 +37,7 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -51,6 +53,7 @@ public class RecordDialogFragment extends DialogFragment {
     private String mFileName = null;
     private String mFilePath = null;
     int maxRecordingSeconds=20;
+    long audioSeconds=0;//标示录音录录多久
     Uri fileUri;
     FileDescriptor fd;
     ParcelFileDescriptor pfd;
@@ -58,6 +61,8 @@ public class RecordDialogFragment extends DialogFragment {
     ActivityResultLauncher<Intent>activityResultLauncher;
     ActivityResultLauncher<Intent>selectFileResultLauncher;
     private long mStartingTimeMillis = 0;
+    MediaPlayer mediaPlayer;
+    boolean isPlaying=false;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 //    private static final String ARG_PARAM1 = "param1";
@@ -144,20 +149,19 @@ public class RecordDialogFragment extends DialogFragment {
                         }
                     }
                 });
-//        selectFileResultLauncher=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-//                new ActivityResultCallback<ActivityResult>() {
-//                    @Override
-//                    public void onActivityResult(ActivityResult result) {
-//                        if(result.getResultCode()==Activity.RESULT_OK&&result.getData()!=null){
-//                            Bundle res=new Bundle();
-//                            //InputStreamReader()
-//                            fileUri=result.getData().getData();
-//                            binding.recordFilepath.setText(getFilename(fileUri));
-//                            res.putParcelable("uri",fileUri);
-//                            getParentFragmentManager().setFragmentResult("record",res);
-//                        }
-//                    }
-//                });
+        mediaPlayer=new MediaPlayer();
+        binding.recordProgress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isPlaying){
+                    stopPlaying();
+                }else{
+                    Log.d(TAG, "onClick: start play!");
+                    startPlaying();
+                }
+
+            }
+        });
         super.onViewCreated(view, savedInstanceState);
     }
 
@@ -184,6 +188,51 @@ public class RecordDialogFragment extends DialogFragment {
     //  设置进度条和时间显示
     public void setDuration(long seconds){
         this.seconds=seconds;
+    }
+    public void setFilePath(String filePath){
+        this.mFilePath=filePath;
+    }
+    public void startPlaying(){
+        try {
+            mediaPlayer=new MediaPlayer();
+            mediaPlayer.setDataSource(mFilePath);
+            mediaPlayer.prepare();
+            long duration = mediaPlayer.getDuration(); //时长
+            audioSeconds = TimeUnit.MILLISECONDS.toSeconds(duration);
+            mediaPlayer.start();
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    isPlaying=false;
+                }
+            });
+            chronometer.setBase(SystemClock.elapsedRealtime());
+            chronometer.start();
+            chronometer.setText("0s");
+            binding.recordProgress.setProgress(0);
+            chronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+                long value=0;
+                @Override
+                public void onChronometerTick(Chronometer chronometer) {
+                    value++;
+                    if(value==audioSeconds){
+                        chronometer.stop();
+                    }
+                    chronometer.setText(String.format("%ds", value));
+                    binding.recordProgress.setProgress((int) ((float)value/audioSeconds*100),true);
+                    //Log.d(TAG, "onChronometerTick: "+chronometer.getText()+" format:"+chronometer.getFormat());
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        isPlaying=true;
+    }
+    public void stopPlaying(){
+        chronometer.stop();
+        mediaPlayer.stop();
+        isPlaying=false;
     }
     public void startRecording() throws FileNotFoundException {
         setFileNameAndPath();
@@ -215,7 +264,8 @@ public class RecordDialogFragment extends DialogFragment {
 
             chronometer.setBase(SystemClock.elapsedRealtime());
             chronometer.start();
-            chronometer.setFormat("");
+            chronometer.setText("0s");
+            binding.recordProgress.setProgress(0);
             chronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
                 long value=0;
                 @Override
@@ -249,15 +299,6 @@ public class RecordDialogFragment extends DialogFragment {
             mFileName = getString(R.string.default_sound_name)
                     + "_" + (System.currentTimeMillis()) + ".wav";
             mFilePath = Environment.getExternalStorageDirectory()+"/Music/"+mFileName;
-            //mFilePath=Environment.getExternalStorageDirectory()+"/DCIM/Camera/"+mFileName;
-            //binding.recordFilepath.setText(mFilePath);
-//            Intent intent=new Intent(Intent.ACTION_CREATE_DOCUMENT);
-//            intent.addCategory(Intent.CATEGORY_DEFAULT);
-//
-//            intent.setType("audio/*");
-//            intent.putExtra(Intent.EXTRA_TITLE,"新文件"+mFileName);
-//            activityResultLauncher.launch(intent);
-
     }
 
     public void stopRecording() {

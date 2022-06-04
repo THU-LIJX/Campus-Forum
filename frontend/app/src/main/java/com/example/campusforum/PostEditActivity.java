@@ -443,6 +443,7 @@ public class PostEditActivity extends AppCompatActivity {
                     long duration = mediaPlayer.getDuration(); //时长
                     long seconds = TimeUnit.MILLISECONDS.toSeconds(duration);
                     dialog.setDuration(seconds);
+                    dialog.setFilePath(audioPath);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

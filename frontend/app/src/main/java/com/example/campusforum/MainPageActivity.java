@@ -78,9 +78,11 @@ public class MainPageActivity extends AppCompatActivity {
             }
         });
 
-//        binding.mainPageTopBar.setNavigationOnClickListener(new View.OnClickListener(){
+//        binding.mainPageNavHost.setNavigationOnClickListener(new View.OnClickListener(){
 //            @Override
 //            public void onClick(View view) {
+//                Intent intent = new Intent(MainPageActivity.this, UserActivity.class);
+//                startActivity(intent);
 //            }
 //        });
         User.setCurrentUser();

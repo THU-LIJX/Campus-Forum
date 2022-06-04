@@ -33,7 +33,7 @@
                     android:background="@color/primaryColor"
                     app:menu="@menu/main_page_top_bar"
                     app:navigationIcon="@drawable/ic_account_circle_24px"
-                    app:title="Campus"
+                    app:title="动态"
                     app:titleCentered="true" />
             </com.google.android.material.appbar.AppBarLayout>
         </androidx.coordinatorlayout.widget.CoordinatorLayout>

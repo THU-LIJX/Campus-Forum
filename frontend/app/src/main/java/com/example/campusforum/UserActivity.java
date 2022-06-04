@@ -153,7 +153,7 @@ public class UserActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             binding.activityUserUsername.setText(user.username);
-                            binding.activityUserUserid.setText(Integer.toString(user.userId));
+                            binding.activityUserUserid.setText("@" + Integer.toString(user.userId));
                             binding.activityUserUserDescription.setText(user.description);
                             binding.activityUserSubscriptions.setText("已关注"+ user.subscriptions.size() + "人");
                             // 如果用户没设置，使用默认头像

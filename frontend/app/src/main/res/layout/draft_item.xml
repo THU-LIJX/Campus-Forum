@@ -20,43 +20,53 @@
         >
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="80dp"
             android:orientation="horizontal">
             <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="30dp"
+                android:layout_height="70dp"
                 android:src="@drawable/ic_article_48px"
                 android:id="@+id/draft_icon"
+                android:layout_marginStart="10dp"
+                android:layout_marginVertical="5dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 />
 
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                app:layout_constraintStart_toEndOf="@id/draft_icon"
-                android:layout_marginStart="10dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_marginHorizontal="10dp"
+                app:layout_constraintEnd_toStartOf="@+id/draft_date"
+                app:layout_constraintStart_toEndOf="@+id/draft_icon">
+
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:id="@+id/draft_title"
-                    />
-                <TextView
+                    style="@style/TextAppearance.MaterialComponents.Subtitle1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="草稿标题"
+                    android:textFontWeight="600" />
+
+                <TextView
                     android:id="@+id/draft_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_marginStart="10dp"
-                    />
+                    android:text="这下面的内容是草稿正文这下面的内容是草稿正文" />
             </LinearLayout>
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:id="@+id/draft_date"
+                android:gravity="center"
+                android:layout_marginEnd="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:gravity="center"
+
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

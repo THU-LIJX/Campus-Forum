@@ -60,6 +60,7 @@
         <entry key="app/src/main/res/layout/activity_user.xml" value="0.375" />
         <entry key="app/src/main/res/layout/activity_user_edit.xml" value="0.25" />
         <entry key="app/src/main/res/layout/comment_item.xml" value="0.375" />
+        <entry key="app/src/main/res/layout/draft_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_draft.xml" value="0.22" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.234375" />
         <entry key="app/src/main/res/layout/fragment_noti.xml" value="0.2740628166160081" />

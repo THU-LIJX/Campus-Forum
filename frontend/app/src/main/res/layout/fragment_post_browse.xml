@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/gray_50"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".PostBrowseFragment">
 
@@ -18,7 +19,8 @@
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:id="@+id/coordinatorLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+           >
 
             <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"
@@ -39,7 +41,8 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/frag_post_browse_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp"/>
     </androidx.appcompat.widget.LinearLayoutCompat>
 
 

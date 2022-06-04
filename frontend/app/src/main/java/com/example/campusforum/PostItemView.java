@@ -203,6 +203,7 @@ public class  PostItemView extends LinearLayoutCompat {
             location_icon.setVisibility(GONE);
         } else {
             location.setVisibility(VISIBLE);
+            location_icon.setVisibility(VISIBLE);
         }
 
         // 点赞/取消点赞

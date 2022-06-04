@@ -91,17 +91,17 @@ public class NotiItemView extends LinearLayoutCompat {
         });
 
         username.setText(notification.username);
-        userId.setText(Integer.toString(notification.userId));
+        userId.setText("@" + Integer.toString(notification.userId));
         state.setText("READ");
         switch (notification.action) {
             case Notification.COMMENT:
-                action.setText(notification.username + "评论了动态" + notification.postId);
+                action.setText(notification.username + "评论了动态#" + notification.postId);
                 break;
             case Notification.LIKE:
-                action.setText(notification.username + "点赞了动态" + notification.postId);
+                action.setText(notification.username + "点赞了动态#" + notification.postId);
                 break;
             case Notification.POST:
-                action.setText(notification.username + "发布了动态" + notification.postId);
+                action.setText(notification.username + "发布了动态#" + notification.postId);
                 break;
         }
         if (notification.avatar.equals("")) {
@@ -165,8 +165,10 @@ public class NotiItemView extends LinearLayoutCompat {
     public void setState(Boolean read) {
         if (read) {
             state.setText("READ");
+            state.setTextColor(getResources().getColor(R.color.secondaryDarkColor));
         } else {
             state.setText("UNREAD");
+            state.setTextColor(getResources().getColor(R.color.primaryDarkColor));
         }
     }
 }

@@ -98,7 +98,7 @@ public class CommentItemView extends LinearLayoutCompat {
         });
 
         username.setText(comment.username);
-        userId.setText(Integer.toString(comment.userId));
+        userId.setText("#" + Integer.toString(comment.userId));
         content.setText(comment.content);
         if (comment.avatar.equals("")) {
             avatar.setImageResource(R.drawable.ranga);

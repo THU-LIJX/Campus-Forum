@@ -3,7 +3,7 @@
     app:title="sss">
     <item
         android:id="@+id/save"
-        android:title="Save"
-        android:contentDescription="通知"
+        android:title="保存"
+        android:contentDescription="保存信息修改"
         app:showAsAction="always"/>
 </menu>

@@ -16,6 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="请选择筛选动态类型"
+            android:background="@color/secondaryDarkColor"
             app:startIconDrawable="@drawable/ic_share_24px"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -36,6 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:hint="请选择搜索关键词项"
+            android:background="@color/secondaryDarkColor"
             app:startIconDrawable="@drawable/ic_manage_search_24px"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/search_filter">
@@ -62,6 +64,7 @@
             android:hint="请输入要查询的用户名"
             android:textSize="16sp"
             android:layout_marginTop="10dp"
+            android:background="@color/secondaryDarkColor"
             app:startIconDrawable="@drawable/ic_person_search_24px"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/search_filter_title_or_content">
@@ -80,7 +83,7 @@
             android:hint="请输入关键词"
             android:textSize="16sp"
             android:layout_marginTop="10dp"
-            android:background="@color/gray_50"
+            android:background="@color/secondaryDarkColor"
             app:startIconDrawable="@drawable/ic_account_circle_24px"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/search_user_name_layout">
@@ -98,6 +101,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:text="搜索"
+            android:backgroundTint="@color/primaryColor"
             app:layout_constraintTop_toTopOf="@+id/search_view"
             app:layout_constraintStart_toEndOf="@+id/search_view">
         </com.google.android.material.button.MaterialButton>

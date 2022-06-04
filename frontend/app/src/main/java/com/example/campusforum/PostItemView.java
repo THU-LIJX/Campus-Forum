@@ -18,6 +18,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ShareCompat;
 
 import com.google.android.material.button.MaterialButton;
@@ -72,6 +73,7 @@ public class  PostItemView extends LinearLayoutCompat {
     private TextView title;                            // 标题
     private TextView content;                          // 正文
     private TextView location;                         // 位置
+    private ShapeableImageView location_icon;          // gps 图标
     private TextView commentNum;                       // 评论数
     private TextView likeNum;                          // 点赞数
     private ShapeableImageView commentIcon;            // 评论图标
@@ -107,6 +109,7 @@ public class  PostItemView extends LinearLayoutCompat {
         title = (TextView) view.findViewById(R.id.post_item_title);
         content = (TextView) view.findViewById(R.id.post_item_content);
         location = (TextView) view.findViewById(R.id.post_item_location);
+        location_icon = (ShapeableImageView) view.findViewById(R.id.post_item_gps_icon);
         commentNum = (TextView) view.findViewById(R.id.post_item_comment_num);
         likeNum = (TextView) view.findViewById(R.id.post_item_like_num);
         commentIcon = (ShapeableImageView) view.findViewById(R.id.post_item_comment_icon);
@@ -190,10 +193,17 @@ public class  PostItemView extends LinearLayoutCompat {
         commentNum.setText(Integer.toString(post.comments.size())); // 设置评论数
         setLikeInfo(post);
         // 如果位置为空，则不显示
+        if (post.title.equals("") ) {
+            title.setVisibility(GONE);
+        }  else {
+            title.setVisibility(VISIBLE);
+        }
         if (post.location.equals("")) {
             location.setVisibility(GONE);
+            location_icon.setVisibility(GONE);
         } else {
             location.setVisibility(VISIBLE);
+            location_icon.setVisibility(VISIBLE);
         }
 
         // 点赞/取消点赞

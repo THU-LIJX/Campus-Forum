@@ -268,6 +268,14 @@ public class PostBrowseFragment extends Fragment {
                 }
             }
         });
+        binding.fragmentPostBrowseTopBar.setNavigationOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), UserActivity.class);
+                intent.putExtra("id", User.currentUser.userId);
+                startActivity(intent);
+            }
+        });
     }
 
     // 获取应用所需要的权限

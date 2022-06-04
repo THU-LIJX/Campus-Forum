@@ -215,7 +215,6 @@ public class  PostItemView extends LinearLayoutCompat {
                         try {
                             jsonOb = new JSONObject(result);
                             if (jsonOb.getString("message").equals("ok")) {
-                                Log.d("fuck", "here");
                                 JSONArray jsonArray = jsonOb.getJSONArray("likedby");
                                 List<Integer> tmpList = new ArrayList<>();
                                 for (int i = 0; i < jsonArray.length(); i++) tmpList.add(jsonArray.getInt(i));
@@ -227,12 +226,14 @@ public class  PostItemView extends LinearLayoutCompat {
                         }
                     }
                 };
-                if (post.likedBy.contains(post.userId)) {
+                if (post.likedBy.contains(User.currentUser.userId)) {
                     // 取消点赞
                     HttpUtil.sendPostRequest("/api/user/dislike", data, callback);
+                    System.out.println("dislike");
                 } else {
                     // 点赞
                     HttpUtil.sendPostRequest("/api/user/like", data, callback);
+                    System.out.println("like");
                 }
             }
         });

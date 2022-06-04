@@ -4,6 +4,7 @@ import (
 	"backend/config"
 	"backend/utils"
 	"context"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jordan-wright/email"
 	"github.com/pkg/errors"
@@ -61,6 +62,10 @@ func QueryUser(id int) (user *User, err error) {
 	if user.BlackList == nil {
 		user.BlackList = make([]int, 0)
 	}
+	if user.Subscribed == nil {
+		user.Subscribed = make([]int, 0)
+	}
+	err = user.Commit()
 	return user, err
 }
 func ExistsUser(filter interface{}) bool {
@@ -83,6 +88,15 @@ func Login(email string, password string) (user *User, err error) {
 	}
 	if user.BlackList == nil {
 		user.BlackList = make([]int, 0)
+	}
+	if user.Drafts == nil {
+		user.Drafts = make([]int, 0)
+	}
+	if user.BlackList == nil {
+		user.BlackList = make([]int, 0)
+	}
+	if user.Subscribed == nil {
+		user.Subscribed = make([]int, 0)
 	}
 	return user, nil
 }
@@ -110,13 +124,26 @@ func (user *User) Commit() (err error) {
 }
 
 func (user *User) Subscribe(id int) (err error) {
+	fmt.Println("start subscribe")
+	if user.Subscriptions == nil {
+		user.Subscriptions = make([]int, 0)
+		err = user.Commit()
+		if err != nil {
+			return err
+		}
+	}
 	_, err = users.UpdateOne(context.Background(), bson.D{{"id", user.Id}}, bson.D{
 		{"$addToSet", bson.M{"subscriptions": id}},
 	})
 	if err != nil {
+		log.Printf("[Subscribe]Fail to update subscriptions,error=%+v", err)
 		return err
 	}
-	_, err = users.UpdateOne(context.Background(), bson.D{{"id", id}}, bson.D{
+	user2, err := QueryUser(id)
+	if err != nil {
+		return err
+	}
+	_, err = users.UpdateOne(context.Background(), bson.D{{"id", user2.Id}}, bson.D{
 		{"$addToSet", bson.M{"subscribed": user.Id}},
 	})
 	if err != nil {
@@ -144,7 +171,11 @@ func (user *User) Unsubscribe(id int) (err error) {
 	if err != nil {
 		return err
 	}
-	_, err = users.UpdateOne(context.Background(), bson.D{{"id", id}}, bson.D{
+	user2, err := QueryUser(id)
+	if err != nil {
+		return err
+	}
+	_, err = users.UpdateOne(context.Background(), bson.D{{"id", user2.Id}}, bson.D{
 		{"$pull", bson.M{"subscribed": user.Id}},
 	})
 	if err != nil {

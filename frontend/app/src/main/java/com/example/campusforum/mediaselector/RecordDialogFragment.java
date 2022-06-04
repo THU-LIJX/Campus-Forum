@@ -47,6 +47,7 @@ public class RecordDialogFragment extends DialogFragment {
     FragmentRecordDialogBinding binding;
     Chronometer chronometer;
     boolean recording =true;
+    long seconds=0;//从外面可以传进来
     private String mFileName = null;
     private String mFilePath = null;
     int maxRecordingSeconds=20;
@@ -80,8 +81,6 @@ public class RecordDialogFragment extends DialogFragment {
     public static RecordDialogFragment newInstance() {
         RecordDialogFragment fragment = new RecordDialogFragment();
         Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -89,10 +88,6 @@ public class RecordDialogFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -123,7 +118,8 @@ public class RecordDialogFragment extends DialogFragment {
             }
         });
         chronometer= binding.chronometer;
-        chronometer.setText("0s");
+        chronometer.setText(seconds+"s");
+        binding.recordProgress.setProgress((int) ((float)seconds/maxRecordingSeconds*100),false);
         activityResultLauncher=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
@@ -185,7 +181,10 @@ public class RecordDialogFragment extends DialogFragment {
             Log.d(TAG, "onRecord: Stop");
         }
     }
-
+    //  设置进度条和时间显示
+    public void setDuration(long seconds){
+        this.seconds=seconds;
+    }
     public void startRecording() throws FileNotFoundException {
         setFileNameAndPath();
         mRecorder = new MediaRecorder();

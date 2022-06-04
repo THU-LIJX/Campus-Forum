@@ -137,7 +137,7 @@ public class PostBrowseFragment extends Fragment {
 
     private int currentPage = -1;
     private int pageSize = 10;
-    private String sortLiked = "DES";
+    private String sortLiked = "None";
     private String sortTime = "DES";
     private boolean subscribed = true;
 
@@ -169,16 +169,16 @@ public class PostBrowseFragment extends Fragment {
                         startActivity(intent);
                         break;
                     case R.id.time_asc:
-                        sortTime = "ASC";
+                        sortTime = sortTime.equals("ASC") ? "None" : "ASC";
                         break;
                     case R.id.time_des:
-                        sortTime = "DES";
+                        sortTime = sortTime.equals("DES") ? "None" : "DES";
                         break;
                     case R.id.like_asc:
-                        sortLiked = "ASC";
+                        sortLiked = sortLiked.equals("ASC") ? "None" : "ASC";
                         break;
                     case R.id.like_des:
-                        sortLiked = "DES";
+                        sortLiked = sortLiked.equals("DES") ? "None" : "DES";
                         break;
                     case R.id.all:
                         subscribed = false;
@@ -223,8 +223,12 @@ public class PostBrowseFragment extends Fragment {
         HashMap<String, String> query = new HashMap<>();
         query.put("pagesize", Integer.toString(pageSize));
         query.put("page", Integer.toString(currentPage+1));
-        query.put("sort_time", sortTime);
-        query.put("sort_liked", sortLiked);
+        if (!sortTime.equals("None")) {
+            query.put("sort_time", sortTime);
+        }
+        if (!sortLiked.equals("None")) {
+            query.put("sort_liked", sortLiked);
+        }
         // 和后端约定的接口
         if (subscribed) {
             query.put("subscribed", Boolean.toString(subscribed)); // 显示自己和关注的人的动态

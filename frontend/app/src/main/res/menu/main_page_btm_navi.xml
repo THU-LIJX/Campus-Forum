@@ -2,14 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/post_browse_fragment"
-        android:title=""
+        android:title="动态"
         android:icon="@drawable/ic_cottage_24px"/>
     <item
-        android:id="@+id/draft_fragment"
-        android:title=""
-        android:icon="@drawable/ic_list_alt_24px"/>
+        android:id="@+id/noti_fragment"
+        android:title="通知"
+        android:icon="@drawable/ic_mail_24px"/>
     <item
-        android:id="@+id/user_fragment"
-        android:title=""
-        android:icon="@drawable/ic_face_24px"/>
+        android:id="@+id/draft_fragment"
+        android:title="草稿"
+        android:icon="@drawable/ic_list_alt_24px"/>
 </menu>

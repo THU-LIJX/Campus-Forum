@@ -18,8 +18,8 @@
         tools:layout="@layout/fragment_draft" />
 
     <fragment
-        android:id="@+id/user_fragment"
-        android:name="com.example.campusforum.UserFragment"
-        android:label="user_fragment"
-        tools:layout="@layout/fragment_user" />
+        android:id="@+id/noti_fragment"
+        android:name="com.example.campusforum.NotiFragment"
+        android:label="noti_fragment"
+        tools:layout="@layout/fragment_noti" />
 </navigation>

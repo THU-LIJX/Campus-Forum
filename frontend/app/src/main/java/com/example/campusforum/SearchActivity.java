@@ -133,6 +133,7 @@ public class SearchActivity extends AppCompatActivity {
                 try {
                     String result = Objects.requireNonNull(response.body()).string();
                     JSONObject jsonObject = new JSONObject(result);
+                    Log.d("result", jsonObject.toString());
                     if (jsonObject.getString("message").equals("ok")) {
                         JSONArray jsonArray= jsonObject.getJSONArray("blogs");
 //                                Log.d(TAG, jsonArray.toString());

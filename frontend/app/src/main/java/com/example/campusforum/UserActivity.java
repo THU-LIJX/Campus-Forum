@@ -214,7 +214,7 @@ public class UserActivity extends AppCompatActivity {
 
     // 关注
     private void onFollowClick() {
-        binding.activityUserFuncBtn.setText("Followed");
+        binding.activityUserFuncBtn.setText("取关");
         binding.activityUserFuncBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -240,6 +240,12 @@ public class UserActivity extends AppCompatActivity {
                             User.currentUser.subscriptions.add(userId);
                             System.out.println(User.currentUser.subscriptions);
                             Log.d("fuck", "ok");
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    init();
+                                }
+                            });
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -251,7 +257,7 @@ public class UserActivity extends AppCompatActivity {
 
     // 取消关注
     private void onFollowedClick() {
-        binding.activityUserFuncBtn.setText("Follow");
+        binding.activityUserFuncBtn.setText("关注");
         binding.activityUserFuncBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -277,6 +283,12 @@ public class UserActivity extends AppCompatActivity {
                             User.currentUser.subscriptions.remove(Integer.valueOf(userId));
                             System.out.println(User.currentUser.subscriptions);
                             Log.d("fuck", "ok");
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    init();
+                                }
+                            });
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();

@@ -110,7 +110,8 @@ public class UserEditActivity extends AppCompatActivity {
                 String result = Objects.requireNonNull(response.body()).string();
                 try {
                     JSONObject jsonObject = new JSONObject(result);
-                    Log.d(TAG, jsonObject.getString("message"));
+                    Log.d(TAG, jsonObject.toString());
+//                    Log.d(TAG, jsonObject.getString("message"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

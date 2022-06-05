@@ -65,6 +65,9 @@ func QueryUser(id int) (user *User, err error) {
 	if user.Subscribed == nil {
 		user.Subscribed = make([]int, 0)
 	}
+	if user.Notices == nil {
+		user.Notices = make([]int, 0)
+	}
 	err = user.Commit()
 	return user, err
 }
@@ -98,6 +101,10 @@ func Login(email string, password string) (user *User, err error) {
 	if user.Subscribed == nil {
 		user.Subscribed = make([]int, 0)
 	}
+	if user.Notices == nil {
+		user.Notices = make([]int, 0)
+	}
+	user.Commit()
 	return user, nil
 }
 
@@ -328,7 +335,9 @@ func (user *User) SendValidationEmail() (err error) {
 }
 
 func AddNoticeToUser(noticeId, userId int) error {
-	_, err := users.UpdateOne(context.Background(), bson.D{{"id", userId}}, bson.D{
+	user, err := QueryUser(userId)
+
+	_, err = users.UpdateOne(context.Background(), bson.D{{"id", user.Id}}, bson.D{
 		{"$push", bson.M{"notices": noticeId}},
 	})
 	return err

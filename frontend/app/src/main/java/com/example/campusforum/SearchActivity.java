@@ -93,7 +93,7 @@ public class SearchActivity extends AppCompatActivity {
                 searchTypeContent_Convert = "image";
                 break;
             case "语音":
-                searchTypeContent_Convert = "voice";
+                searchTypeContent_Convert = "sound";
                 break;
             case "视频":
                 searchTypeContent_Convert = "video";

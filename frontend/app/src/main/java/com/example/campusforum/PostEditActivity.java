@@ -515,6 +515,7 @@ public class PostEditActivity extends AppCompatActivity {
     }
     private void saveContent() throws JSONException, IOException {
         JSONObject obj=new JSONObject();
+        obj.put("id",User.currentUser.userId);
         obj.put("text",binding.postText.getText().toString());
         obj.put("title",binding.titleText.getText().toString());
         JSONArray srcs=new JSONArray();

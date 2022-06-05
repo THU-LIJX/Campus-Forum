@@ -95,6 +95,7 @@ public class DraftFragment extends Fragment {
         draftList = new ArrayList<>();
         draftPath = Environment.getExternalStorageDirectory() + "/Documents/Campus/";
         File dir = new File(draftPath);
+        int userID=User.currentUser.userId;
         if (dir.exists()) {
             File[] array = dir.listFiles();
             for (int i = 0; i < array.length; i++) {
@@ -109,6 +110,10 @@ public class DraftFragment extends Fragment {
                     }
                     String text = new String(buf, 0, len);
                     JSONObject obj = new JSONObject(text);
+                    //判断，只读取当前用户的
+                    if(obj.getInt("id")!=userID){
+                        continue;
+                    }
                     Log.d(TAG, "onViewCreated: jsonObj:" + obj);
                     draftList.add(obj);
                 } catch (FileNotFoundException e) {
@@ -145,6 +150,7 @@ public class DraftFragment extends Fragment {
     public void onResume() {
         adapter.clear();
         File dir = new File(draftPath);
+        int userID=User.currentUser.userId;
         if (dir.exists()) {
             File[] array = dir.listFiles();
             for (int i = 0; i < array.length; i++) {
@@ -159,6 +165,9 @@ public class DraftFragment extends Fragment {
                     }
                     String text = new String(buf, 0, len);
                     JSONObject obj = new JSONObject(text);
+                    if(obj.getInt("id")!=userID){
+                        continue;
+                    }
                     Log.d(TAG, "onViewCreated: jsonObj:" + obj);
                     draftList.add(obj);
                 } catch (FileNotFoundException e) {

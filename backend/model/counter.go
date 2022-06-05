@@ -51,7 +51,14 @@ func (c *Counter) Commit() (err error) {
 func getCounter(id string) (counter *Counter, err error) {
 	counter = new(Counter)
 	err = counters.FindOne(context.TODO(), bson.D{{"id", id}}).Decode(&counter)
-	if err != nil {
+	if err == mongo.ErrNoDocuments {
+		counter.Id = id
+		counter.Value = 0
+		_, err = counters.InsertOne(context.Background(), counter)
+		if err != nil {
+			return nil, err
+		}
+	} else if err != nil {
 		return nil, err
 	}
 	return

@@ -17,6 +17,8 @@
             android:layout_height="?attr/actionBarSize"
             android:id="@+id/post_edit_top_bar"
             app:title="编辑动态"
+            app:titleCentered="true"
+            app:navigationIcon="@drawable/ic_arrow_back_24px"
             app:menu="@menu/post_edit_top_bar"
             style="@style/ThemeOverlay.MaterialComponents.Toolbar.Primary"
             />

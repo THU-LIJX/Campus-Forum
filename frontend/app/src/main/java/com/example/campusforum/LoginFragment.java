@@ -13,6 +13,7 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.campusforum.databinding.FragmentLoginBinding;
 
@@ -120,6 +121,12 @@ public class LoginFragment extends Fragment {
                                 getActivity().finish();
                             } else {
                                 // TODO: 提示错误信息
+                                LoginFragment.this.getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getContext(), "账号或密码错误", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
                         } catch (JSONException e) {
                             System.out.println(e.getStackTrace());

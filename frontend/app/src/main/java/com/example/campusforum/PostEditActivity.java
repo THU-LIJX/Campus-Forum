@@ -307,6 +307,31 @@ public class PostEditActivity extends AppCompatActivity {
 
         launcherResult = createActivityResultLauncher();
 
+        binding.postEditTopBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onMenuItemClick: close");
+                //弹出是否保存到草稿
+                MaterialAlertDialogBuilder builder=new MaterialAlertDialogBuilder(getContext());
+                builder.setTitle("退出确认")
+                        .setMessage("是否保存到草稿箱？")
+                        .setPositiveButton(R.string.confirm_save, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                finish();
+                            }
+                        })
+                        .setNegativeButton(R.string.confirm_cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                File file=new File(draftPath+draftFileName);
+                                file.delete();
+                                finish();
+                            }
+                        }).show();
+            }
+        });
+
         //处理菜单栏点击事件
         binding.postEditTopBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
@@ -318,30 +343,30 @@ public class PostEditActivity extends AppCompatActivity {
                         Log.d(TAG, "onOptionsItemSelected: selected");
                         publish();
                         return true;
-                    case R.id.close_edit:
-                        Log.d(TAG, "onMenuItemClick: close");
-                        //弹出是否保存到草稿
-                        MaterialAlertDialogBuilder builder=new MaterialAlertDialogBuilder(getContext());
-                        builder.setTitle("退出确认")
-                                .setMessage("是否保存到草稿箱？")
-                                .setPositiveButton(R.string.confirm_save, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        finish();
-                                    }
-                                })
-                                .setNegativeButton(R.string.confirm_cancel, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    File file=new File(draftPath+draftFileName);
-                                    file.delete();
-                                    finish();
-                                }
-                        }).show();
-
-
-
-                        return true;
+//                    case R.id.close_edit:
+//                        Log.d(TAG, "onMenuItemClick: close");
+//                        //弹出是否保存到草稿
+//                        MaterialAlertDialogBuilder builder=new MaterialAlertDialogBuilder(getContext());
+//                        builder.setTitle("退出确认")
+//                                .setMessage("是否保存到草稿箱？")
+//                                .setPositiveButton(R.string.confirm_save, new DialogInterface.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(DialogInterface dialogInterface, int i) {
+//                                        finish();
+//                                    }
+//                                })
+//                                .setNegativeButton(R.string.confirm_cancel, new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialogInterface, int i) {
+//                                    File file=new File(draftPath+draftFileName);
+//                                    file.delete();
+//                                    finish();
+//                                }
+//                        }).show();
+//
+//
+//
+//                        return true;
                     default:
                         return false;
                 }
@@ -720,8 +745,9 @@ public class PostEditActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if(response.code()==200){
                     postSuccess();
-                    Intent intent=new Intent(getContext(),MainPageActivity.class);
-                    startActivity(intent);
+                    finish();
+//                    Intent intent=new Intent(getContext(),MainPageActivity.class);
+//                    startActivity(intent);
                 }else{
                     Log.d(TAG, "onResponse: "+response.body().string());
                 }

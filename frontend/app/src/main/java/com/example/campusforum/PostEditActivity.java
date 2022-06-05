@@ -677,8 +677,9 @@ public class PostEditActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if(response.code()==200){
                     postSuccess();
-                    Intent intent=new Intent(getContext(),MainPageActivity.class);
-                    startActivity(intent);
+                    finish();
+//                    Intent intent=new Intent(getContext(),MainPageActivity.class);
+//                    startActivity(intent);
                 }else{
                     Log.d(TAG, "onResponse: "+response.body().string());
                 }
@@ -828,8 +829,9 @@ public class PostEditActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if(response.code()==200){
                     postSuccess();
-                    Intent intent=new Intent(getContext(),MainPageActivity.class);
-                    startActivity(intent);
+                    finish();
+//                    Intent intent=new Intent(getContext(),MainPageActivity.class);
+//                    startActivity(intent);
                 }else{
                     Log.d(TAG, "onResponse: "+response.body().string());
                 }

@@ -58,6 +58,11 @@ func DBUri() string {
 func Domain() string {
 	return conf.HostConf.Domain
 }
+
+//测试用
+func SetDomain(domain string) {
+	conf.HostConf.Domain = domain
+}
 func Static() string {
 	return conf.HostConf.Static
 }

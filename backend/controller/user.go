@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/crypto/bcrypt"
 	"io"
+	"net/http"
 	"path"
 	"strconv"
 	"time"
@@ -337,9 +338,7 @@ func VerifyUser(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(200, gin.H{
-		"message": "验证成功",
-	})
+	c.Data(http.StatusOK, "text/html; charset=utf-8", []byte("验证成功！"))
 
 }
 func GetNotices(c *gin.Context) {

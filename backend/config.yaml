@@ -1,7 +1,7 @@
 dbconf:
-  name: "test"
-  uri: "mongodb://campus:campus@qiuyuhan.xyz:27017/test"
-
+  name: "finaltest"
+  #uri: "mongodb://campus:campus@qiuyuhan.xyz:27017/test"
+  uri: "mongodb://root:yh-qiu18@qiuyuhan.xyz:27017"
 hostconf:
 
   domain: "localhost"

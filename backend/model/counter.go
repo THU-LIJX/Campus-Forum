@@ -1,6 +1,7 @@
 package model
 
 import (
+	"backend/config"
 	"backend/store"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
@@ -21,7 +22,7 @@ var draftsCounter *Counter
 var noticesCounter *Counter
 
 func initCounter() {
-	counters = store.GetMongo().Database("test").Collection("counters")
+	counters = store.GetMongo().Database(config.DB()).Collection("counters")
 	usersCounter, _ = getCounter("users")
 	blogsCounter, _ = getCounter("blogs")
 	commentsCounter, _ = getCounter("comments")

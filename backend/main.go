@@ -4,9 +4,11 @@ import (
 	"backend/model"
 	"backend/store"
 	"context"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
+	"net"
 )
 
 var client *mongo.Client
@@ -19,6 +21,21 @@ func Init() {
 	}
 	model.Init()
 }
+func getClientIp() string {
+	addrs, _ := net.InterfaceAddrs()
+
+	for _, address := range addrs {
+		// 检查ip地址判断是否回环地址
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				fmt.Println(ipnet.IP.String())
+				return ipnet.IP.String()
+			}
+
+		}
+	}
+	return ""
+}
 func main() {
 	Init()
 	engine := gin.Default()
@@ -30,6 +47,9 @@ func main() {
 			panic(err)
 		}
 	}()
+
+	// 这一句只在本地测试的时候使用，上线的时候注释掉
+	// config.SetDomain(getClientIp())
 
 	err = engine.Run("0.0.0.0:8080")
 	if err != nil {

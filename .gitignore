@@ -13,3 +13,6 @@ frontend/.idea/misc.xml
 frontend/.idea/misc.xml
 frontend/.idea/misc.xml
 backend/backend
+*.jpg
+*.mp4
+*.wav

@@ -326,7 +326,7 @@ func (user *User) SendValidationEmail() (err error) {
 	log.Println(token)
 	//发送邮件
 	e := email.NewEmail()
-	e.From = "Campusbbs <1403292286@qq.com>"
+	e.From = "CampusForum <1403292286@qq.com>"
 	e.To = []string{user.Email}
 	e.Subject = "验证用户身份"
 	e.Text = []byte("http://" + config.Domain() + ":8080/api/verify/" + token) //TODO 这里硬编码了端口

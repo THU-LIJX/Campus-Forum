@@ -29,7 +29,11 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class HttpUtil {
-     static final String baseUrl = "http://qiuyuhan.xyz:8080";
+    static final String baseUrl = "http://qiuyuhan.xyz:8080";
+
+    // 仅本地临时测试用
+
+     //static final String baseUrl ="http://192.168.1.101:8080";
     //本地跑后端，用10.0.2.2这个ip地址
     //static final String baseUrl = "http://10.0.2.2:8080/api";
     //static final  String baseUrl="http://qiuyuhan.xyz:8080/api";

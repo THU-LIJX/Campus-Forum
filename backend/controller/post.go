@@ -181,6 +181,7 @@ func Search(c *gin.Context) {
 	userName := c.Query("user_name")
 	if userName != "" {
 		filter.UserName = userName
+		fmt.Println(userName)
 	}
 	t := c.Query("type")
 	if t != "" {

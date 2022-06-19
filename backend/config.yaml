@@ -4,9 +4,14 @@ dbconf:
   uri: "mongodb://root:yh-qiu18@qiuyuhan.xyz:27017"
 hostconf:
 
-  domain: "localhost"
-  #domain: "qiuyuhan.xyz"
+  #domain: "localhost"
+  domain: "qiuyuhan.xyz"
   #domain: "10.0.2.2"
-  static: "D:\\workPlace\\Android\\test"
-  #static: "/home/ubuntu/static"
-# static: "/Users/bytedance/Documents/"
+  # Windows
+  #static: "D:\\workPlace\\Android\\test"
+
+  # Ubuntu
+  static: "/home/ubuntu/static"
+
+  # MacOS
+  # static: "/Users/bytedance/Documents/"
